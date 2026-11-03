@@ -1,0 +1,276 @@
+{
+  "scanner-user": {
+    "first_name": {
+      "value": "Test",
+      "valueType": "string",
+      "updatedAt": null
+    },
+    "last_name": {
+      "value": "Candidate",
+      "valueType": "string",
+      "updatedAt": null
+    },
+    "title": {
+      "value": "Mr.",
+      "valueType": "string",
+      "updatedAt": "2026-11-02T17:01:15.212Z"
+    },
+    "phone_country_code": {
+      "value": "+1",
+      "valueType": "string",
+      "updatedAt": "2026-11-02T17:01:15.212Z"
+    },
+    "phone_number": {
+      "value": "1234567890",
+      "valueType": "string",
+      "updatedAt": "2026-11-02T17:01:15.212Z"
+    },
+    "country": {
+      "value": "United States",
+      "valueType": "string",
+      "updatedAt": "2026-11-02T17:01:15.212Z"
+    },
+    "address_line1": {
+      "value": "123",
+      "valueType": "string",
+      "updatedAt": "2026-11-03T15:41:29.083Z"
+    },
+    "city": {
+      "value": "Essex Fells",
+      "valueType": "string",
+      "updatedAt": "2026-11-02T17:01:15.212Z"
+    },
+    "region2": {
+      "value": "NY",
+      "valueType": "string",
+      "updatedAt": "2026-11-02T17:01:15.212Z"
+    },
+    "postal_code": {
+      "value": "12936",
+      "valueType": "string",
+      "updatedAt": "2026-11-03T15:41:29.083Z"
+    },
+    "do_you_require_visa_sponsorship": {
+      "value": "Yes",
+      "valueType": "string",
+      "updatedAt": "2026-11-02T17:01:15.212Z"
+    },
+    "have_you_ever_worked_at_deloitte": {
+      "value": "No",
+      "valueType": "string",
+      "updatedAt": "2026-11-02T17:01:15.212Z"
+    },
+    "do_you_have_any_relatives_currently_working_for_tradeweb": {
+      "value": "No",
+      "valueType": "string",
+      "updatedAt": "2026-11-02T17:01:15.212Z"
+    },
+    "gb_standard_ora_ethnicity_standard": {
+      "value": "Chinese",
+      "valueType": "string",
+      "updatedAt": "2026-11-02T17:01:15.212Z"
+    },
+    "gb_standard_ora_gender_standard": {
+      "value": "Male",
+      "valueType": "string",
+      "updatedAt": "2026-11-02T17:01:15.212Z"
+    },
+    "i_agree_to_receive_updates_about_new_job_opportunities": {
+      "value": true,
+      "valueType": "boolean",
+      "updatedAt": "2026-11-02T17:01:15.212Z"
+    },
+    "i_agree_to_receive_marketing_communications": {
+      "value": true,
+      "valueType": "boolean",
+      "updatedAt": "2026-11-02T17:01:15.212Z"
+    },
+    "full_name": {
+      "value": "Candidate Test",
+      "valueType": "string",
+      "updatedAt": "2026-11-03T12:13:17.993Z"
+    },
+    "education": {
+      "value": [
+        {
+          "content_item_id": "Bachelor of Arts"
+        }
+      ],
+      "valueType": "array",
+      "updatedAt": "2026-11-03T16:05:15.215Z"
+    },
+    "experience": {
+      "value": [
+        {
+          "employer_name": "Xyz"
+        }
+      ],
+      "valueType": "array",
+      "updatedAt": "2026-11-02T17:01:15.212Z"
+    },
+    "middle_names": {
+      "value": "chowdara",
+      "valueType": "string",
+      "updatedAt": "2026-11-03T12:13:17.993Z"
+    },
+    "known_as": {
+      "value": "kamma",
+      "valueType": "string",
+      "updatedAt": "2026-11-03T12:13:17.993Z"
+    },
+    "nationality": {
+      "value": "Indian",
+      "valueType": "string",
+      "updatedAt": "2026-11-03T12:13:17.993Z"
+    },
+    "dual_citizenship": {
+      "value": "Not Applicable",
+      "valueType": "string",
+      "updatedAt": "2026-11-03T12:13:17.993Z"
+    },
+    "how_did_you_come_to_know_about_this_opportunity": {
+      "value": "Career Site",
+      "valueType": "string",
+      "updatedAt": "2026-11-03T12:13:17.993Z"
+    },
+    "are_you_over_the_age_of_18": {
+      "value": "Yes",
+      "valueType": "string",
+      "updatedAt": "2026-11-03T12:13:17.993Z"
+    },
+    "have_you_ever_worked_as_an_employee_for_vertiv_or_any_other_vertiv_legal_entity": {
+      "value": "No",
+      "valueType": "string",
+      "updatedAt": "2026-11-03T12:13:17.993Z"
+    },
+    "have_you_ever_worked_as_a_contractor_for_vertiv_currently_or_previously": {
+      "value": "No",
+      "valueType": "string",
+      "updatedAt": "2026-11-03T12:13:17.993Z"
+    },
+    "will_you_now_or_in_the_future_require_vertiv_to_help_you_obtain_an_employment_visa": {
+      "value": "Yes",
+      "valueType": "string",
+      "updatedAt": "2026-11-03T12:13:17.993Z"
+    },
+    "do_you_have_a_disability": {
+      "value": "No, I do not have a disability and have not had one in the past",
+      "valueType": "string",
+      "updatedAt": "2026-11-03T12:13:17.993Z"
+    },
+    "us_standard_ora_veteran_status_standard": {
+      "value": "I am not a protected Veteran",
+      "valueType": "string",
+      "updatedAt": "2026-11-03T12:13:17.993Z"
+    },
+    "i_am_hispanic_or_latino": {
+      "value": false,
+      "valueType": "boolean",
+      "updatedAt": "2026-11-03T12:13:17.993Z"
+    },
+    "ethnicity": {
+      "value": false,
+      "valueType": "boolean",
+      "updatedAt": "2026-11-03T12:13:17.993Z"
+    },
+    "american_indian_or_alaska_native": {
+      "value": false,
+      "valueType": "boolean",
+      "updatedAt": "2026-11-03T12:13:17.993Z"
+    },
+    "select_the_races_you_identify_with": {
+      "value": [
+        "Asian"
+      ],
+      "valueType": "array",
+      "updatedAt": "2026-11-03T18:50:00.000Z"
+    },
+    "asian": {
+      "value": true,
+      "valueType": "boolean",
+      "updatedAt": "2026-11-03T12:13:17.993Z"
+    },
+    "black_or_african_american": {
+      "value": false,
+      "valueType": "boolean",
+      "updatedAt": "2026-11-03T12:13:17.993Z"
+    },
+    "native_hawaiian_or_other_pacific_islander": {
+      "value": false,
+      "valueType": "boolean",
+      "updatedAt": "2026-11-03T12:13:17.993Z"
+    },
+    "white": {
+      "value": false,
+      "valueType": "boolean",
+      "updatedAt": "2026-11-03T12:13:17.993Z"
+    },
+    "us_standard_ora_gender_standard": {
+      "value": "Female",
+      "valueType": "string",
+      "updatedAt": "2026-11-03T12:13:17.993Z"
+    },
+    "were_you_referred_by_a_current_employee": {
+      "value": "Yes",
+      "valueType": "string",
+      "updatedAt": "2026-11-03T12:13:17.993Z"
+    },
+    "check_all_of_the_following_statements_that_apply_to_you": {
+      "value": [
+        "No statements apply to me"
+      ],
+      "valueType": "array",
+      "updatedAt": "2026-11-03T15:41:29.083Z"
+    },
+    "region1": {
+      "value": "essex",
+      "valueType": "string",
+      "updatedAt": "2026-11-03T15:41:29.083Z"
+    },
+    "current_or_former_us_government_employees_within_the_last_12_months_before_receiving_any_reimburseme": {
+      "value": "No",
+      "valueType": "string",
+      "updatedAt": "2026-11-03T15:41:29.083Z"
+    },
+    "were_you_previously_employed_directly_by_honeywell_honeywell_aerospace_or_a_subsidiary_of_either_com": {
+      "value": "No",
+      "valueType": "string",
+      "updatedAt": "2026-11-03T15:41:29.083Z"
+    },
+    "are_you_related_to_or_in_a_relationship_with_anyone_who_works_at_honeywell_aerospace": {
+      "value": "No",
+      "valueType": "string",
+      "updatedAt": "2026-11-03T15:41:29.083Z"
+    },
+    "within_the_past_12_months_or_audit_cycle_whichever_is_longer_did_you_provide_audit_or_review_service": {
+      "value": "No",
+      "valueType": "string",
+      "updatedAt": "2026-11-03T15:41:29.083Z"
+    },
+    "are_you_currently_lawfully_authorized_to_work_in_the_u_s_for_any_employer_as_a_i_u_s_citizen_or_nati": {
+      "value": "No",
+      "valueType": "string",
+      "updatedAt": "2026-11-03T15:41:29.083Z"
+    },
+    "will_you_now_or_in_the_future_require_visa_sponsorship_to_work_in_the_united_states": {
+      "value": "No",
+      "valueType": "string",
+      "updatedAt": "2026-11-03T15:41:29.083Z"
+    },
+    "have_you_ever_participated_personally_and_substantially_on_behalf_of_the_u_s_government_in_a_federal": {
+      "value": "No",
+      "valueType": "string",
+      "updatedAt": "2026-11-03T15:41:29.083Z"
+    },
+    "have_you_ever_been_suspended_or_debarred_from_receiving_u_s_government_contracts_or_proposed_for_sus": {
+      "value": "No",
+      "valueType": "string",
+      "updatedAt": "2026-11-03T15:41:29.083Z"
+    },
+    "have_you_entered_into_any_restrictive_covenant_agreement_such_as_a_non_compete_no_solicitation_trade": {
+      "value": "No",
+      "valueType": "string",
+      "updatedAt": "2026-11-03T15:41:29.083Z"
+    }
+  }
+}

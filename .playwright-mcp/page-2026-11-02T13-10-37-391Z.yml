@@ -1,0 +1,597 @@
+- generic [ref=e1]:
+  - generic [aria-hidden] [ref=e2]:
+    - generic [ref=e3]: .
+    - generic [ref=e4]: ..
+    - generic [ref=e5]: .
+  - generic [ref=e7]:
+    - link "Skip to main content." [ref=e457] [cursor=pointer]:
+      - /url: "#main"
+    - generic:
+      - alert
+    - generic [ref=e459]:
+      - banner [ref=e472]:
+        - generic [ref=e474]:
+          - link "Back to Job Details" [ref=e475] [cursor=pointer]:
+            - generic [ref=e476]: 
+          - tooltip "Industrial ML Software Engineer ..." [ref=e477]:
+            - generic [ref=e478]:
+              - generic [ref=e479]: Industrial ML Software Engineer
+              - generic [ref=e480]: ...
+        - heading "Industrial ML Software Engineer application, step 1 of 4" [level=1] [ref=e481]
+        - navigation "Application Flow Navigation" [ref=e482]:
+          - generic [ref=e483]:
+            - generic [ref=e484]: 
+            - list [ref=e486]:
+              - listitem [ref=e487]:
+                - link "Import your profile" [ref=e488] [cursor=pointer]:
+                  - /url: javascript:void(0)
+              - listitem [ref=e489]:
+                - link "Contact Information" [ref=e490] [cursor=pointer]:
+                  - /url: javascript:void(0)
+              - listitem [ref=e491]:
+                - link "Extra Information" [ref=e492] [cursor=pointer]:
+                  - /url: javascript:void(0)
+              - listitem [ref=e493]:
+                - link "Application Questions" [ref=e494] [cursor=pointer]:
+                  - /url: javascript:void(0)
+              - listitem [ref=e495]:
+                - link "Work and Education History" [ref=e496] [cursor=pointer]:
+                  - /url: javascript:void(0)
+              - listitem [ref=e497]:
+                - link "Supporting Documents and URLs" [ref=e498] [cursor=pointer]:
+                  - /url: javascript:void(0)
+              - listitem [ref=e499]:
+                - link "Disability Information" [ref=e500] [cursor=pointer]:
+                  - /url: javascript:void(0)
+              - listitem [ref=e501]:
+                - link "Veteran Information" [ref=e502] [cursor=pointer]:
+                  - /url: javascript:void(0)
+              - listitem [ref=e503]:
+                - link "Diversity Information" [ref=e504] [cursor=pointer]:
+                  - /url: javascript:void(0)
+              - listitem [ref=e505]:
+                - link "E-Signature" [ref=e506] [cursor=pointer]:
+                  - /url: javascript:void(0)
+      - main [ref=e460]:
+        - heading "Job application form" [level=1] [ref=e461]
+        - generic [ref=e462]:
+          - generic [ref=e463]:
+            - generic [ref=e466]:
+              - text: Fields marked with an asterisk
+              - generic [ref=e467]:
+                - text: (
+                - generic [aria-hidden] [ref=e468]: "*"
+                - text: )
+              - text: are required.
+            - generic [ref=e508]:
+              - list [ref=e511]:
+                - listitem [ref=e512]:
+                  - region "Import your profile" [ref=e515]:
+                    - generic [ref=e516]:
+                      - generic [ref=e517]:
+                        - heading "Import your profile" [level=2] [ref=e518]
+                        - paragraph [ref=e519]: You can import your information.
+                      - generic [ref=e521]:
+                        - button "Import your profile from resume" [ref=e522] [cursor=pointer]
+                        - button [aria-hidden] [ref=e523] [cursor=pointer]: Resume
+                      - status
+              - list [ref=e526]:
+                - listitem [ref=e527]:
+                  - generic [ref=e529]:
+                    - generic [ref=e530]:
+                      - heading "Contact Information" [level=3] [ref=e532]
+                      - paragraph [ref=e533]: Please enter your contact information.
+                    - region "Contact Information" [ref=e534]:
+                      - generic [ref=e536]:
+                        - generic [ref=e537]:
+                          - generic "Last/Family Name (Please enter with letters a-z, capital letters A-Z and the characters - or ‘ only. Accented and other special characters will not be recognized)" [ref=e539]:
+                            - generic [aria-hidden] [ref=e541]: "*"
+                          - textbox "Last/Family Name (Please enter with letters a-z, capital letters A-Z and the characters - or ‘ only. Accented and other special characters will not be recognized)" [ref=e543]
+                        - generic [ref=e544]:
+                          - generic "First/Given Name (Please enter with letters a-z, capital letters A-Z and the characters - or ‘ only. Accented and other special characters will not be recognized)" [ref=e546]:
+                            - generic [aria-hidden] [ref=e548]: "*"
+                          - textbox "First/Given Name (Please enter with letters a-z, capital letters A-Z and the characters - or ‘ only. Accented and other special characters will not be recognized)" [ref=e550]
+                        - generic [ref=e551]:
+                          - generic "Title" [ref=e553]
+                          - radiogroup "Title" [ref=e557]:
+                            - radio "Doctor" [ref=e558] [cursor=pointer]
+                            - radio "Miss" [ref=e560] [cursor=pointer]
+                            - radio "Mr." [ref=e562] [cursor=pointer]
+                            - radio "Mrs." [ref=e564] [cursor=pointer]
+                            - radio "Ms." [ref=e566] [cursor=pointer]
+                        - generic [ref=e568]:
+                          - generic "Middle Name (Please use to provide any further names)" [ref=e570]
+                          - textbox "Middle Name (Please use to provide any further names)" [ref=e573]
+                        - generic [ref=e574]:
+                          - generic "Preferred Name (Please enter with letters a-z, capital letters A-Z and the characters - or ‘ only. Accented and other special characters will not be recognized)" [ref=e576]
+                          - textbox "Preferred Name (Please enter with letters a-z, capital letters A-Z and the characters - or ‘ only. Accented and other special characters will not be recognized)" [ref=e579]
+                        - generic [ref=e581]:
+                          - generic "Email Address" [ref=e583]
+                          - generic [ref=e586]:
+                            - textbox "Email Address" [ref=e587]: lokesh.matla@applywizard.ai
+                            - button "Edit email address" [ref=e588] [cursor=pointer]:
+                              - emphasis [ref=e589]: 
+                        - generic [ref=e590]:
+                          - generic "Phone Number" [ref=e592]
+                          - group "Phone Number" [ref=e595]:
+                            - generic [ref=e599]:
+                              - generic [ref=e600]:
+                                - generic: Country code
+                                - combobox "Country code" [ref=e601]: "+1"
+                              - generic [ref=e602]:
+                                - button "Remove value for the Country code field." [ref=e603] [cursor=pointer]: 
+                                - button "Open the drop-down list for Country code." [ref=e604] [cursor=pointer]: 
+                            - textbox "Phone Number" [ref=e606]
+                - listitem [ref=e607]:
+                  - generic [ref=e609]:
+                    - generic [ref=e610]:
+                      - heading "Extra Information" [level=3] [ref=e612]
+                      - paragraph [ref=e613]: Provide additional details.
+                    - region "Extra Information" [ref=e614]:
+                      - generic [ref=e615]:
+                        - generic [ref=e616]:
+                          - generic "Nationality" [ref=e618]:
+                            - generic [aria-hidden] [ref=e620]: "*"
+                          - generic [ref=e624]:
+                            - combobox "Nationality" [ref=e626]
+                            - button "Open the drop-down list for Nationality." [ref=e628] [cursor=pointer]: 
+                        - generic [ref=e629]:
+                          - generic "Please specify dual citizenship if applicable" [ref=e631]:
+                            - generic [aria-hidden] [ref=e633]: "*"
+                          - generic [ref=e637]:
+                            - combobox "Please specify dual citizenship if applicable" [ref=e639]
+                            - button "Open the drop-down list for Please specify dual citizenship if applicable." [ref=e641] [cursor=pointer]: 
+              - list [ref=e644]:
+                - listitem [ref=e645]:
+                  - generic [ref=e647]:
+                    - generic [ref=e648]:
+                      - heading "Application Questions" [level=3] [ref=e650]
+                      - paragraph [ref=e651]: Please answer the following questions.
+                    - region "Application Questions" [ref=e652]:
+                      - generic [ref=e653]:
+                        - generic [ref=e654]:
+                          - generic "How did you come to know about this opportunity?" [ref=e656]:
+                            - generic [aria-hidden] [ref=e658]: "*"
+                          - radiogroup "How did you come to know about this opportunity?" [ref=e661]:
+                            - radio "Employee Referral" [ref=e662] [cursor=pointer]
+                            - radio "Career Site" [ref=e664] [cursor=pointer]
+                            - radio "LinkedIn/Job Portal" [ref=e666] [cursor=pointer]
+                            - radio "Recruitment Agency" [ref=e668] [cursor=pointer]
+                            - radio "Other" [checked] [ref=e670] [cursor=pointer]
+                        - generic [ref=e1200]:
+                          - generic "If Other Source, Please specify" [ref=e1202]:
+                            - generic [aria-hidden] [ref=e1204]: "*"
+                          - generic [ref=e1205]:
+                            - textbox "If Other Source, Please specify" [ref=e1206]
+                            - textbox [aria-hidden] [ref=e1207]
+                        - generic [ref=e672]:
+                          - generic "Are you over the age of 18?" [ref=e674]:
+                            - generic [aria-hidden] [ref=e676]: "*"
+                          - radiogroup "Are you over the age of 18?" [ref=e679]:
+                            - radio "Yes" [ref=e680] [cursor=pointer]
+                            - radio "No" [ref=e682] [cursor=pointer]
+                        - generic [ref=e684]:
+                          - generic "Have you ever worked as an employee for Vertiv, or any other Vertiv Legal Entity?" [ref=e686]:
+                            - generic [aria-hidden] [ref=e688]: "*"
+                          - radiogroup "Have you ever worked as an employee for Vertiv, or any other Vertiv Legal Entity?" [ref=e691]:
+                            - radio "No" [ref=e692] [cursor=pointer]
+                            - radio "Yes" [checked] [ref=e694] [cursor=pointer]
+                        - generic [ref=e696]:
+                          - generic "Have you ever worked as a contractor for Vertiv (currently or previously)?" [ref=e698]:
+                            - generic [aria-hidden] [ref=e700]: "*"
+                          - radiogroup "Have you ever worked as a contractor for Vertiv (currently or previously)?" [ref=e703]:
+                            - radio "No" [ref=e704] [cursor=pointer]
+                            - radio "Yes" [checked] [ref=e706] [cursor=pointer]
+                        - generic [ref=e708]:
+                          - generic "Will you now or in the future require Vertiv to help you obtain an employment visa?" [ref=e710]:
+                            - generic [aria-hidden] [ref=e712]: "*"
+                          - radiogroup "Will you now or in the future require Vertiv to help you obtain an employment visa?" [ref=e715]:
+                            - radio "No" [ref=e716] [cursor=pointer]
+                            - radio "Yes" [checked] [ref=e718] [cursor=pointer]
+              - list [ref=e722]:
+                - listitem [ref=e723]:
+                  - generic [ref=e725]:
+                    - generic [ref=e726]:
+                      - heading "Work and Education History" [level=3] [ref=e728]
+                      - paragraph [ref=e729]: Please enter details about your work experience and education.
+                    - region "Work and Education History" [ref=e730]:
+                      - generic [ref=e731]:
+                        - generic [ref=e733]:
+                          - button "Add Experience" [ref=e734] [cursor=pointer]
+                          - button "Add Education" [ref=e736] [cursor=pointer]
+                        - generic [ref=e1629]:
+                          - generic [ref=e1630]: "2027"
+                          - generic [ref=e1632]: "2026"
+                          - generic [ref=e1634]: "2025"
+                          - generic [ref=e1636]: "2024"
+                          - generic [ref=e1638]: "2023"
+              - list [ref=e755]:
+                - listitem [ref=e756]:
+                  - generic [ref=e758]:
+                    - generic [ref=e759]:
+                      - heading "Supporting Documents and URLs" [level=3] [ref=e761]
+                      - paragraph [ref=e762]: Please add any additional documents or URLs.
+                    - region "Supporting Documents and URLs" [ref=e763]:
+                      - generic [ref=e764]:
+                        - application [ref=e768]:
+                          - generic:
+                            - generic:
+                              - text: 
+                              - generic:
+                                - generic: Drop Resume Here
+                                - generic [aria-hidden]: "*"
+                            - generic [ref=e769]:
+                              - generic [ref=e770]: Or
+                              - generic [ref=e771]:
+                                - button "Upload Resume" [ref=e772]
+                                - generic [ref=e773] [cursor=pointer]: Upload Resume
+                        - application [ref=e777]:
+                          - generic:
+                            - generic:
+                              - text: 
+                              - generic: Drop Cover Letter Here
+                            - generic [ref=e778]:
+                              - generic [ref=e779]: Or
+                              - generic [ref=e780]:
+                                - button "Upload Cover Letter" [ref=e781]
+                                - generic [ref=e782] [cursor=pointer]: Upload Cover Letter
+                      - generic [ref=e784]:
+                        - generic [ref=e1641]:
+                          - generic [ref=e1643]:
+                            - generic "Link 1" [ref=e1645]
+                            - textbox "Supporting Documents and URLs Link 1" [ref=e1648]
+                          - generic [ref=e1649]:
+                            - generic [ref=e1650]:
+                              - generic "Link 2" [ref=e1652]
+                              - textbox "Supporting Documents and URLs Link 2" [active] [ref=e1655]
+                            - button "Remove Link 2" [ref=e1656] [cursor=pointer]:
+                              - text: 
+                              - generic [ref=e1657]: Remove
+                        - button "+ Add Another Link" [ref=e793] [cursor=pointer]
+                - listitem [ref=e794]:
+                  - generic [ref=e796]:
+                    - heading "Disability Information" [level=3] [ref=e799]
+                    - region "Disability Information" [ref=e800]:
+                      - generic [ref=e801]:
+                        - generic [ref=e803]:
+                          - heading "Voluntary Self-Identification of Disability" [level=1] [ref=e804]:
+                            - generic [ref=e805]: Voluntary
+                            - generic [ref=e807]: Self-Identification
+                            - generic [ref=e809]: of
+                            - generic [ref=e811]: Disability
+                          - paragraph [ref=e812]: Form CC-305
+                          - paragraph [ref=e813]: OMB Control Number 1250-0005
+                          - paragraph [ref=e814]: Expires 07/31/2029
+                          - paragraph [ref=e815]: Page 1 of 1
+                          - paragraph [ref=e816]: "Name:"
+                          - paragraph [ref=e817]: "Employee ID:"
+                          - paragraph [ref=e818]: (if applicable)
+                          - paragraph [ref=e819]: "Date: 11/2/2026"
+                          - paragraph [ref=e820]
+                          - table [ref=e821]:
+                            - rowgroup [ref=e822]:
+                              - row [ref=e823]:
+                                - cell "Why are you being asked to complete this form?" [ref=e824]:
+                                  - paragraph [ref=e825]:
+                                    - generic [ref=e826]: Why
+                                    - generic [ref=e828]: are
+                                    - generic [ref=e830]: you
+                                    - generic [ref=e832]: being
+                                    - generic [ref=e833]: asked
+                                    - generic [ref=e834]: to
+                                    - generic [ref=e835]: complete
+                                    - generic [ref=e837]: this
+                                    - generic [ref=e839]: form?
+                          - paragraph [ref=e840]
+                          - paragraph [ref=e841]: We are a federal contractor or subcontractor. The law requires us to provide equal employment opportunity to qualified people with disabilities. We have a goal of having at least 7% of our workers as people with disabilities. The law says we must measure our progress towards this goal. To do this, we must ask applicants and employees if they have a disability or have ever had one. People can become disabled, so we need to ask this question at least every five years.
+                          - paragraph [ref=e842]
+                          - paragraph [ref=e843]:
+                            - text: Completing this form is voluntary, and we hope that you will choose to do so. Your answer is confidential. No one who makes hiring decisions will see it. Your decision to complete the form and your answer will not harm you in any way. If you want to learn more about the law or this form, visit the U.S. Department of Labor's Office of Federal Contract Compliance Programs (OFCCP) website at
+                            - link "www.dol.gov/ofccp" [ref=e844] [cursor=pointer]:
+                              - /url: https://www.dol.gov/agencies/ofccp
+                            - text: .
+                          - paragraph [ref=e845]
+                          - table [ref=e846]:
+                            - rowgroup [ref=e847]:
+                              - row [ref=e848]:
+                                - cell "How do you know if you have a disability?" [ref=e849]:
+                                  - paragraph [ref=e850]:
+                                    - generic [ref=e851]: How
+                                    - generic [ref=e853]: do
+                                    - generic [ref=e854]: you
+                                    - generic [ref=e855]: know
+                                    - generic [ref=e857]: if
+                                    - generic [ref=e858]: you
+                                    - generic [ref=e860]: have
+                                    - generic [ref=e861]: a
+                                    - generic [ref=e862]: disability?
+                          - paragraph [ref=e863]
+                          - paragraph [ref=e864]:
+                            - text: A disability is a condition that substantially limits one or more of your "major life activities." If you have or have ever had such a condition, you are a person with a disability.
+                            - generic [ref=e865]: "Disabilities include, but are not limited to:"
+                          - paragraph [ref=e866]
+                          - table [ref=e867]:
+                            - rowgroup [ref=e868]:
+                              - row [ref=e869]:
+                                - cell [ref=e870]:
+                                  - list [ref=e871]:
+                                    - listitem [ref=e872]:
+                                      - paragraph [ref=e873]: Alcohol or other substance use disorder (not currently using drugs illegally)
+                                    - listitem [ref=e874]:
+                                      - paragraph [ref=e875]: Autoimmune disorder, for example, lupus, fibromyalgia, rheumatoid arthritis, HIV/AIDS
+                                    - listitem [ref=e876]:
+                                      - paragraph [ref=e877]: Blind or low vision
+                                    - listitem [ref=e878]:
+                                      - paragraph [ref=e879]: Cancer (past or present)
+                                    - listitem [ref=e880]:
+                                      - paragraph [ref=e881]: Cardiovascular or heart disease
+                                    - listitem [ref=e882]:
+                                      - paragraph [ref=e883]: Celiac disease
+                                    - listitem [ref=e884]:
+                                      - paragraph [ref=e885]: Cerebral palsy
+                                    - listitem [ref=e886]:
+                                      - paragraph [ref=e887]: Deaf or serious difficulty hearing
+                                    - listitem [ref=e888]:
+                                      - paragraph [ref=e889]: Diabetes
+                                    - listitem [ref=e890]:
+                                      - paragraph [ref=e891]: Disfigurement, for example, disfigurement caused by burns, wounds, accidents, or congenital disorders
+                                    - listitem [ref=e892]:
+                                      - paragraph [ref=e893]: Epilepsy or other seizure disorder
+                                    - listitem [ref=e894]:
+                                      - paragraph [ref=e895]: Gastrointestinal disorders, for example, Crohn's Disease, irritable bowel syndrome
+                                    - listitem [ref=e896]:
+                                      - paragraph [ref=e897]: Intellectual or developmental disability
+                                    - listitem [ref=e898]:
+                                      - paragraph [ref=e899]: Mental health conditions, for example, depression, bipolar disorder, anxiety disorder, schizophrenia, PTSD
+                                    - listitem [ref=e900]:
+                                      - paragraph [ref=e901]: Missing limbs or partially missing limbs
+                                    - listitem [ref=e902]:
+                                      - paragraph [ref=e903]: Mobility impairment, benefiting from the use of a wheelchair, scooter, walker, leg brace(s) and/or other supports
+                                    - listitem [ref=e904]:
+                                      - paragraph [ref=e905]: Nervous system condition, for example, migraine headaches, Parkinson's disease, multiple sclerosis (MS)
+                                    - listitem [ref=e906]:
+                                      - paragraph [ref=e907]: Neurodivergence, for example, attention-deficit/hyperactivity disorder (ADHD), autism spectrum disorder, dyslexia, dyspraxia, other learning disabilities
+                                    - listitem [ref=e908]:
+                                      - paragraph [ref=e909]: Partial or complete paralysis (any cause)
+                                    - listitem [ref=e910]:
+                                      - paragraph [ref=e911]: Pulmonary or respiratory conditions, for example, tuberculosis, asthma, emphysema
+                                    - listitem [ref=e912]:
+                                      - paragraph [ref=e913]: Short stature (dwarfism)
+                                    - listitem [ref=e914]:
+                                      - paragraph [ref=e915]: Traumatic brain injury
+                          - paragraph [ref=e916]
+                          - table [ref=e917]:
+                            - rowgroup [ref=e918]:
+                              - row [ref=e919]:
+                                - cell "Please check one of the boxes below:" [ref=e920]:
+                                  - paragraph [ref=e921]:
+                                    - generic [ref=e922]: "Please check one of the boxes below:"
+                          - paragraph [ref=e923]
+                        - radiogroup "Do you have a disability?" [ref=e925]:
+                          - generic [ref=e926]:
+                            - radio "Yes, I have a disability, or have had one in the past"
+                            - generic [ref=e927]:
+                              - generic [aria-hidden] [ref=e928] [cursor=pointer]
+                              - generic [aria-hidden] [ref=e929] [cursor=pointer]: Yes, I have a disability, or have had one in the past
+                            - radio "No, I do not have a disability and have not had one in the past"
+                            - generic [ref=e930]:
+                              - generic [aria-hidden] [ref=e931] [cursor=pointer]
+                              - generic [aria-hidden] [ref=e932] [cursor=pointer]: No, I do not have a disability and have not had one in the past
+                            - radio "I do not want to answer"
+                            - generic [ref=e933]:
+                              - generic [aria-hidden] [ref=e934] [cursor=pointer]
+                              - generic [aria-hidden] [ref=e935] [cursor=pointer]: I do not want to answer
+                        - generic [ref=e936]:
+                          - paragraph [ref=e937]
+                          - paragraph [ref=e938]: "PUBLIC BURDEN STATEMENT: According to the Paperwork Reduction Act of 1995 no persons are required to respond to a collection of information unless such collection displays a valid OMB control number. This survey should take about 5 minutes to complete."
+                          - paragraph [ref=e939]
+                          - table [ref=e940]:
+                            - rowgroup [ref=e943]:
+                              - row [ref=e944]:
+                                - 'cell "For Employer Use Only Employers may modify this section of the form as needed for recordkeeping purposes. For example: Job Title: Date of Hire:" [ref=e945]':
+                                  - paragraph [ref=e946]
+                                  - paragraph [ref=e947]:
+                                    - generic [ref=e948]: For Employer Use Only
+                                  - paragraph [ref=e949]
+                                  - paragraph [ref=e950]: Employers may modify this section of the form as needed for recordkeeping purposes.
+                                  - paragraph [ref=e951]: "For example:"
+                                  - paragraph [ref=e952]: "Job Title:"
+                                  - paragraph [ref=e953]: "Date of Hire:"
+                                  - paragraph [ref=e954]
+                          - paragraph [ref=e955]
+                - listitem [ref=e956]:
+                  - generic [ref=e958]:
+                    - generic [ref=e959]:
+                      - heading "Veteran Information" [level=3] [ref=e961]
+                      - paragraph [ref=e962]:
+                        - text: Vertiv is a Government contractor subject to the Vietnam Era Veterans’ Readjustment Assistance Act of 1974, as amended (VEVRAA) which requires government contractors to take affirmative action to employ and advance in employment protected veterans. Submission of this information is voluntary and refusal to provide it will not subject you to any adverse treatment. The information provided will be maintained confidentially and used only in ways that are consistent with VEVRAA. Please visit this
+                        - link "link for more information" [ref=e963] [cursor=pointer]:
+                          - /url: https://egup.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/pages/1
+                        - text: .
+                    - region "Veteran Information" [ref=e964]:
+                      - generic [ref=e967]:
+                        - generic "Veteran Status" [ref=e969]
+                        - generic [ref=e974]:
+                          - combobox "Veteran Status" [ref=e976]
+                          - button "Open the drop-down list for Veteran Status." [ref=e978] [cursor=pointer]: 
+                - listitem [ref=e979]:
+                  - generic [ref=e981]:
+                    - generic [ref=e982]:
+                      - heading "Diversity Information" [level=3] [ref=e984]
+                      - paragraph [ref=e985]:
+                        - text: Vertiv is subject to certain non-discrimination and affirmative action record-keeping and reporting requirements which require employers to invite applicants to voluntarily self-identify their race/ethnicity. Submission of this information is voluntary and refusal to provide it will not subject you to any adverse treatment. Please visit this
+                        - link "link for more information." [ref=e986] [cursor=pointer]:
+                          - /url: https://egup.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/pages/2
+                        - text: Anti-Discrimination Notice. It is an unlawful employment practice for an employer to fail or refuse to hire or discharge any individual, or otherwise to discriminate against any individual with respect to that individual’s terms and conditions of employment, because of such individual’s race, color, religion, sex, or national origin.
+                    - region "Diversity Information" [ref=e987]:
+                      - generic [ref=e989]:
+                        - group [ref=e990]:
+                          - generic "Ethnicity" [ref=e992]
+                          - generic [ref=e995]:
+                            - checkbox "I am Hispanic or Latino."
+                            - generic [ref=e996]:
+                              - generic [ref=e997] [cursor=pointer]
+                              - generic [ref=e998] [cursor=pointer]: I am Hispanic or Latino.
+                        - group [ref=e999]:
+                          - generic "Select the races you identify with." [ref=e1001]
+                          - generic [ref=e1003]:
+                            - generic [ref=e1004]:
+                              - checkbox "American Indian or Alaska Native"
+                              - generic [ref=e1005]:
+                                - generic [ref=e1006] [cursor=pointer]
+                                - generic [ref=e1007] [cursor=pointer]: American Indian or Alaska Native
+                            - generic [ref=e1008]:
+                              - checkbox "Asian"
+                              - generic [ref=e1009]:
+                                - generic [ref=e1010] [cursor=pointer]
+                                - generic [ref=e1011] [cursor=pointer]: Asian
+                            - generic [ref=e1012]:
+                              - checkbox "Black or African American"
+                              - generic [ref=e1013]:
+                                - generic [ref=e1014] [cursor=pointer]
+                                - generic [ref=e1015] [cursor=pointer]: Black or African American
+                            - generic [ref=e1016]:
+                              - checkbox "Native Hawaiian or other Pacific Islander"
+                              - generic [ref=e1017]:
+                                - generic [ref=e1018] [cursor=pointer]
+                                - generic [ref=e1019] [cursor=pointer]: Native Hawaiian or other Pacific Islander
+                            - generic [ref=e1020]:
+                              - checkbox "White"
+                              - generic [ref=e1021]:
+                                - generic [ref=e1022] [cursor=pointer]
+                                - generic [ref=e1023] [cursor=pointer]: White
+                        - generic [ref=e1024]:
+                          - generic "Gender" [ref=e1026]
+                          - generic [ref=e1031]:
+                            - combobox "Gender" [ref=e1033]
+                            - button "Open the drop-down list for Gender." [ref=e1035] [cursor=pointer]: 
+                - listitem [ref=e1036]:
+                  - region [ref=e1039]:
+                    - generic [ref=e1042]:
+                      - checkbox "I agree to receive updates about new job opportunities."
+                      - generic [ref=e1043]:
+                        - generic [ref=e1044] [cursor=pointer]
+                        - generic [ref=e1045] [cursor=pointer]: I agree to receive updates about new job opportunities.
+                - listitem [ref=e1046]:
+                  - generic [ref=e1048]:
+                    - heading "E-Signature" [level=3] [ref=e1051]
+                    - region "E-Signature" [ref=e1052]:
+                      - generic [ref=e1053]:
+                        - generic [ref=e1055]:
+                          - generic [ref=e1056]:
+                            - paragraph [ref=e1057]: Privacy Notice
+                            - paragraph [ref=e1058]
+                            - paragraph [ref=e1059]: This Privacy Notice explains how Vertiv Holdings Co or its affiliate (“Vertiv”) processes personal data provided by you in your resume / curriculum vitae or cover letter and that is otherwise collected in connection with your job application and Vertiv’s job candidate review process.
+                            - paragraph [ref=e1060]: Personal data processed
+                            - paragraph [ref=e1061]: "We may collect, store, and use the following personal data:"
+                            - paragraph [ref=e1062]: · Identifiers, including name, address, email address, telephone number, date and place of birth, job title, social security number, driver’s license number, passport number, and other similar identifiers;
+                            - paragraph [ref=e1063]: · Financial information, including income, tax status, banking details, and insurance details;
+                            - paragraph [ref=e1064]: · Professional or employment-related information, including job titles, performance evaluations, references from previous employers, and trade union membership;
+                            - paragraph [ref=e1065]: · Education information, including training history;
+                            - paragraph [ref=e1066]: · Personal data, including marital and parental status, criminal record checks, and health/medical information; and
+                            - paragraph [ref=e1067]: · Protected classification information, including race, gender, ethnicity, religion, sexual orientation, citizenship, and residency.
+                            - paragraph [ref=e1068]
+                            - paragraph [ref=e1069]: References from previous employers may be requested and criminal records checks may be performed in compliance with applicable law.
+                            - paragraph [ref=e1070]
+                            - paragraph [ref=e1071]: Purposes of the processing
+                            - paragraph [ref=e1072]: Each category of your personal data may be processed to evaluate your profile, attributes, and professional skills as part of Vertiv’s personnel selection process. Such processing is necessary to evaluate a working relationship between you and Vertiv and for Vertiv to comply with applicable law. The legal basis for processing your personal data is for Vertiv to take steps at your request prior to entering a potential employment relationship with you.
+                            - paragraph [ref=e1073]
+                            - paragraph [ref=e1074]: If your resume / curriculum vitae or cover letter contains special categories of personal data (e.g., gender, race, and ethnic data), you will need to provide specific written consent for Vertiv to process such data. Vertiv does not require such data and recommends that you do not include such data on your resume / curriculum vitae or cover letter. If you include such data and choose not to consent to have such data processed, then Vertiv might not proceed with your application.
+                            - paragraph [ref=e1075]
+                            - paragraph [ref=e1076]: Nature of providing personal data
+                            - paragraph [ref=e1077]: Providing your personal data is required for the above purposes. Therefore, refusal to provide the requested data or its inaccuracy might prevent Vertiv from considering and evaluating your application.
+                            - paragraph [ref=e1078]
+                            - paragraph [ref=e1079]: Protection of personal data
+                            - paragraph [ref=e1080]: Your personal data will be processed manually or electronically, using automated tools that ensure the security and confidentiality of the data. We will process only personal data necessary for the purposes described above. The individuals authorized to process personal data will immediately delete or make anonymous personal data unnecessary for the above purposes.
+                            - paragraph [ref=e1081]
+                            - paragraph [ref=e1082]: Your processed personal data are stored at our office or at the office of external providers we entrust to store personal data. If you wish to know the list of our external providers, please contact us.
+                            - paragraph [ref=e1083]
+                            - paragraph [ref=e1084]: Data retention period
+                            - paragraph [ref=e1085]: Your personal data will be retained for the time period necessary to evaluate your candidacy for the position for which you applied and for a maximum of three years thereafter to evaluate your candidacy for any future positions at Vertiv that may become available, after which your personal data will be deleted or rendered anonymous. Please note that the retention period may be modified to comply with applicable law in your country of residence.
+                            - paragraph [ref=e1086]
+                            - paragraph [ref=e1087]: Disclosure of Personal Data
+                            - paragraph [ref=e1088]: "Your personal data may be disclosed for business purposes and to the extent necessary for Vertiv to fulfil legal or regulatory obligations:"
+                            - paragraph [ref=e1089]: · Personal data will be processed by Vertiv employees authorized to process personal data for the purposes described above.
+                            - paragraph [ref=e1090]: · Personal data may be processed for business purposes by those authorized to maintain and develop Vertiv’s information technology systems, companies that provide computer and electronic or storage services, outsourcing service providers, consultants, and Vertiv affiliates.
+                            - paragraph [ref=e1091]: · Personal data may be shared with government agencies, which may act as autonomous data controllers or data processors.
+                            - paragraph [ref=e1092]: · Personal data may be transferred to other companies of the Vertiv group or third parties located in other countries, including the United States of America. In such cases, Vertiv will take appropriate measures to ensure appropriate safeguards are in place to protect your data.
+                            - paragraph [ref=e1093]: · Personal data may be processed by external service providers entrusted with job candidate management, such as recruitment agencies. Vertiv will provide you with a list of such external service providers upon request.
+                            - paragraph [ref=e1094]: · Personal data may be disclosed to previous employers to facilitate reference checks, subject to applicable law.
+                            - paragraph [ref=e1095]
+                            - paragraph [ref=e1096]: Vertiv does not sell your personal data for monetary or other valuable consideration.
+                            - paragraph [ref=e1097]
+                            - paragraph [ref=e1098]: Manage the processing of your personal data
+                            - paragraph [ref=e1099]: "Vertiv is a global company with legal entities, business activities, management, and system infrastructure throughout the world and we are committed to safeguarding personal data in compliance with all applicable data privacy laws. If you are located in one of the regions, countries, or states listed below, please see the respective Privacy Notice to understand Vertiv’s compliance with the data privacy law in your location:"
+                            - list [ref=e1100]:
+                              - listitem [ref=e1101]:
+                                - link "Europe (GDPR)" [ref=e1102] [cursor=pointer]:
+                                  - /url: https://www.vertiv.com/gdpr-privacy-statement/
+                              - listitem [ref=e1103]:
+                                - link "California" [ref=e1104] [cursor=pointer]:
+                                  - /url: https://www.vertiv.com/en-us/privacy-policy/privacy-notice-for-website-california/
+                              - listitem [ref=e1105]:
+                                - link "China" [ref=e1106] [cursor=pointer]:
+                                  - /url: https://www.vertiv.com/en-cn/cls-statement/
+                              - listitem [ref=e1107]:
+                                - link "Argentina" [ref=e1108] [cursor=pointer]:
+                                  - /url: https://www.vertiv.com/es-latam/about/ethics--compliance/politica-de-tratamiento-de-datos-personales/
+                              - listitem [ref=e1109]:
+                                - link "Colombia" [ref=e1110] [cursor=pointer]:
+                                  - /url: https://www.vertiv.com/es-latam/about/ethics--compliance/politica-de-tratamiento-de-datos-personales/
+                              - listitem [ref=e1111]:
+                                - link "Philippines" [ref=e1112] [cursor=pointer]:
+                                  - /url: https://www.vertiv.com/en-asia/privacy-policy/privacy-notice-for-company-website-for-philippines-users/
+                              - listitem [ref=e1113]:
+                                - link "Peru" [ref=e1114] [cursor=pointer]:
+                                  - /url: https://www.vertiv.com/es-latam/about/ethics--compliance/politica-de-tratamiento-de-datos-personales-peru/
+                            - paragraph [ref=e1115]: "Applicable data privacy law may provide you with certain rights with respect to your personal data, including the following:"
+                            - paragraph [ref=e1116]: · The right to obtain confirmation of the existence or non-existence of personal data relating to you.
+                            - paragraph [ref=e1117]: "· The right to be informed of the following:"
+                            - paragraph [ref=e1118]: o the origin of the personal data processed
+                            - paragraph [ref=e1119]: o the purpose and methods of data processing
+                            - paragraph [ref=e1120]: o the logic applied to data processed electronically
+                            - paragraph [ref=e1121]: o the identity of the data controller and data processors
+                            - paragraph [ref=e1122]: o the identity of the individuals or categories of individuals with whom your personal data may be shared as appointed representatives of Vertiv in your country of residence or as individuals authorized to process your data
+                            - paragraph [ref=e1123]: "· The right to:"
+                            - paragraph [ref=e1124]: o have your personal data updated, corrected, and supplemented
+                            - paragraph [ref=e1125]: o have the processing of your personal data restricted to the scope of the consent you gave by accepting this Privacy Notice
+                            - paragraph [ref=e1126]: o have any unlawfully processed data erased, made anonymous, or blocked
+                            - paragraph [ref=e1127]: o require a declaration attesting that the individuals/companies with whom we have shared your personal data have, upon your request, updated, corrected, and supplemented your data and/or restricted the processing of your data, unless doing so proved impossible or implied an effort that was clearly disproportionate to the right to be protected
+                            - paragraph [ref=e1128]: o obtain, in a structured format commonly used and readable by electronic devices, the personal data you give us, and to have such data transmitted, directly or through Vertiv, to another data controller (known as data portability)
+                            - paragraph [ref=e1129]: "· The right to object, in whole or in part, to:"
+                            - paragraph [ref=e1130]: o the processing, on legitimate grounds, of your personal data, including data relevant for the purposes they were collected
+                            - paragraph [ref=e1131]: o the processing of your personal data for profiling, to send you advertising material and direct sales messages, and to conduct market or commercial communication surveys
+                            - paragraph [ref=e1132]
+                            - paragraph [ref=e1133]: "To exercise your data privacy rights or to obtain more information, you may contact Vertiv at:"
+                            - paragraph [ref=e1134]:
+                              - text: "· By email at:"
+                              - link "dataprotection@vertiv.com" [ref=e1135] [cursor=pointer]:
+                                - /url: mailto:dataprotection@vertiv.com
+                            - paragraph [ref=e1136]: "· By telephone at: 1 (800) 376-2127"
+                            - paragraph [ref=e1137]: "· By mail at: Vertiv Group Corporation, Chief Compliance Officer, 1050 Dearborn Drive, Columbus, Ohio 43085"
+                            - paragraph [ref=e1138]:
+                              - text: "· If you are a resident of a country in Europe, you may contact our Data Protection Officer at:"
+                              - link "dpo.vertiv@amicadpo.eu" [ref=e1139] [cursor=pointer]:
+                                - /url: mailto:dpo.vertiv@amicadpo.eu
+                              - text: .
+                            - paragraph [ref=e1140]
+                            - paragraph [ref=e1141]: If you believe that Vertiv or an individual/company with whom we have shared your personal data has violated your rights, you may file a complaint with the Data Protection Authority in your country and other competent supervisory authorities.
+                            - paragraph [ref=e1142]
+                            - paragraph [ref=e1143]: Additional notices
+                            - paragraph [ref=e1144]: If you have difficulty accessing any material on this Privacy Notice because of a disability, please contact us in writing or by telephone and we will work with you to make the information available.
+                            - paragraph [ref=e1145]
+                            - paragraph [ref=e1146]: Vertiv is committed to offering equal opportunity to all individuals without discrimination on the basis of age, race, color, religion, creed, sex, pregnancy status (including childbirth, breastfeeding, or related medical conditions), marital status, sexual orientation, gender identity / expression (including transgender status or sexual stereotypes), genetic information, citizenship status, national origin, protected veteran status, political affiliation, or disability, or any other discrimination prohibited by applicable law.
+                          - button " Show More" [ref=e1148] [cursor=pointer]:
+                            - generic [ref=e1149]: 
+                            - generic [ref=e1150]: Show More
+                        - generic [ref=e1152]:
+                          - generic "Full Name" [ref=e1154]:
+                            - generic [aria-hidden] [ref=e1156]: "*"
+                          - textbox "Full Name" [ref=e1158]
+              - button "Submit" [ref=e1162] [cursor=pointer]
+          - generic [ref=e469]:
+            - generic:
+              - alert
+      - generic:
+        - generic [ref=e470]: Link
+        - alert [ref=e471]

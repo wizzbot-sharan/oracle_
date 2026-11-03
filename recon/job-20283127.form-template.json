@@ -1,0 +1,246 @@
+{
+  "schemaVersion": "0.1.0",
+  "source": {
+    "platform": "oracle-recruiting-cloud",
+    "tenantHost": "egup.fa.us2.oraclecloud.com",
+    "site": "CX",
+    "jobId": "20283127",
+    "jobTitle": "Industrial ML Software Engineer",
+    "canonicalUrl": "https://egup.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/job/20283127"
+  },
+  "scan": {
+    "scannedAt": "2026-11-02",
+    "status": "reconnaissance-complete",
+    "navigationMode": "single-page-sections",
+    "headerStepText": "step 1 of 4",
+    "submitPresentOnFirstApplicationUrl": true,
+    "applicationUrlSuffix": "/apply/section/1",
+    "rawArtifacts": [
+      "recon/section-1-accessibility.yml",
+      "recon/control-metadata.json",
+      "recon/experience-expanded.yml",
+      "recon/education-expanded.yml"
+    ]
+  },
+  "authentication": {
+    "entryMode": "email",
+    "phoneToEmailSwitchObserved": false,
+    "consentCheckboxObserved": false,
+    "honeypotObserved": true,
+    "otp": {
+      "required": true,
+      "digits": 6,
+      "controlMode": "six-single-digit-inputs",
+      "verifyButtonName": "Verify",
+      "emailMatchingPolicy": "recon/otp-email-matching-policy.json",
+      "observedSubject": "Confirm your identity",
+      "observedSenderFamily": "workflow.email.*.ocs.oraclecloud.com",
+      "tenantCorrelationHost": "egup.fa.us2.oraclecloud.com",
+      "expiryMinutesObserved": 10
+    }
+  },
+  "sections": [
+    {
+      "id": "contact_information",
+      "label": "Contact Information",
+      "fields": [
+        { "id": "last_name", "sourceName": "lastName", "type": "text", "label": "Last/Family Name", "required": true, "validation": { "patternFamily": "oracle-person-name-ascii" } },
+        { "id": "first_name", "sourceName": "firstName", "type": "text", "label": "First/Given Name", "required": true, "validation": { "patternFamily": "oracle-person-name-ascii" } },
+        { "id": "title", "type": "radio", "label": "Title", "required": false, "options": ["Doctor", "Miss", "Mr.", "Mrs.", "Ms."] },
+        { "id": "middle_names", "sourceName": "middleNames", "type": "text", "label": "Middle Name (Please use to provide any further names)", "required": false },
+        { "id": "preferred_name", "sourceName": "knownAs", "type": "text", "label": "Preferred Name", "required": false, "validation": { "patternFamily": "oracle-person-name-ascii" } },
+        { "id": "email", "sourceName": "email", "type": "email", "label": "Email Address", "required": false, "sessionIdentity": true },
+        {
+          "id": "phone",
+          "type": "compound-phone",
+          "label": "Phone Number",
+          "required": false,
+          "children": [
+            { "id": "country_code", "sourceName": "phoneNumber", "type": "combobox", "label": "Country code", "optionsProvider": "oracle-dynamic-list" },
+            { "id": "number", "type": "tel", "label": "Phone Number" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "extra_information",
+      "label": "Extra Information",
+      "fields": [
+        { "id": "nationality", "sourceName": "nationality", "type": "combobox", "label": "Nationality", "required": true, "optionsProvider": "oracle-virtualized-list" },
+        { "id": "dual_citizenship", "sourceName": "DualCitizenship", "type": "combobox", "label": "Please specify dual citizenship if applicable", "required": true, "optionsProvider": "oracle-virtualized-list" }
+      ]
+    },
+    {
+      "id": "application_questions",
+      "label": "Application Questions",
+      "fields": [
+        {
+          "id": "opportunity_source",
+          "type": "radio",
+          "label": "How did you come to know about this opportunity?",
+          "required": true,
+          "options": ["Employee Referral", "Career Site", "LinkedIn/Job Portal", "Recruitment Agency", "Other"]
+        },
+        {
+          "id": "current_employee_referral",
+          "type": "radio",
+          "label": "Were you referred by a current employee?",
+          "required": true,
+          "options": ["Yes", "No"],
+          "visibleWhen": { "field": "opportunity_source", "equals": "Employee Referral" }
+        },
+        {
+          "id": "referrer_employee_number",
+          "type": "text",
+          "label": "Please provide Vertiv Employee Number:",
+          "required": true,
+          "visibleWhen": { "all": [{ "field": "opportunity_source", "equals": "Employee Referral" }, { "field": "current_employee_referral", "equals": "Yes" }] }
+        },
+        {
+          "id": "referrer_department",
+          "type": "text",
+          "label": "Employee Function/Department (If Known)",
+          "required": true,
+          "visibleWhen": { "all": [{ "field": "opportunity_source", "equals": "Employee Referral" }, { "field": "current_employee_referral", "equals": "Yes" }] }
+        },
+        {
+          "id": "referrer_name",
+          "type": "text",
+          "label": "Please provide the Vertiv Employee’s name:",
+          "required": true,
+          "visibleWhen": { "all": [{ "field": "opportunity_source", "equals": "Employee Referral" }, { "field": "current_employee_referral", "equals": "Yes" }] }
+        },
+        {
+          "id": "other_opportunity_source",
+          "sourceName": "300008667902821",
+          "type": "textarea",
+          "label": "If Other Source, Please specify",
+          "required": true,
+          "visibleWhen": { "field": "opportunity_source", "equals": "Other" }
+        },
+        { "id": "age_over_18", "type": "radio", "label": "Are you over the age of 18?", "required": true, "options": ["Yes", "No"] },
+        { "id": "previous_vertiv_employee", "type": "radio", "label": "Have you ever worked as an employee for Vertiv, or any other Vertiv Legal Entity?", "required": true, "options": ["No", "Yes"] },
+        { "id": "previous_vertiv_contractor", "type": "radio", "label": "Have you ever worked as a contractor for Vertiv (currently or previously)?", "required": true, "options": ["No", "Yes"] },
+        { "id": "requires_visa_assistance", "type": "radio", "label": "Will you now or in the future require Vertiv to help you obtain an employment visa?", "required": true, "options": ["No", "Yes"] }
+      ]
+    },
+    {
+      "id": "work_and_education_history",
+      "label": "Work and Education History",
+      "groups": [
+        {
+          "id": "experience",
+          "type": "repeatable-group",
+          "addButton": "Add Experience",
+          "fields": [
+            { "id": "employer_name", "type": "text", "label": "Employer Name", "required": true },
+            { "id": "job_title", "type": "text", "label": "Job Title", "required": false },
+            { "id": "start_date", "type": "month-year", "label": "Start Date", "required": false },
+            { "id": "end_date", "type": "month-year", "label": "End Date", "required": false },
+            { "id": "current_job", "type": "checkbox", "label": "Current Job", "required": false },
+            { "id": "business_type", "type": "text", "label": "Type of Business", "required": false },
+            { "id": "job_family", "type": "combobox", "label": "Job Family", "required": false, "optionsProvider": "oracle-dynamic-list" },
+            { "id": "job_function", "type": "combobox", "label": "Job Function", "required": false, "optionsProvider": "oracle-dynamic-list" },
+            { "id": "other_job_function", "type": "text", "label": "Other Job Function", "required": false },
+            { "id": "achievements", "type": "textarea", "label": "Achievements", "required": false },
+            { "id": "starting_position", "type": "text", "label": "Starting Position", "required": false },
+            { "id": "supervisor_name", "type": "text", "label": "Supervisor Name", "required": false },
+            { "id": "supervisor_title", "type": "text", "label": "Supervisor Title", "required": false },
+            { "id": "supervisor_email", "type": "email", "label": "Supervisor Email", "required": false },
+            { "id": "supervisor_phone", "type": "tel", "label": "Supervisor Phone", "required": false },
+            { "id": "ok_to_contact_supervisor", "type": "radio", "label": "OK to Contact Supervisor", "required": false, "options": ["No", "Yes"] }
+          ]
+        },
+        {
+          "id": "education",
+          "type": "repeatable-group",
+          "addButton": "Add Education",
+          "fields": [
+            { "id": "degree", "type": "combobox", "label": "Degree", "required": true, "optionsProvider": "oracle-dynamic-list" },
+            { "id": "major", "type": "text", "label": "Major", "required": false },
+            { "id": "school", "type": "combobox", "label": "School", "required": false, "optionsProvider": "oracle-dynamic-list" },
+            { "id": "start_date", "type": "month-year", "label": "Start Date", "required": false },
+            { "id": "end_date", "type": "month-year", "label": "End Date", "required": false },
+            { "id": "country", "type": "combobox", "label": "Country", "required": false, "optionsProvider": "oracle-dynamic-list" },
+            { "id": "average_grade", "type": "text", "label": "Average Grade", "required": false },
+            { "id": "year_acquired", "type": "text", "label": "Year Acquired", "required": false },
+            { "id": "gpa", "type": "text", "label": "GPA", "required": false },
+            { "id": "graduated", "type": "checkbox", "label": "Graduated", "required": false },
+            { "id": "terminal_degree", "type": "radio", "label": "Terminal Degree for Discipline", "required": false, "options": ["No", "Yes"] },
+            { "id": "date_acquired", "type": "month-year", "label": "Date Acquired", "required": false },
+            { "id": "educator", "type": "text", "label": "Educator", "required": false },
+            { "id": "minor", "type": "text", "label": "Minor", "required": false },
+            { "id": "projected_completion_date", "type": "month-year", "label": "Projected Completion Date", "required": false },
+            { "id": "fee", "type": "text", "label": "Fee", "required": false },
+            { "id": "completed_amount", "type": "text", "label": "Completed Amount", "required": false },
+            { "id": "total_amount", "type": "text", "label": "Total Amount", "required": false },
+            { "id": "comments", "type": "textarea", "label": "Comments", "required": false },
+            { "id": "reimbursement_arrangements", "type": "textarea", "label": "Reimbursement Arrangements", "required": false },
+            { "id": "training_completed_units", "type": "text", "label": "Training Completed Units", "required": false },
+            { "id": "status", "type": "radio", "label": "Status", "required": false, "optionsProvider": "oracle-dynamic-list" },
+            { "id": "fee_currency", "type": "combobox", "label": "Fee Currency", "required": false, "optionsProvider": "oracle-dynamic-list" },
+            { "id": "tuition_method", "type": "radio", "label": "Tuition Method", "required": false, "optionsProvider": "oracle-dynamic-list" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "supporting_documents",
+      "label": "Supporting Documents and URLs",
+      "fields": [
+        { "id": "resume", "sourceId": "attachment-upload-4", "type": "file", "label": "Resume", "required": true },
+        { "id": "cover_letter", "sourceId": "attachment-upload-5", "type": "file", "label": "Cover Letter", "required": false },
+        { "id": "links", "sourceNamePattern": "siteLink-{index}", "type": "repeatable-url", "label": "Link", "required": false }
+      ]
+    },
+    {
+      "id": "disability_information",
+      "label": "Disability Information",
+      "fields": [
+        {
+          "id": "disability_status",
+          "sourceName": "US-STANDARD-ORA_DISABILITY_STATUS-STANDARD-8",
+          "type": "radio",
+          "label": "Do you have a disability?",
+          "required": false,
+          "options": ["Yes, I have a disability, or have had one in the past", "No, I do not have a disability and have not had one in the past", "I do not want to answer"]
+        }
+      ]
+    },
+    {
+      "id": "veteran_information",
+      "label": "Veteran Information",
+      "fields": [
+        { "id": "veteran_status", "sourceName": "US-STANDARD-ORA_VETERAN_STATUS-STANDARD", "type": "combobox", "label": "Veteran Status", "required": false, "optionsProvider": "oracle-dynamic-list" }
+      ]
+    },
+    {
+      "id": "diversity_information",
+      "label": "Diversity Information",
+      "fields": [
+        { "id": "hispanic_or_latino", "type": "checkbox", "label": "I am Hispanic or Latino.", "required": false },
+        { "id": "races", "type": "multi-checkbox", "label": "Select the races you identify with.", "required": false, "options": ["American Indian or Alaska Native", "Asian", "Black or African American", "Native Hawaiian or other Pacific Islander", "White"] },
+        { "id": "gender", "sourceName": "US-STANDARD-ORA_GENDER-STANDARD", "type": "combobox", "label": "Gender", "required": false, "optionsProvider": "oracle-dynamic-list" }
+      ]
+    },
+    {
+      "id": "preferences",
+      "label": "Preferences",
+      "fields": [
+        { "id": "job_alerts", "sourceId": "job-alerts-checkbox", "type": "checkbox", "label": "I agree to receive updates about new job opportunities.", "required": false }
+      ]
+    },
+    {
+      "id": "e_signature",
+      "label": "E-Signature",
+      "fields": [
+        { "id": "full_name", "sourceName": "fullName", "type": "text", "label": "Full Name", "required": true }
+      ]
+    }
+  ],
+  "terminalAction": {
+    "type": "submit",
+    "accessibleName": "Submit",
+    "scannerPolicy": "never-click"
+  }
+}

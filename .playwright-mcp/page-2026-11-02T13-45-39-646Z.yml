@@ -1,0 +1,217 @@
+- generic [ref=f1e3]:
+  - complementary [ref=f1e4]:
+    - generic [ref=f1e5]:
+      - generic [ref=f1e6]: AW
+      - generic [ref=f1e7]:
+        - strong [ref=f1e8]: Apply Workflow
+        - generic [ref=f1e9]: Oracle Recruiting Cloud
+    - button "Load reconnaissance sample" [ref=f1e10] [cursor=pointer]
+    - navigation [ref=f1e11]:
+      - button "Job 20283127 scanner-user needs input" [ref=f1e12] [cursor=pointer]:
+        - generic [ref=f1e13]: Job 20283127
+        - generic [ref=f1e14]: scanner-user
+        - emphasis [ref=f1e15]: needs input
+  - main [ref=f1e16]:
+    - generic [ref=f1e17]:
+      - generic [ref=f1e18]:
+        - paragraph [ref=f1e19]: Application review
+        - heading "Job 20283127" [level=1] [ref=f1e20]
+      - generic [ref=f1e21]: needs_input
+    - generic [ref=f1e22]:
+      - generic [ref=f1e23]: Ingested
+      - generic [ref=f1e24]: Scanned
+      - generic [ref=f1e25]: Answers
+      - generic [ref=f1e26]: Review
+      - generic [ref=f1e27]: Submitted
+    - generic [ref=f1e28]:
+      - generic [ref=f1e29]:
+        - heading "Application fields" [level=2] [ref=f1e30]
+        - generic [ref=f1e31]:
+          - generic [ref=f1e32]: Last/Family Name (Please enter with letters a-z, capital letters A-Z and the characters - or ‘ only. Accented and other special characters will not be recognized) *
+          - textbox "Last/Family Name (Please enter with letters a-z, capital letters A-Z and the characters - or ‘ only. Accented and other special characters will not be recognized) *" [ref=f1e33]:
+            - /placeholder: ""
+            - text: Candidate
+        - generic [ref=f1e34]:
+          - generic [ref=f1e35]: First/Given Name (Please enter with letters a-z, capital letters A-Z and the characters - or ‘ only. Accented and other special characters will not be recognized) *
+          - textbox "First/Given Name (Please enter with letters a-z, capital letters A-Z and the characters - or ‘ only. Accented and other special characters will not be recognized) *" [ref=f1e36]:
+            - /placeholder: ""
+            - text: Test
+        - group "Title" [ref=f1e37]:
+          - generic [ref=f1e39]:
+            - generic [ref=f1e40]:
+              - radio "Doctor" [ref=f1e41]
+              - text: Doctor
+            - generic [ref=f1e42]:
+              - radio "Miss" [ref=f1e43]
+              - text: Miss
+            - generic [ref=f1e44]:
+              - radio "Mr." [ref=f1e45]
+              - text: Mr.
+            - generic [ref=f1e46]:
+              - radio "Mrs." [ref=f1e47]
+              - text: Mrs.
+            - generic [ref=f1e48]:
+              - radio "Ms." [ref=f1e49]
+              - text: Ms.
+        - generic [ref=f1e50]:
+          - generic [ref=f1e51]: Middle Name (Please use to provide any further names)
+          - textbox "Middle Name (Please use to provide any further names)" [ref=f1e52]:
+            - /placeholder: ""
+        - generic [ref=f1e53]:
+          - generic [ref=f1e54]: Preferred Name (Please enter with letters a-z, capital letters A-Z and the characters - or ‘ only. Accented and other special characters will not be recognized)
+          - textbox "Preferred Name (Please enter with letters a-z, capital letters A-Z and the characters - or ‘ only. Accented and other special characters will not be recognized)" [ref=f1e55]:
+            - /placeholder: ""
+        - generic [ref=f1e56]:
+          - generic [ref=f1e57]: Email Address
+          - textbox "Email Address" [ref=f1e58]:
+            - /placeholder: ""
+        - generic [ref=f1e59]:
+          - generic [ref=f1e60]: Country code
+          - textbox "Country code" [ref=f1e61]:
+            - /placeholder: Search or enter a value
+        - generic [ref=f1e62]:
+          - generic [ref=f1e63]: Phone Number
+          - textbox "Phone Number" [ref=f1e64]:
+            - /placeholder: ""
+        - generic [ref=f1e65]:
+          - generic [ref=f1e66]: Nationality *
+          - textbox "Nationality *" [ref=f1e67]:
+            - /placeholder: Search or enter a value
+        - generic [ref=f1e68]:
+          - generic [ref=f1e69]: Please specify dual citizenship if applicable *
+          - textbox "Please specify dual citizenship if applicable *" [ref=f1e70]:
+            - /placeholder: Search or enter a value
+        - group "How did you come to know about this opportunity? *" [ref=f1e71]:
+          - generic [ref=f1e73]:
+            - generic [ref=f1e74]:
+              - radio "Employee Referral" [checked] [active] [ref=f1e75]
+              - text: Employee Referral
+            - generic [ref=f1e76]:
+              - radio "Career Site" [ref=f1e77]
+              - text: Career Site
+            - generic [ref=f1e78]:
+              - radio "LinkedIn/Job Portal" [ref=f1e79]
+              - text: LinkedIn/Job Portal
+            - generic [ref=f1e80]:
+              - radio "Recruitment Agency" [ref=f1e81]
+              - text: Recruitment Agency
+            - generic [ref=f1e82]:
+              - radio "Other" [ref=f1e83]
+              - text: Other
+        - group "Are you over the age of 18? *" [ref=f1e84]:
+          - generic [ref=f1e86]:
+            - generic [ref=f1e87]:
+              - radio "Yes" [ref=f1e88]
+              - text: "Yes"
+            - generic [ref=f1e89]:
+              - radio "No" [ref=f1e90]
+              - text: "No"
+        - group "Have you ever worked as an employee for Vertiv, or any other Vertiv Legal Entity? *" [ref=f1e91]:
+          - generic [ref=f1e93]:
+            - generic [ref=f1e94]:
+              - radio "No" [ref=f1e95]
+              - text: "No"
+            - generic [ref=f1e96]:
+              - radio "Yes" [ref=f1e97]
+              - text: "Yes"
+        - group "Have you ever worked as a contractor for Vertiv (currently or previously)? *" [ref=f1e98]:
+          - generic [ref=f1e100]:
+            - generic [ref=f1e101]:
+              - radio "No" [ref=f1e102]
+              - text: "No"
+            - generic [ref=f1e103]:
+              - radio "Yes" [ref=f1e104]
+              - text: "Yes"
+        - group "Will you now or in the future require Vertiv to help you obtain an employment visa? *" [ref=f1e105]:
+          - generic [ref=f1e107]:
+            - generic [ref=f1e108]:
+              - radio "No" [ref=f1e109]
+              - text: "No"
+            - generic [ref=f1e110]:
+              - radio "Yes" [ref=f1e111]
+              - text: "Yes"
+        - generic [ref=f1e112]:
+          - generic [ref=f1e113]: Upload Resume *
+          - textbox "Upload Resume *" [ref=f1e114]:
+            - /placeholder: ""
+            - text: output/pdf/dummy-resume.pdf
+        - generic [ref=f1e115]:
+          - generic [ref=f1e116]: Upload Cover Letter
+          - textbox "Upload Cover Letter" [ref=f1e117]:
+            - /placeholder: ""
+            - text: output/pdf/dummy-cover-letter.pdf
+        - generic [ref=f1e118]:
+          - generic [ref=f1e119]: Supporting Documents and URLs Link 1
+          - textbox "Supporting Documents and URLs Link 1" [ref=f1e120]:
+            - /placeholder: ""
+        - group "Do you have a disability?" [ref=f1e121]:
+          - generic [ref=f1e123]:
+            - generic [ref=f1e124]:
+              - radio "Yes, I have a disability, or have had one in the past" [ref=f1e125]
+              - text: Yes, I have a disability, or have had one in the past
+            - generic [ref=f1e126]:
+              - radio "No, I do not have a disability and have not had one in the past" [ref=f1e127]
+              - text: No, I do not have a disability and have not had one in the past
+            - generic [ref=f1e128]:
+              - radio "I do not want to answer" [ref=f1e129]
+              - text: I do not want to answer
+        - generic [ref=f1e130]:
+          - generic [ref=f1e131]: Veteran Status
+          - textbox "Veteran Status" [ref=f1e132]:
+            - /placeholder: Search or enter a value
+        - generic [ref=f1e133]:
+          - generic [ref=f1e134]: Gender
+          - textbox "Gender" [ref=f1e135]:
+            - /placeholder: Search or enter a value
+        - generic [ref=f1e136]:
+          - generic [ref=f1e137]: Full Name *
+          - textbox "Full Name *" [ref=f1e138]:
+            - /placeholder: ""
+        - group "Were you referred by a current employee? *" [ref=f1e166]:
+          - generic [ref=f1e168]:
+            - generic [ref=f1e169]:
+              - radio "Yes" [ref=f1e170]
+              - text: "Yes"
+            - generic [ref=f1e171]:
+              - radio "No" [ref=f1e172]
+              - text: "No"
+      - generic [ref=f1e139]:
+        - heading "Work, education and links" [level=2] [ref=f1e140]
+        - group "experience" [ref=f1e141]:
+          - generic [ref=f1e174]:
+            - strong [ref=f1e175]: experience 1
+            - button "Remove" [ref=f1e176] [cursor=pointer]
+          - generic [ref=f1e178]:
+            - strong [ref=f1e179]: experience 2
+            - button "Remove" [ref=f1e180] [cursor=pointer]
+          - button "+ ADD EXPERIENCE" [ref=f1e143] [cursor=pointer]
+        - group "education" [ref=f1e144]:
+          - generic [ref=f1e182]:
+            - strong [ref=f1e183]: education 1
+            - button "Remove" [ref=f1e184] [cursor=pointer]
+          - generic [ref=f1e186]:
+            - strong [ref=f1e187]: education 2
+            - button "Remove" [ref=f1e188] [cursor=pointer]
+          - button "+ ADD EDUCATION" [ref=f1e146] [cursor=pointer]
+        - group "supporting links" [ref=f1e147]:
+          - generic [ref=f1e163]:
+            - strong [ref=f1e164]: supporting links 1
+            - button "Remove" [ref=f1e165] [cursor=pointer]
+          - generic [ref=f1e190]:
+            - strong [ref=f1e191]: supporting links 2
+            - button "Remove" [ref=f1e192] [cursor=pointer]
+          - button "+ Add Another Link" [ref=f1e149] [cursor=pointer]
+      - button "Save answers" [ref=f1e150] [cursor=pointer]
+    - generic [ref=f1e151]:
+      - heading "Browser actions" [level=2] [ref=f1e152]
+      - paragraph [ref=f1e153]: Prepare logs in as this user, fills the live Oracle form, verifies values and stops before Submit.
+      - generic [ref=f1e154]:
+        - button "Apply and prepare review" [ref=f1e155] [cursor=pointer]
+        - button "Approve review" [disabled] [ref=f1e156]
+      - generic [ref=f1e157]:
+        - generic [ref=f1e158]:
+          - text: Type job ID
+          - strong [ref=f1e159]: "20283127"
+          - text: to submit
+          - textbox "Type job ID 20283127 to submit" [ref=f1e160]
+        - button "Submit application" [disabled] [ref=f1e161]

@@ -1,0 +1,139 @@
+- region "Work and Education History" [ref=e730]:
+  - generic [ref=e1380]:
+    - generic [ref=e1383]:
+      - generic [ref=e1384]:
+        - generic "Degree" [ref=e1386]:
+          - generic [aria-hidden] [ref=e1388]: "*"
+        - generic [ref=e1392]:
+          - combobox "Degree" [active] [ref=e1394]
+          - button "Open the drop-down list for Degree." [ref=e1396] [cursor=pointer]: 
+      - generic [ref=e1397]:
+        - generic "Major" [ref=e1399]
+        - textbox "Major" [ref=e1402]
+      - generic [ref=e1403]:
+        - generic "School" [ref=e1405]
+        - generic [ref=e1411]:
+          - combobox "School" [ref=e1413]
+          - button "Open the drop-down list for School." [ref=e1415] [cursor=pointer]: 
+      - generic "Start Date" [ref=e1416]:
+        - generic "Start Date" [ref=e1418]
+        - generic [ref=e1421]:
+          - generic [ref=e1425]:
+            - generic [ref=e1426]:
+              - generic: Month
+              - combobox "Start Date Month" [ref=e1427]
+            - button "Open the drop-down list for Month." [ref=e1429] [cursor=pointer]: 
+          - generic [ref=e1433]:
+            - generic [ref=e1434]:
+              - generic: Year
+              - combobox "Start Date Year" [ref=e1435]
+            - button "Open the drop-down list for Year." [ref=e1437] [cursor=pointer]: 
+      - generic "End Date" [ref=e1438]:
+        - generic "End Date" [ref=e1440]
+        - generic [ref=e1443]:
+          - generic [ref=e1447]:
+            - generic [ref=e1448]:
+              - generic: Month
+              - combobox "End Date Month" [ref=e1449]
+            - button "Open the drop-down list for Month." [ref=e1451] [cursor=pointer]: 
+          - generic [ref=e1455]:
+            - generic [ref=e1456]:
+              - generic: Year
+              - combobox "End Date Year" [ref=e1457]
+            - button "Open the drop-down list for Year." [ref=e1459] [cursor=pointer]: 
+      - generic [ref=e1460]:
+        - generic "Country" [ref=e1462]
+        - generic [ref=e1467]:
+          - combobox "Country" [ref=e1469]
+          - button "Open the drop-down list for Country." [ref=e1471] [cursor=pointer]: 
+      - generic [ref=e1472]:
+        - generic "Average Grade" [ref=e1474]
+        - textbox "Average Grade" [ref=e1477]
+      - generic [ref=e1478]:
+        - generic "Year Acquired" [ref=e1480]
+        - textbox "Year Acquired" [ref=e1483]
+      - generic [ref=e1484]:
+        - generic "GPA" [ref=e1486]
+        - textbox "GPA" [ref=e1489]
+      - generic "Graduated" [ref=e1490]:
+        - checkbox "Graduated"
+        - status [ref=e1492]:
+          - generic [ref=e1493] [cursor=pointer]
+          - generic [ref=e1494] [cursor=pointer]: Graduated
+      - generic [ref=e1495]:
+        - generic "Terminal Degree for Discipline" [ref=e1497]
+        - radiogroup "Terminal Degree for Discipline" [ref=e1501]:
+          - radio "No" [checked] [ref=e1502] [cursor=pointer]
+          - radio "Yes" [ref=e1504] [cursor=pointer]
+      - generic "Date Acquired" [ref=e1506]:
+        - generic "Date Acquired" [ref=e1508]
+        - generic [ref=e1511]:
+          - generic [ref=e1515]:
+            - generic [ref=e1516]:
+              - generic: Month
+              - combobox "Date Acquired Month" [ref=e1517]
+            - button "Open the drop-down list for Month." [ref=e1519] [cursor=pointer]: 
+          - generic [ref=e1523]:
+            - generic [ref=e1524]:
+              - generic: Year
+              - combobox "Date Acquired Year" [ref=e1525]
+            - button "Open the drop-down list for Year." [ref=e1527] [cursor=pointer]: 
+      - generic [ref=e1528]:
+        - generic "Educator" [ref=e1530]
+        - textbox "Educator" [ref=e1533]
+      - generic [ref=e1534]:
+        - generic "Minor" [ref=e1536]
+        - textbox "Minor" [ref=e1539]
+      - generic "Projected Completion Date" [ref=e1540]:
+        - generic "Projected Completion Date" [ref=e1542]
+        - generic [ref=e1545]:
+          - generic [ref=e1549]:
+            - generic [ref=e1550]:
+              - generic: Month
+              - combobox "Projected Completion Date Month" [ref=e1551]
+            - button "Open the drop-down list for Month." [ref=e1553] [cursor=pointer]: 
+          - generic [ref=e1557]:
+            - generic [ref=e1558]:
+              - generic: Year
+              - combobox "Projected Completion Date Year" [ref=e1559]
+            - button "Open the drop-down list for Year." [ref=e1561] [cursor=pointer]: 
+      - generic [ref=e1562]:
+        - generic "Fee" [ref=e1564]
+        - textbox "Fee" [ref=e1567]
+      - generic [ref=e1568]:
+        - generic "Completed Amount" [ref=e1570]
+        - textbox "Completed Amount" [ref=e1573]
+      - generic [ref=e1574]:
+        - generic "Total Amount" [ref=e1576]
+        - textbox "Total Amount" [ref=e1579]
+      - generic [ref=e1580]:
+        - generic "Comments" [ref=e1582]
+        - generic [ref=e1584]:
+          - textbox "Comments" [ref=e1585]
+          - textbox [aria-hidden] [ref=e1586]
+      - generic [ref=e1587]:
+        - generic "Reimbursement Arrangements" [ref=e1589]
+        - generic [ref=e1591]:
+          - textbox "Reimbursement Arrangements" [ref=e1592]
+          - textbox [aria-hidden] [ref=e1593]
+      - generic [ref=e1594]:
+        - generic "Training Completed Units" [ref=e1596]
+        - textbox "Training Completed Units" [ref=e1599]
+      - generic [ref=e1600]:
+        - generic "Status" [ref=e1602]
+        - generic:
+          - generic:
+            - radiogroup "Status"
+      - generic [ref=e1604]:
+        - generic "Fee Currency" [ref=e1606]
+        - generic [ref=e1611]:
+          - combobox "Fee Currency" [ref=e1613]
+          - button "Open the drop-down list for Fee Currency." [ref=e1615] [cursor=pointer]: 
+      - generic [ref=e1616]:
+        - generic "Tuition Method" [ref=e1618]
+        - generic:
+          - generic:
+            - radiogroup "Tuition Method"
+    - generic [ref=e1621]:
+      - button "Cancel" [ref=e1622] [cursor=pointer]
+      - button "Add Education" [ref=e1624] [cursor=pointer]

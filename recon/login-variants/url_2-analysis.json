@@ -1,0 +1,246 @@
+{
+  "headings": [
+    {
+      "tag": "h1",
+      "text": "Are You Still With Us?"
+    },
+    {
+      "tag": "h1",
+      "text": "Work Summary"
+    },
+    {
+      "tag": "h1",
+      "text": "Job application form"
+    },
+    {
+      "tag": "h1",
+      "text": "Authentication screen. Submit your job application!"
+    },
+    {
+      "tag": "h1",
+      "text": "Terms and Conditions"
+    },
+    {
+      "tag": "h2",
+      "text": "Privacy Preference Center"
+    },
+    {
+      "tag": "h3",
+      "text": "Your Privacy"
+    },
+    {
+      "tag": "h3",
+      "text": "Strictly Necessary Cookies"
+    },
+    {
+      "tag": "h3",
+      "text": "Functional Cookies"
+    },
+    {
+      "tag": "h4",
+      "text": "Your Privacy"
+    },
+    {
+      "tag": "h4",
+      "text": "Strictly Necessary Cookies"
+    },
+    {
+      "tag": "h4",
+      "text": "Functional Cookies"
+    },
+    {
+      "tag": "h3",
+      "text": "Back"
+    }
+  ],
+  "inputs": [
+    {
+      "tag": "textarea",
+      "type": "textarea",
+      "role": null,
+      "name": null,
+      "id": "oda-work-summary-text-area|input",
+      "placeholder": "",
+      "ariaLabel": null,
+      "value": "",
+      "required": true,
+      "visible": false,
+      "parentText": ""
+    },
+    {
+      "tag": "input",
+      "type": "email",
+      "role": null,
+      "name": "primary-email",
+      "id": "primary-email-0",
+      "placeholder": null,
+      "ariaLabel": null,
+      "value": "",
+      "checked": false,
+      "required": true,
+      "visible": true,
+      "parentText": ""
+    },
+    {
+      "tag": "input",
+      "type": "input",
+      "role": null,
+      "name": "honey-pot",
+      "id": "honey-pot-1",
+      "placeholder": null,
+      "ariaLabel": null,
+      "value": "",
+      "checked": false,
+      "required": false,
+      "visible": true,
+      "parentText": ""
+    },
+    {
+      "tag": "input",
+      "type": "checkbox",
+      "role": null,
+      "name": null,
+      "id": "legal-disclaimer-checkbox",
+      "placeholder": null,
+      "ariaLabel": null,
+      "value": "on",
+      "checked": false,
+      "required": true,
+      "visible": true,
+      "parentText": "I agree with the terms and conditions"
+    },
+    {
+      "tag": "input",
+      "type": "text",
+      "role": null,
+      "name": "vendor-search-handler",
+      "id": "vendor-search-handler",
+      "placeholder": null,
+      "ariaLabel": null,
+      "value": "",
+      "checked": false,
+      "required": false,
+      "visible": false,
+      "parentText": ""
+    },
+    {
+      "tag": "input",
+      "type": "checkbox",
+      "role": null,
+      "name": null,
+      "id": "select-all-hosts-groups-handler",
+      "placeholder": null,
+      "ariaLabel": null,
+      "value": "on",
+      "checked": false,
+      "required": false,
+      "visible": false,
+      "parentText": "checkbox label label"
+    },
+    {
+      "tag": "input",
+      "type": "checkbox",
+      "role": null,
+      "name": null,
+      "id": "select-all-vendor-groups-handler",
+      "placeholder": null,
+      "ariaLabel": null,
+      "value": "on",
+      "checked": false,
+      "required": false,
+      "visible": false,
+      "parentText": "checkbox label label"
+    },
+    {
+      "tag": "input",
+      "type": "checkbox",
+      "role": null,
+      "name": null,
+      "id": "select-all-vendor-leg-handler",
+      "placeholder": null,
+      "ariaLabel": null,
+      "value": "on",
+      "checked": false,
+      "required": false,
+      "visible": false,
+      "parentText": "checkbox label label"
+    },
+    {
+      "tag": "input",
+      "type": "checkbox",
+      "role": null,
+      "name": null,
+      "id": "chkbox-id",
+      "placeholder": null,
+      "ariaLabel": null,
+      "value": "on",
+      "checked": false,
+      "required": false,
+      "visible": false,
+      "parentText": "checkbox label label"
+    }
+  ],
+  "actionButtons": [
+    {
+      "tag": "a",
+      "role": null,
+      "text": "Skip to main content.",
+      "ariaLabel": "Skip to main content.",
+      "title": null,
+      "visible": true,
+      "id": "",
+      "class": "skip-navigation-link"
+    },
+    {
+      "tag": "button",
+      "role": "link",
+      "text": "",
+      "ariaLabel": "Back to Job Details",
+      "title": "Back to Job Details",
+      "visible": true,
+      "id": "",
+      "class": "app-header-icon-button app-header__close"
+    },
+    {
+      "tag": "button",
+      "role": null,
+      "text": "Do you want to communicate by phone instead?",
+      "ariaLabel": null,
+      "title": null,
+      "visible": true,
+      "id": "",
+      "class": "quick-apply-flow-verify-method__button"
+    },
+    {
+      "tag": "a",
+      "role": null,
+      "text": "terms and conditions",
+      "ariaLabel": null,
+      "title": null,
+      "visible": true,
+      "id": "legal-disclaimer-link",
+      "class": "agreements-label-text-link"
+    },
+    {
+      "tag": "button",
+      "role": null,
+      "text": "Cancel",
+      "ariaLabel": "Cancel",
+      "title": "Cancel",
+      "visible": true,
+      "id": "",
+      "class": "button apply-flow-pagination__button text-color-secondary focused-tooltip"
+    },
+    {
+      "tag": "button",
+      "role": null,
+      "text": "Next",
+      "ariaLabel": "Next",
+      "title": "Next",
+      "visible": true,
+      "id": "",
+      "class": "button apply-flow-pagination__button theme-color-1 focused-tooltip"
+    }
+  ],
+  "currentUrl": "https://hdjq.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/26012594/apply/email"
+}

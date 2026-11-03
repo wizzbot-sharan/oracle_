@@ -1,0 +1,67 @@
+{
+  "assignments": [
+    {
+      "assignmentId": "asg_bd8e8d9257a6d6c2",
+      "userId": "scanner-user",
+      "jobId": "20283127",
+      "originalUrl": "https://egup.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/20283127/?utm_medium=jobboard&utm_source=linkedin",
+      "canonicalUrl": "https://egup.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/job/20283127",
+      "tenantHost": "egup.fa.us2.oraclecloud.com",
+      "tenantKey": "egup",
+      "sourceJobId": "20283127"
+    },
+    {
+      "assignmentId": "asg-26012594",
+      "userId": "scanner-user",
+      "jobId": "26012594",
+      "canonicalUrl": "https://hdjq.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/26012594/apply/section/1",
+      "tenantHost": "hdjq.fa.us2.oraclecloud.com",
+      "tenantKey": "hdjq"
+    },
+    {
+      "assignmentId": "asg-301984",
+      "userId": "scanner-user",
+      "jobId": "301984",
+      "canonicalUrl": "https://ecnf.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/job/301984",
+      "tenantHost": "ecnf.fa.us2.oraclecloud.com",
+      "tenantKey": "ecnf"
+    },
+    {
+      "assignmentId": "asg-99124652",
+      "userId": "scanner-user",
+      "jobId": "99124652",
+      "canonicalUrl": "https://icfcjb.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/99124652",
+      "tenantHost": "icfcjb.fa.ocs.oraclecloud.com",
+      "tenantKey": "icfcjb"
+    }
+  ],
+  "uniqueJobs": [
+    {
+      "jobId": "20283127",
+      "canonicalUrl": "https://egup.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/job/20283127",
+      "tenantHost": "egup.fa.us2.oraclecloud.com",
+      "tenantKey": "egup",
+      "userIds": [
+        "scanner-user"
+      ]
+    },
+    {
+      "jobId": "26012594",
+      "canonicalUrl": "https://hdjq.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/26012594/apply/section/1",
+      "tenantHost": "hdjq.fa.us2.oraclecloud.com",
+      "tenantKey": "hdjq"
+    },
+    {
+      "jobId": "301984",
+      "canonicalUrl": "https://ecnf.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/job/301984",
+      "tenantHost": "ecnf.fa.us2.oraclecloud.com",
+      "tenantKey": "ecnf"
+    },
+    {
+      "jobId": "99124652",
+      "canonicalUrl": "https://icfcjb.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/99124652",
+      "tenantHost": "icfcjb.fa.ocs.oraclecloud.com",
+      "tenantKey": "icfcjb"
+    }
+  ]
+}

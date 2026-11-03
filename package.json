@@ -1,0 +1,31 @@
+{
+  "name": "oracle-application-workflow",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev:api": "node src/server.js",
+    "dev:web": "vite --config web/vite.config.js",
+    "dev": "concurrently -n api,web -c blue,green \"npm:dev:api\" \"npm:dev:web\"",
+    "start": "node src/server.js",
+    "test": "node --test",
+    "seed": "node src/cli.js seed",
+    "ingest": "node src/cli.js ingest",
+    "auth": "node src/cli.js auth",
+    "scan": "node src/cli.js scan",
+    "resolve": "node src/cli.js resolve",
+    "prepare:application": "node src/cli.js prepare"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "playwright": "^1.56.1",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^5.1.0",
+    "concurrently": "^9.2.1",
+    "vite": "^7.2.0"
+  }
+}

@@ -1,0 +1,74 @@
+- generic [active] [ref=e1]:
+  - generic [aria-hidden] [ref=e2]:
+    - generic [ref=e3]: .
+    - generic [ref=e4]: ..
+    - generic [ref=e5]: .
+  - generic [ref=e7]:
+    - link "Skip to main content." [ref=e8] [cursor=pointer]:
+      - /url: "#main"
+    - generic [ref=e10]:
+      - generic [ref=e11]:
+        - banner [ref=e13]:
+          - banner [ref=e16]:
+            - navigation [ref=e17]:
+              - generic:
+                - generic:
+                  - link "Go to Home Page":
+                    - /url: https://egup.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/?utm_medium=jobboard&utm_source=linkedin
+              - generic [ref=e18]:
+                - text: 
+                - list [ref=e20]:
+                  - listitem [ref=e21]:
+                    - link "Vertiv.com" [ref=e23] [cursor=pointer]:
+                      - /url: http://www.vertiv.com
+                  - listitem [ref=e24]:
+                    - link "About Careers" [ref=e26] [cursor=pointer]:
+                      - /url: https://www.vertiv.com/careers
+                  - listitem [ref=e27]:
+                    - link "About Vertiv" [ref=e29] [cursor=pointer]:
+                      - /url: https://www.vertiv.com/about/
+                - text: 
+            - generic [ref=e30]:
+              - button "I am an employee" [ref=e32] [cursor=pointer]
+              - link "Manage profile" [ref=e36] [cursor=pointer]:
+                - /url: https://egup.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/my-profile/sign-in
+                - generic [ref=e37]: 
+              - button "Change Site Language American English" [ref=e41] [cursor=pointer]:
+                - generic [ref=e42]: American English
+                - generic [ref=e43]: 
+        - main [ref=e45]:
+          - generic [ref=e50]:
+            - generic [ref=e51]: 
+            - alert "Loading screen" [ref=e54]: 
+      - contentinfo [ref=e55]:
+        - contentinfo [ref=e57]:
+          - generic [ref=e58]:
+            - link [ref=e59] [cursor=pointer]:
+              - /url: https://vertiv.com
+              - img "Footer Logo" [ref=e60]
+            - generic [ref=e61]: Connect with us
+            - generic [ref=e62]:
+              - link "https://www.facebook.com/vertiv" [ref=e63] [cursor=pointer]:
+                - /url: https://www.facebook.com/vertiv
+                - text: 
+              - link "https://twitter.com/Vertiv" [ref=e64] [cursor=pointer]:
+                - /url: https://twitter.com/Vertiv
+                - text: 
+              - link "https://www.linkedin.com/company/vertiv" [ref=e65] [cursor=pointer]:
+                - /url: https://www.linkedin.com/company/vertiv
+                - text: 
+              - link "https://www.youtube.com/user/EmersonNetworkPower":
+                - /url: https://www.youtube.com/user/EmersonNetworkPower
+              - link "https://www.instagram.com/vertiv" [ref=e66] [cursor=pointer]:
+                - /url: https://www.instagram.com/vertiv
+            - generic [ref=e67]:
+              - link "Terms of Use" [ref=e68] [cursor=pointer]:
+                - /url: /en-asia/terms-of-use/
+              - link "Privacy Policy" [ref=e69] [cursor=pointer]:
+                - /url: /en-asia/privacy-policy/
+              - link "Cookie Policy" [ref=e70] [cursor=pointer]:
+                - /url: /en-asia/cookie_information/
+              - paragraph [ref=e71]: © 2020 Vertiv Group Corp. All rights reserved.
+    - alert
+    - status [ref=e72]
+    - alert [ref=e73]

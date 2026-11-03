@@ -1,0 +1,36 @@
+- generic [ref=e1]:
+  - generic [aria-hidden] [ref=e2]:
+    - generic [ref=e3]: .
+    - generic [ref=e4]: ..
+    - generic [ref=e5]: .
+  - generic [ref=e7]:
+    - link "Skip to main content." [ref=e379] [cursor=pointer]:
+      - /url: "#main"
+    - generic:
+      - alert
+    - generic [ref=e381]:
+      - banner [ref=e383]:
+        - generic [ref=e385]:
+          - link "Back to Job Details" [ref=e386] [cursor=pointer]:
+            - generic [ref=e387]: 
+          - tooltip "Industrial ML Software Engineer ..." [ref=e388]:
+            - generic [ref=e389]:
+              - generic [ref=e390]: Industrial ML Software Engineer
+              - generic [ref=e391]: ...
+      - main [ref=e393]:
+        - heading "Job application form" [level=1] [ref=e394]
+        - generic [ref=e427]:
+          - heading "Confirm Your Identity" [level=1] [ref=e429]
+          - generic [ref=e430]:
+            - generic [ref=e431]:
+              - alert [ref=e432]: "The verification code was sent to this email address: lokesh.matla@applywizard.ai. When you get the code, type the code into the field to confirm your identity and complete your job application. Note that it may take some time before you receive the code."
+              - group "Verification Code" [ref=e436]:
+                - generic [ref=e438]:
+                  - textbox "Enter verification code digit 1 of six." [active] [ref=e440]
+                  - textbox "Enter verification code digit 2 of six." [ref=e442]
+                  - textbox "Enter verification code digit 3 of six." [ref=e444]
+                  - textbox "Enter verification code digit 4 of six." [ref=e446]
+                  - textbox "Enter verification code digit 5 of six." [ref=e448]
+                  - textbox "Enter verification code digit 6 of six." [ref=e450]
+            - button "Verify" [ref=e452] [cursor=pointer]
+            - button "Send New Code" [ref=e456] [cursor=pointer]

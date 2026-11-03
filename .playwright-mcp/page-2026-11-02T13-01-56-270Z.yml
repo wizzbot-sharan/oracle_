@@ -1,0 +1,39 @@
+- generic [ref=e1]:
+  - generic [aria-hidden] [ref=e2]:
+    - generic [ref=e3]: .
+    - generic [ref=e4]: ..
+    - generic [ref=e5]: .
+  - generic [ref=e7]:
+    - link "Skip to main content." [ref=e379] [cursor=pointer]:
+      - /url: "#main"
+    - generic:
+      - alert
+    - generic [ref=e381]:
+      - banner [ref=e383]:
+        - generic [ref=e385]:
+          - link "Back to Job Details" [ref=e386] [cursor=pointer]:
+            - generic [ref=e387]: 
+          - tooltip "Industrial ML Software Engineer ..." [ref=e388]:
+            - generic [ref=e389]:
+              - generic [ref=e390]: Industrial ML Software Engineer
+              - generic [ref=e391]: ...
+      - main [ref=e393]:
+        - heading "Job application form" [level=1] [ref=e394]
+        - generic [ref=e396]:
+          - heading "Authentication screen. You don't need to have an account" [level=1] [ref=e398]:
+            - generic: Authentication screen.
+            - text: You don't need to have an account
+          - generic [ref=e399]:
+            - paragraph [ref=e400]: Get started right away by simply using your email. Your profile will be created and kept up to date automatically as you enter details for each of your job applications.
+            - generic [ref=e402]:
+              - generic [ref=e403]:
+                - generic "Email Address" [ref=e405]:
+                  - generic [aria-hidden] [ref=e407]: "*"
+                - textbox "Email Address" [active] [ref=e409]: lokesh.matla@applywizard.ai
+              - generic:
+                - generic: honeypot
+                - textbox [aria-hidden] [ref=e413]
+              - generic [ref=e414]: This is how we'll communicate with you.
+          - generic [ref=e415]:
+            - button "Cancel" [ref=e416] [cursor=pointer]
+            - button "Next" [ref=e419] [cursor=pointer]

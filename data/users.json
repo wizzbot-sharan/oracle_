@@ -1,0 +1,14 @@
+{
+  "scanner-user": {
+    "userId": "scanner-user",
+    "email": "lokesh.matla@applywizard.ai",
+    "profile": {
+      "first_name": "Test",
+      "last_name": "Candidate"
+    },
+    "files": {
+      "resume": "output/pdf/dummy-resume.pdf",
+      "cover_letter": "output/pdf/dummy-cover-letter.pdf"
+    }
+  }
+}

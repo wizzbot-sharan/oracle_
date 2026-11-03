@@ -1,0 +1,85 @@
+- region "Work and Education History" [ref=e730]:
+  - generic [ref=e1209]:
+    - generic [ref=e1212]:
+      - generic [ref=e1213]:
+        - generic "Employer Name" [ref=e1215]:
+          - generic [aria-hidden] [ref=e1217]: "*"
+        - textbox "Employer Name" [active] [ref=e1219]
+      - generic [ref=e1220]:
+        - generic "Job Title" [ref=e1222]
+        - textbox "Job Title" [ref=e1225]
+      - generic "Start Date" [ref=e1226]:
+        - generic "Start Date" [ref=e1228]
+        - generic [ref=e1231]:
+          - generic [ref=e1235]:
+            - generic [ref=e1236]:
+              - generic: Month
+              - combobox "Start Date Month" [ref=e1237]
+            - button "Open the drop-down list for Month." [ref=e1239] [cursor=pointer]: 
+          - generic [ref=e1243]:
+            - generic [ref=e1244]:
+              - generic: Year
+              - combobox "Start Date Year" [ref=e1245]
+            - button "Open the drop-down list for Year." [ref=e1247] [cursor=pointer]: 
+      - generic "End Date" [ref=e1248]:
+        - generic "End Date" [ref=e1250]
+        - generic [ref=e1253]:
+          - generic [ref=e1257]:
+            - generic [ref=e1258]:
+              - generic: Month
+              - combobox "End Date Month" [ref=e1259]
+            - button "Open the drop-down list for Month." [ref=e1261] [cursor=pointer]: 
+          - generic [ref=e1265]:
+            - generic [ref=e1266]:
+              - generic: Year
+              - combobox "End Date Year" [ref=e1267]
+            - button "Open the drop-down list for Year." [ref=e1269] [cursor=pointer]: 
+      - generic "Current Job" [ref=e1270]:
+        - checkbox "Current Job"
+        - status [ref=e1272]:
+          - generic [ref=e1273] [cursor=pointer]
+          - generic [ref=e1274] [cursor=pointer]: Current Job
+      - generic [ref=e1275]:
+        - generic "Type of Business" [ref=e1277]
+        - textbox "Type of Business" [ref=e1280]
+      - generic [ref=e1281]:
+        - generic "Job Family" [ref=e1283]
+        - generic [ref=e1288]:
+          - combobox "Job Family" [ref=e1290]
+          - button "Open the drop-down list for Job Family." [ref=e1292] [cursor=pointer]: 
+      - generic [ref=e1293]:
+        - generic "Job Function" [ref=e1295]
+        - generic [ref=e1300]:
+          - combobox "Job Function" [ref=e1302]
+          - button "Open the drop-down list for Job Function." [ref=e1304] [cursor=pointer]: 
+      - generic [ref=e1305]:
+        - generic "Other Job Function" [ref=e1307]
+        - textbox "Other Job Function" [ref=e1310]
+      - generic [ref=e1311]:
+        - generic "Achievements" [ref=e1313]
+        - generic [ref=e1315]:
+          - textbox "Achievements" [ref=e1316]
+          - textbox [aria-hidden] [ref=e1317]
+      - generic [ref=e1318]:
+        - generic "Starting Position" [ref=e1320]
+        - textbox "Starting Position" [ref=e1323]
+      - generic [ref=e1324]:
+        - generic "Supervisor Name" [ref=e1326]
+        - textbox "Supervisor Name" [ref=e1329]
+      - generic [ref=e1330]:
+        - generic "Supervisor Title" [ref=e1332]
+        - textbox "Supervisor Title" [ref=e1335]
+      - generic [ref=e1336]:
+        - generic "Supervisor Email" [ref=e1338]
+        - textbox "Supervisor Email" [ref=e1341]
+      - generic [ref=e1342]:
+        - generic "Supervisor Phone" [ref=e1344]
+        - textbox "Supervisor Phone" [ref=e1347]
+      - generic [ref=e1348]:
+        - generic "OK to Contact Supervisor" [ref=e1350]
+        - radiogroup "OK to Contact Supervisor" [ref=e1354]:
+          - radio "No" [ref=e1355] [cursor=pointer]
+          - radio "Yes" [ref=e1357] [cursor=pointer]
+    - generic [ref=e1360]:
+      - button "Cancel" [ref=e1361] [cursor=pointer]
+      - button "Add Experience" [ref=e1363] [cursor=pointer]

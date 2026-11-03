@@ -1,0 +1,1582 @@
+[
+  {
+    "applicationId": "app_1dca330d82e8343c",
+    "userId": "scanner-user",
+    "jobId": "20283127",
+    "templateId": "tpl_8f042693bb075717",
+    "canonicalUrl": "https://egup.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/job/20283127",
+    "tenantHost": "egup.fa.us2.oraclecloud.com",
+    "tenantKey": "egup",
+    "status": "answers_resolved",
+    "reviewStatus": "not_ready",
+    "values": {
+      "select_the_races_you_identify_with": {
+        "value": [
+          "Asian"
+        ],
+        "source": "dashboard",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "last_name": {
+        "value": "Candidate",
+        "source": "question_bank",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "first_name": {
+        "value": "Test",
+        "source": "question_bank",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "title": {
+        "value": "Mr.",
+        "source": "question_bank",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "middle_names": {
+        "value": "chowdara",
+        "source": "dashboard",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "known_as": {
+        "value": "kamma",
+        "source": "dashboard",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "email": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "phone_country_code": {
+        "value": "+1",
+        "source": "question_bank",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "phone_number": {
+        "value": "1234567890",
+        "source": "question_bank",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "how_did_you_come_to_know_about_this_opportunity": {
+        "value": "Career Site",
+        "source": "dashboard",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "are_you_over_the_age_of_18": {
+        "value": "Yes",
+        "source": "dashboard",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "have_you_ever_worked_as_an_employee_for_vertiv_or_any_other_vertiv_legal_entity": {
+        "value": "No",
+        "source": "dashboard",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "have_you_ever_worked_as_a_contractor_for_vertiv_currently_or_previously": {
+        "value": "No",
+        "source": "dashboard",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "will_you_now_or_in_the_future_require_vertiv_to_help_you_obtain_an_employment_visa": {
+        "value": "Yes",
+        "source": "dashboard",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "site_link_1": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "do_you_have_a_disability": {
+        "value": "No, I do not have a disability and have not had one in the past",
+        "source": "dashboard",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "us_standard_ora_veteran_status_standard": {
+        "value": "I am not a protected Veteran",
+        "source": "dashboard",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "i_am_hispanic_or_latino": {
+        "value": false,
+        "source": "dashboard",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "us_standard_ora_gender_standard": {
+        "value": "Female",
+        "source": "dashboard",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "i_agree_to_receive_updates_about_new_job_opportunities": {
+        "value": true,
+        "source": "question_bank",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "full_name": {
+        "value": "Candidate Test",
+        "source": "dashboard",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "were_you_referred_by_a_current_employee": {
+        "value": "Yes",
+        "source": "dashboard",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "if_other_source_please_specify": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "please_provide_vertiv_employee_number": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "employee_function_department_if_known": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "please_provide_the_vertiv_employee_s_name": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "experience": {
+        "value": [
+          {
+            "employer_name": "Xyz"
+          }
+        ],
+        "source": "question_bank",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "education": {
+        "value": [
+          {
+            "content_item_id": "None"
+          }
+        ],
+        "source": "question_bank",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "supporting_links": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "another_link": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      }
+    },
+    "fillResults": [
+      {
+        "fieldId": "last_name",
+        "status": "verified"
+      },
+      {
+        "fieldId": "first_name",
+        "status": "verified"
+      },
+      {
+        "fieldId": "title",
+        "status": "verified"
+      },
+      {
+        "fieldId": "middle_names",
+        "status": "verified"
+      },
+      {
+        "fieldId": "known_as",
+        "status": "verified"
+      },
+      {
+        "fieldId": "phone_country_code",
+        "status": "verified"
+      },
+      {
+        "fieldId": "phone_number",
+        "status": "verified"
+      },
+      {
+        "fieldId": "nationality",
+        "status": "verified"
+      },
+      {
+        "fieldId": "dual_citizenship",
+        "status": "verified"
+      },
+      {
+        "fieldId": "how_did_you_come_to_know_about_this_opportunity",
+        "status": "verified"
+      },
+      {
+        "fieldId": "are_you_over_the_age_of_18",
+        "status": "verified"
+      },
+      {
+        "fieldId": "have_you_ever_worked_as_an_employee_for_vertiv_or_any_other_vertiv_legal_entity",
+        "status": "verified"
+      },
+      {
+        "fieldId": "have_you_ever_worked_as_a_contractor_for_vertiv_currently_or_previously",
+        "status": "verified"
+      },
+      {
+        "fieldId": "will_you_now_or_in_the_future_require_vertiv_to_help_you_obtain_an_employment_visa",
+        "status": "verified"
+      },
+      {
+        "fieldId": "resume",
+        "status": "verified"
+      },
+      {
+        "fieldId": "cover_letter",
+        "status": "verified"
+      },
+      {
+        "fieldId": "do_you_have_a_disability",
+        "status": "failed",
+        "error": "locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('radiogroup', { name: 'Do you have a disability?' }).first().getByRole('radio', { name: 'No, I do not have a disability and have not had one in the past', exact: true })\u001b[22m\n\u001b[2m    - locator resolved to <input type=\"radio\" showlov=\"true\" value=\"ORA_PER_NO_US\" name=\"US-STANDARD-ORA_DISABILITY_STATUS-STANDARD-8\" id=\"US-STANDARD-ORA_DISABILITY_STATUS-STANDARD-8-ORA_PER_NO_US\" class=\"input-row__hidden-control apply-flow-input-radio-control\" aria-labelledby=\"label-US-STANDARD-ORA_DISABILITY_STATUS-STANDARD-8-ORA_PER_NO_US\" data-bind=\"checkedValue: option.lookupCode,↵                            checked: $parent.element.value,↵                            attr: option.attributes,↵                           …/>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not stable\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not stable\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    58 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is not visible\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n"
+      },
+      {
+        "fieldId": "us_standard_ora_veteran_status_standard",
+        "status": "verified"
+      },
+      {
+        "fieldId": "i_am_hispanic_or_latino",
+        "status": "verified"
+      },
+      {
+        "fieldId": "ethnicity",
+        "status": "verified"
+      },
+      {
+        "fieldId": "american_indian_or_alaska_native",
+        "status": "verified"
+      },
+      {
+        "fieldId": "select_the_races_you_identify_with",
+        "status": "verified"
+      },
+      {
+        "fieldId": "asian",
+        "status": "verified"
+      },
+      {
+        "fieldId": "black_or_african_american",
+        "status": "verified"
+      },
+      {
+        "fieldId": "native_hawaiian_or_other_pacific_islander",
+        "status": "verified"
+      },
+      {
+        "fieldId": "white",
+        "status": "verified"
+      },
+      {
+        "fieldId": "us_standard_ora_gender_standard",
+        "status": "verified"
+      },
+      {
+        "fieldId": "i_agree_to_receive_updates_about_new_job_opportunities",
+        "status": "verified"
+      },
+      {
+        "fieldId": "full_name",
+        "status": "verified"
+      },
+      {
+        "fieldId": "experience",
+        "status": "verified"
+      },
+      {
+        "fieldId": "education",
+        "status": "verified"
+      },
+      {
+        "fieldId": "do_you_have_a_disability",
+        "status": "failed",
+        "error": "locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('radiogroup', { name: 'Do you have a disability?' }).first().getByRole('radio', { name: 'No, I do not have a disability and have not had one in the past', exact: true })\u001b[22m\n\u001b[2m    - locator resolved to <input type=\"radio\" showlov=\"true\" value=\"ORA_PER_NO_US\" name=\"US-STANDARD-ORA_DISABILITY_STATUS-STANDARD-8\" id=\"US-STANDARD-ORA_DISABILITY_STATUS-STANDARD-8-ORA_PER_NO_US\" class=\"input-row__hidden-control apply-flow-input-radio-control\" aria-labelledby=\"label-US-STANDARD-ORA_DISABILITY_STATUS-STANDARD-8-ORA_PER_NO_US\" data-bind=\"checkedValue: option.lookupCode,↵                            checked: $parent.element.value,↵                            attr: option.attributes,↵                           …/>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not stable\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not stable\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is not stable\u001b[22m\n\u001b[2m  57 × retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\u001b[2m       - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is not visible\u001b[22m\n\u001b[2m  - retrying click action\u001b[22m\n\u001b[2m    - waiting 500ms\u001b[22m\n"
+      }
+    ],
+    "updatedAt": "2026-11-03T15:26:21.118Z"
+  },
+  {
+    "applicationId": "app_bcf765dfe4542fc2",
+    "userId": "scanner-user",
+    "jobId": "26012594",
+    "templateId": "tpl_fbcb3cb383819cae",
+    "canonicalUrl": "https://hdjq.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/26012594/apply/section/1",
+    "tenantHost": "hdjq.fa.us2.oraclecloud.com",
+    "tenantKey": "hdjq",
+    "status": "needs_input",
+    "reviewStatus": "not_ready",
+    "values": {
+      "last_name": {
+        "value": "Candidate",
+        "source": "question_bank",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "first_name": {
+        "value": "Test",
+        "source": "question_bank",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "title": {
+        "value": "Mr.",
+        "source": "question_bank",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "middle_names": {
+        "value": "chowdara",
+        "source": "question_bank",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "known_as": {
+        "value": "kamma",
+        "source": "question_bank",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "email": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "use_email_address_for_communication": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "use_for_communication": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "phone_country_code": {
+        "value": "+1",
+        "source": "question_bank",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "phone_number": {
+        "value": "1234567890",
+        "source": "question_bank",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "use_sms_for_communication": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "use_sms_for_communication_use_sms_for_communication": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "are_you_at_least_18_years_of_age": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "are_you_a_us_citizen_lawful_permanent_resident_green_card_holder_asylee_or_refugee": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "are_you_currently_legally_eligible_to_work_on_a_full_time_basis_in_the_country_where_the_position_is": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "will_you_now_or_in_the_future_require_emerson_to_help_you_obtain_an_employment_visa": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "have_you_previously_worked_for_or_do_you_currently_work_for_emerson": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "do_you_have_any_relatives_presently_working_for_emerson": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "what_is_your_annual_salary_expectation_in_local_currency": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "what_is_your_highest_level_of_completed_education": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "in_what_subject_or_field_is_your_education": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "how_many_years_of_relevant_experience_do_you_have_for_this_position": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "are_you_willing_and_able_to_travel": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "are_you_currently_located_where_the_position_will_be_based": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "if_offered_this_position_how_soon_could_you_start": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "resume": {
+        "value": "output/pdf/dummy-resume.pdf",
+        "source": "user_files",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "cover_letter": {
+        "value": "output/pdf/dummy-cover-letter.pdf",
+        "source": "user_files",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "site_link_1": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "i_am_hispanic_or_latino": {
+        "value": false,
+        "source": "question_bank",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "select_the_races_you_identify_with": {
+        "value": [
+          "Asian"
+        ],
+        "source": "question_bank",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "us_standard_ora_gender_standard": {
+        "value": "Female",
+        "source": "question_bank",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "us_standard_ora_veteran_status_standard": {
+        "value": "I am not a protected Veteran",
+        "source": "question_bank",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "employee_name": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "i_agree_to_receive_updates_about_new_job_opportunities": {
+        "value": true,
+        "source": "question_bank",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "i_agree_to_receive_job_information_updates_and_alerts": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "full_name": {
+        "value": "Sharan Srikar",
+        "source": "question_bank",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "address_line1": {
+        "value": "123, Main Street",
+        "source": "question_bank",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "address_line2": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "address_line3": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "postal_code": {
+        "value": "123456",
+        "source": "question_bank",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "city": {
+        "value": "Essex Fells",
+        "source": "question_bank",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "region2": {
+        "value": "NY",
+        "source": "question_bank",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "addl_address_attribute4": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "region1": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "what_kind_of_visa_do_you_currently_hold": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "in_what_capacity_are_you_or_did_you_work_for_emerson": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "what_was_your_work_location": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "who_was_your_previous_supervisor": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "please_share_the_name_and_relationship": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "are_you_willing_to_relocate": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "do_you_have_a_visa_that_you_obtained_from_your_current_employer_that_will_need_to_be_transferred": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "do_you_have_an_approved_i_140_immigrant_visa_petition": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "are_you_currently_employed": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "when_did_you_first_start_in_either_h_1_b_or_l_1_status_earliest_date_month": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "when_did_you_first_start_in_either_h_1_b_or_l_1_status_earliest_date_day": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "when_did_you_first_start_in_either_h_1_b_or_l_1_status_earliest_date_year": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "what_type_of_f_1_work_authorization_do_you_have": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "please_specify_here_the_type_of_visa": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "do_you_have_a_pending_i_485_adjustment_of_status_filed_based_on_this_i_140_approval": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "form_i_140_approval_date_month": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "form_i_140_approval_date_day": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "form_i_140_approval_date_year": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "month": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "day": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "year": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "are_you_eligible_for_stem_opt_extension": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "what_is_your_opt_expiration_date_month": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "what_is_your_opt_expiration_date_day": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "what_is_your_opt_expiration_date_year": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "do_you_have_a_valid_ead_work_permit_card": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "what_date_did_you_file_your_i_485_adjustment_of_status_month": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "what_date_did_you_file_your_i_485_adjustment_of_status_day": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "what_date_did_you_file_your_i_485_adjustment_of_status_year": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "when_will_the_stem_opt_expire_last_possible_date_of_stem_opt_month": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "when_will_the_stem_opt_expire_last_possible_date_of_stem_opt_day": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "when_will_the_stem_opt_expire_last_possible_date_of_stem_opt_year": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "when_does_ead_work_permit_card_expire_month": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "when_does_ead_work_permit_card_expire_day": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "when_does_ead_work_permit_card_expire_year": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "experience": {
+        "value": [
+          {
+            "employer_name": "Xyz"
+          }
+        ],
+        "source": "question_bank",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "education": {
+        "value": [
+          {
+            "content_item_id": "None"
+          }
+        ],
+        "source": "question_bank",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "supporting_links": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "another_link": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      }
+    },
+    "fillResults": [],
+    "updatedAt": "2026-11-03T15:26:21.118Z"
+  },
+  {
+    "applicationId": "app_e14f1f886b1b1e36",
+    "userId": "scanner-user",
+    "jobId": "301984",
+    "templateId": "tpl_c30f5785abcf4f0f",
+    "canonicalUrl": "https://ecnf.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/job/301984",
+    "tenantHost": "ecnf.fa.us2.oraclecloud.com",
+    "tenantKey": "ecnf",
+    "status": "answers_resolved",
+    "reviewStatus": "not_ready",
+    "values": {
+      "last_name": {
+        "value": "Candidate",
+        "source": "question_bank",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "first_name": {
+        "value": "Test",
+        "source": "question_bank",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "title": {
+        "value": "Mr.",
+        "source": "dashboard",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "middle_names": {
+        "value": "chowdara",
+        "source": "question_bank",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "email": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "phone_country_code": {
+        "value": "+1",
+        "source": "dashboard",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "phone_number": {
+        "value": "1234567890",
+        "source": "dashboard",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "country": {
+        "value": "United States",
+        "source": "dashboard",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "address_line1": {
+        "value": "123, Main Street",
+        "source": "dashboard",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "address_line2": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "address_line3": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "city": {
+        "value": "Essex Fells",
+        "source": "dashboard",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "region2": {
+        "value": "NY",
+        "source": "dashboard",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "postal_code": {
+        "value": "123456",
+        "source": "dashboard",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "cover_letter": {
+        "value": "output/pdf/dummy-cover-letter.pdf",
+        "source": "user_files",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "site_link_1": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "site_link_2": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "do_you_require_visa_sponsorship": {
+        "value": "Yes",
+        "source": "dashboard",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "have_you_ever_worked_at_deloitte": {
+        "value": "No",
+        "source": "dashboard",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "do_you_have_any_relatives_currently_working_for_tradeweb": {
+        "value": "No",
+        "source": "dashboard",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "gb_standard_ora_ethnicity_standard": {
+        "value": "Chinese",
+        "source": "dashboard",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "gb_standard_ora_gender_standard": {
+        "value": "Male",
+        "source": "dashboard",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "i_agree_to_receive_updates_about_new_job_opportunities": {
+        "value": true,
+        "source": "dashboard",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "i_agree_to_receive_marketing_communications": {
+        "value": true,
+        "source": "dashboard",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "full_name": {
+        "value": "Sharan Srikar",
+        "source": "dashboard",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "if_yes_please_provide_their_name_and_your_relationship": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "supporting_links": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "another_link": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "education": {
+        "value": [
+          {
+            "content_item_id": "None"
+          }
+        ],
+        "source": "dashboard",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "experience": {
+        "value": [
+          {
+            "employer_name": "Xyz"
+          }
+        ],
+        "source": "dashboard",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "license": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      }
+    },
+    "fillResults": [
+      {
+        "fieldId": "last_name",
+        "status": "verified"
+      },
+      {
+        "fieldId": "first_name",
+        "status": "verified"
+      },
+      {
+        "fieldId": "title",
+        "status": "verified"
+      },
+      {
+        "fieldId": "phone_country_code",
+        "status": "verified"
+      },
+      {
+        "fieldId": "phone_number",
+        "status": "verified"
+      },
+      {
+        "fieldId": "country",
+        "status": "verified"
+      },
+      {
+        "fieldId": "address_line1",
+        "status": "verified"
+      },
+      {
+        "fieldId": "city",
+        "status": "verified"
+      },
+      {
+        "fieldId": "region2",
+        "status": "verified"
+      },
+      {
+        "fieldId": "postal_code",
+        "status": "failed",
+        "error": "Value did not persist for Postcode"
+      },
+      {
+        "fieldId": "do_you_require_visa_sponsorship",
+        "status": "verified"
+      },
+      {
+        "fieldId": "have_you_ever_worked_at_deloitte",
+        "status": "verified"
+      },
+      {
+        "fieldId": "do_you_have_any_relatives_currently_working_for_tradeweb",
+        "status": "verified"
+      },
+      {
+        "fieldId": "postal_code",
+        "status": "verified"
+      },
+      {
+        "fieldId": "education",
+        "status": "verified"
+      },
+      {
+        "fieldId": "experience",
+        "status": "verified"
+      },
+      {
+        "fieldId": "gb_standard_ora_ethnicity_standard",
+        "status": "verified"
+      },
+      {
+        "fieldId": "gb_standard_ora_gender_standard",
+        "status": "verified"
+      },
+      {
+        "fieldId": "i_agree_to_receive_updates_about_new_job_opportunities",
+        "status": "verified"
+      },
+      {
+        "fieldId": "i_agree_to_receive_marketing_communications",
+        "status": "verified"
+      },
+      {
+        "fieldId": "full_name",
+        "status": "verified"
+      }
+    ],
+    "updatedAt": "2026-11-03T15:26:21.118Z"
+  },
+  {
+    "applicationId": "app_508e18f15cee670d",
+    "userId": "scanner-user",
+    "jobId": "99124652",
+    "templateId": "tpl_a2cf0bfd51d8c6e9",
+    "canonicalUrl": "https://icfcjb.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/99124652",
+    "tenantHost": "icfcjb.fa.ocs.oraclecloud.com",
+    "tenantKey": "icfcjb",
+    "status": "needs_review",
+    "reviewStatus": "pending",
+    "values": {
+      "select_the_races_you_identify_with": {
+        "value": [
+          "Asian"
+        ],
+        "source": "question_bank",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "check_all_of_the_following_statements_that_apply_to_you": {
+        "value": [
+          "No statements apply to me"
+        ],
+        "source": "dashboard",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "last_name": {
+        "value": "Candidate",
+        "source": "question_bank",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "first_name": {
+        "value": "Test",
+        "source": "question_bank",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "title": {
+        "value": "Mr.",
+        "source": "question_bank",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "middle_names": {
+        "value": "chowdara",
+        "source": "question_bank",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "email": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "phone_country_code": {
+        "value": "+1",
+        "source": "question_bank",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "phone_number": {
+        "value": "1234567890",
+        "source": "question_bank",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "address_line1": {
+        "value": "123",
+        "source": "dashboard",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "address_line2": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "address_line3": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "city": {
+        "value": "Essex Fells",
+        "source": "question_bank",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "region2": {
+        "value": "NY",
+        "source": "question_bank",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "region1": {
+        "value": "essex",
+        "source": "dashboard",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "postal_code": {
+        "value": "12936",
+        "source": "dashboard",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "i_am_hispanic_or_latino": {
+        "value": false,
+        "source": "question_bank",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "us_standard_ora_gender_standard": {
+        "value": "Female",
+        "source": "question_bank",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "us_standard_ora_veteran_status_standard": {
+        "value": "I am not a protected Veteran",
+        "source": "question_bank",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "resume": {
+        "value": "output/pdf/dummy-resume.pdf",
+        "source": "user_files",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "cover_letter": {
+        "value": "output/pdf/dummy-cover-letter.pdf",
+        "source": "user_files",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "site_link_1": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "current_or_former_us_government_employees_within_the_last_12_months_before_receiving_any_reimburseme": {
+        "value": "No",
+        "source": "dashboard",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "were_you_previously_employed_directly_by_honeywell_honeywell_aerospace_or_a_subsidiary_of_either_com": {
+        "value": "No",
+        "source": "dashboard",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "are_you_related_to_or_in_a_relationship_with_anyone_who_works_at_honeywell_aerospace": {
+        "value": "No",
+        "source": "dashboard",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "within_the_past_12_months_or_audit_cycle_whichever_is_longer_did_you_provide_audit_or_review_service": {
+        "value": "No",
+        "source": "dashboard",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "are_you_currently_lawfully_authorized_to_work_in_the_u_s_for_any_employer_as_a_i_u_s_citizen_or_nati": {
+        "value": "No",
+        "source": "dashboard",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "will_you_now_or_in_the_future_require_visa_sponsorship_to_work_in_the_united_states": {
+        "value": "No",
+        "source": "dashboard",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "have_you_ever_participated_personally_and_substantially_on_behalf_of_the_u_s_government_in_a_federal": {
+        "value": "No",
+        "source": "dashboard",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "have_you_ever_been_suspended_or_debarred_from_receiving_u_s_government_contracts_or_proposed_for_sus": {
+        "value": "No",
+        "source": "dashboard",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "have_you_entered_into_any_restrictive_covenant_agreement_such_as_a_non_compete_no_solicitation_trade": {
+        "value": "No",
+        "source": "dashboard",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "i_agree_to_receive_updates_about_new_job_opportunities": {
+        "value": true,
+        "source": "question_bank",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "i_agree_to_receive_marketing_communications": {
+        "value": true,
+        "source": "question_bank",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "full_name": {
+        "value": "Candidate Test",
+        "source": "question_bank",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "please_identify_the_firm": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "please_identify_your_role": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "please_provide_your_last_date_of_service_on_the_engagement_month": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "please_provide_your_last_date_of_service_on_the_engagement_day": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "please_provide_your_last_date_of_service_on_the_engagement_year": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "please_enter_period_of_time_this_covers": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "experience": {
+        "value": [
+          {
+            "employer_name": "Xyz"
+          }
+        ],
+        "source": "question_bank",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "education": {
+        "value": [
+          {
+            "content_item_id": "Bachelor of Arts"
+          }
+        ],
+        "source": "dashboard",
+        "confidence": 1,
+        "reviewed": true
+      },
+      "supporting_links": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "more_skills": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "license": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "language": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      },
+      "another_link": {
+        "value": null,
+        "source": null,
+        "confidence": 0,
+        "reviewed": false
+      }
+    },
+    "fillResults": [
+      {
+        "fieldId": "select_the_races_you_identify_with",
+        "status": "verified"
+      },
+      {
+        "fieldId": "check_all_of_the_following_statements_that_apply_to_you",
+        "status": "verified"
+      },
+      {
+        "fieldId": "last_name",
+        "status": "verified"
+      },
+      {
+        "fieldId": "first_name",
+        "status": "verified"
+      },
+      {
+        "fieldId": "title",
+        "status": "verified"
+      },
+      {
+        "fieldId": "middle_names",
+        "status": "verified"
+      },
+      {
+        "fieldId": "phone_country_code",
+        "status": "verified"
+      },
+      {
+        "fieldId": "phone_number",
+        "status": "verified"
+      },
+      {
+        "fieldId": "address_line1",
+        "status": "verified"
+      },
+      {
+        "fieldId": "city",
+        "status": "verified"
+      },
+      {
+        "fieldId": "region2",
+        "status": "verified"
+      },
+      {
+        "fieldId": "region1",
+        "status": "verified"
+      },
+      {
+        "fieldId": "postal_code",
+        "status": "verified"
+      },
+      {
+        "fieldId": "i_am_hispanic_or_latino",
+        "status": "verified"
+      },
+      {
+        "fieldId": "us_standard_ora_gender_standard",
+        "status": "verified"
+      },
+      {
+        "fieldId": "us_standard_ora_veteran_status_standard",
+        "status": "verified"
+      },
+      {
+        "fieldId": "current_or_former_us_government_employees_within_the_last_12_months_before_receiving_any_reimburseme",
+        "status": "verified"
+      },
+      {
+        "fieldId": "were_you_previously_employed_directly_by_honeywell_honeywell_aerospace_or_a_subsidiary_of_either_com",
+        "status": "verified"
+      },
+      {
+        "fieldId": "are_you_related_to_or_in_a_relationship_with_anyone_who_works_at_honeywell_aerospace",
+        "status": "verified"
+      },
+      {
+        "fieldId": "within_the_past_12_months_or_audit_cycle_whichever_is_longer_did_you_provide_audit_or_review_service",
+        "status": "verified"
+      },
+      {
+        "fieldId": "are_you_currently_lawfully_authorized_to_work_in_the_u_s_for_any_employer_as_a_i_u_s_citizen_or_nati",
+        "status": "verified"
+      },
+      {
+        "fieldId": "will_you_now_or_in_the_future_require_visa_sponsorship_to_work_in_the_united_states",
+        "status": "verified"
+      },
+      {
+        "fieldId": "have_you_ever_participated_personally_and_substantially_on_behalf_of_the_u_s_government_in_a_federal",
+        "status": "verified"
+      },
+      {
+        "fieldId": "have_you_ever_been_suspended_or_debarred_from_receiving_u_s_government_contracts_or_proposed_for_sus",
+        "status": "verified"
+      },
+      {
+        "fieldId": "have_you_entered_into_any_restrictive_covenant_agreement_such_as_a_non_compete_no_solicitation_trade",
+        "status": "verified"
+      },
+      {
+        "fieldId": "i_agree_to_receive_updates_about_new_job_opportunities",
+        "status": "verified"
+      },
+      {
+        "fieldId": "full_name",
+        "status": "verified"
+      },
+      {
+        "fieldId": "experience",
+        "status": "verified"
+      },
+      {
+        "fieldId": "education",
+        "status": "verified"
+      }
+    ],
+    "updatedAt": "2026-11-03T16:10:06.607Z"
+  }
+]

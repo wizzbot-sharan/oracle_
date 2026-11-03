@@ -1,0 +1,113 @@
+{
+  "schemaVersion": "0.1.0",
+  "purpose": "Select the OTP email produced by a specific Oracle Recruiting Cloud login request without depending on one sender or one exact subject.",
+  "inputs": {
+    "candidateEmail": "required",
+    "requestedAtEpochMs": "required",
+    "tenantHost": "required",
+    "tenantKey": "derived from the first tenant host label, for example egup",
+    "companyDomains": "optional allowlist learned from job metadata"
+  },
+  "polling": {
+    "intervalMs": 3000,
+    "timeoutMs": 120000,
+    "inboxPageSize": 20,
+    "maximumMessageAgeBeforeRequestMs": 15000
+  },
+  "concurrency": {
+    "lockKey": "candidateEmail + tenantHost",
+    "rule": "Do not issue two simultaneous OTP requests for the same candidate and Oracle tenant because their messages may be indistinguishable."
+  },
+  "hardReject": [
+    "recipient does not contain candidateEmail",
+    "receivedTime is more than maximumMessageAgeBeforeRequestMs before requestedAtEpochMs",
+    "message body does not contain exactly one plausible six-digit code near OTP or verification language",
+    "messageId was already consumed by this application attempt"
+  ],
+  "scoring": [
+    {
+      "signal": "recipient exactly matches candidateEmail after HTML decoding and normalization",
+      "score": 35
+    },
+    {
+      "signal": "receivedTime is at or after requestedAtEpochMs",
+      "score": 30
+    },
+    {
+      "signal": "subject expresses verification intent",
+      "score": 20,
+      "patterns": [
+        "confirm your identity",
+        "verify your identity",
+        "verification code",
+        "verify your email",
+        "confirm your email",
+        "one-time passcode",
+        "one time passcode",
+        "one-time password",
+        "security code",
+        "access code"
+      ]
+    },
+    {
+      "signal": "body contains OTP or identity-verification wording near a six-digit number",
+      "score": 25,
+      "patterns": [
+        "one-time pass code",
+        "one-time passcode",
+        "one time passcode",
+        "verification code",
+        "security code",
+        "confirm your identity",
+        "verify your identity",
+        "code will expire"
+      ]
+    },
+    {
+      "signal": "sender belongs to a known Oracle family",
+      "score": 15,
+      "patterns": [
+        "*@oracle.com",
+        "*@*.oraclecloud.com",
+        "*@workflow.email.*.ocs.oraclecloud.com"
+      ]
+    },
+    {
+      "signal": "sender domain is in the job company's configured allowlist",
+      "score": 10
+    },
+    {
+      "signal": "HTML or text body contains an HTTPS URL whose host exactly matches tenantHost",
+      "score": 25
+    },
+    {
+      "signal": "sender local part or body contains tenantKey as a distinct token",
+      "score": 5
+    }
+  ],
+  "selection": {
+    "minimumScore": 80,
+    "sort": [
+      "score descending",
+      "receivedTime descending"
+    ],
+    "ambiguityPolicy": "If the two highest candidates are within 10 points and contain different codes, keep polling briefly and then fail safely rather than guessing."
+  },
+  "codeExtraction": {
+    "preferredPattern": "verification wording followed within 120 characters by a standalone six-digit number",
+    "fallbackPattern": "a single standalone six-digit number in the normalized text body",
+    "excludedContexts": [
+      "copyright years",
+      "postal addresses",
+      "phone numbers",
+      "message IDs",
+      "URLs"
+    ]
+  },
+  "security": {
+    "storeOtp": false,
+    "logOtp": false,
+    "markMessageConsumedPerAttempt": true,
+    "mailReaderAccess": "server-side only"
+  }
+}

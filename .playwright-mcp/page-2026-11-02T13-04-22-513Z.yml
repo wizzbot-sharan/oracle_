@@ -1,0 +1,25 @@
+- generic [active] [ref=e1]:
+  - generic [aria-hidden] [ref=e2]:
+    - generic [ref=e3]: .
+    - generic [ref=e4]: ..
+    - generic [ref=e5]: .
+  - generic [ref=e7]:
+    - link "Skip to main content." [ref=e457] [cursor=pointer]:
+      - /url: "#main"
+    - generic:
+      - alert
+    - generic [ref=e459]:
+      - main [ref=e460]:
+        - heading "Job application form" [level=1] [ref=e461]
+        - generic [ref=e462]:
+          - generic [ref=e466]:
+            - text: Fields marked with an asterisk
+            - generic [ref=e467]:
+              - text: (
+              - generic [aria-hidden] [ref=e468]: "*"
+              - text: )
+            - text: are required.
+          - generic [ref=e469]:
+            - generic:
+              - alert
+      - alert [ref=e471]

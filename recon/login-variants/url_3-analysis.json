@@ -1,0 +1,144 @@
+{
+  "headings": [
+    {
+      "tag": "h1",
+      "text": "Are You Still With Us?"
+    },
+    {
+      "tag": "h1",
+      "text": "Work Summary"
+    },
+    {
+      "tag": "h1",
+      "text": "Job application form"
+    },
+    {
+      "tag": "h1",
+      "text": "Authentication screen. You don't need to have an account"
+    },
+    {
+      "tag": "h1",
+      "text": "Terms and Conditions"
+    }
+  ],
+  "inputs": [
+    {
+      "tag": "textarea",
+      "type": "textarea",
+      "role": null,
+      "name": null,
+      "id": "oda-work-summary-text-area|input",
+      "placeholder": "",
+      "ariaLabel": null,
+      "value": "",
+      "required": true,
+      "visible": false,
+      "parentText": ""
+    },
+    {
+      "tag": "input",
+      "type": "email",
+      "role": null,
+      "name": "primary-email",
+      "id": "primary-email-1",
+      "placeholder": null,
+      "ariaLabel": null,
+      "value": "",
+      "checked": false,
+      "required": true,
+      "visible": true,
+      "parentText": ""
+    },
+    {
+      "tag": "input",
+      "type": "input",
+      "role": null,
+      "name": "honey-pot",
+      "id": "honey-pot-0",
+      "placeholder": null,
+      "ariaLabel": null,
+      "value": "",
+      "checked": false,
+      "required": false,
+      "visible": true,
+      "parentText": ""
+    },
+    {
+      "tag": "input",
+      "type": "checkbox",
+      "role": null,
+      "name": null,
+      "id": "legal-disclaimer-checkbox",
+      "placeholder": null,
+      "ariaLabel": null,
+      "value": "on",
+      "checked": false,
+      "required": true,
+      "visible": true,
+      "parentText": "I agree with the terms and conditions"
+    }
+  ],
+  "actionButtons": [
+    {
+      "tag": "a",
+      "role": null,
+      "text": "Skip to main content.",
+      "ariaLabel": "Skip to main content.",
+      "title": null,
+      "visible": true,
+      "id": "",
+      "class": "skip-navigation-link"
+    },
+    {
+      "tag": "button",
+      "role": "link",
+      "text": "",
+      "ariaLabel": "Back to Job Details",
+      "title": "Back to Job Details",
+      "visible": true,
+      "id": "",
+      "class": "app-header-icon-button app-header__close"
+    },
+    {
+      "tag": "button",
+      "role": null,
+      "text": "Do you want to communicate by phone instead?",
+      "ariaLabel": null,
+      "title": null,
+      "visible": true,
+      "id": "",
+      "class": "quick-apply-flow-verify-method__button"
+    },
+    {
+      "tag": "a",
+      "role": null,
+      "text": "terms and conditions",
+      "ariaLabel": null,
+      "title": null,
+      "visible": true,
+      "id": "legal-disclaimer-link",
+      "class": "agreements-label-text-link"
+    },
+    {
+      "tag": "button",
+      "role": null,
+      "text": "Cancel",
+      "ariaLabel": "Cancel",
+      "title": "Cancel",
+      "visible": true,
+      "id": "",
+      "class": "button apply-flow-pagination__button text-color-secondary focused-tooltip"
+    },
+    {
+      "tag": "button",
+      "role": null,
+      "text": "Next",
+      "ariaLabel": "Next",
+      "title": "Next",
+      "visible": true,
+      "id": "",
+      "class": "button apply-flow-pagination__button theme-color-1 focused-tooltip"
+    }
+  ],
+  "currentUrl": "https://ibcjqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_2/job/2624/apply/email"
+}
