@@ -3,6 +3,13 @@ import path from 'node:path';
 import { chromium } from 'playwright';
 import { WorkflowError, invariant } from '../../shared/errors.js';
 import { delay, humanPause, randomBetween } from '../../shared/time.js';
+import {
+  coerceToBoolean,
+  coerceToRadio,
+  coerceToMultiSelect,
+  coerceToString,
+  coerceValueForField
+} from '../../domain/coercion.js';
 
 const SUBMIT_PATTERN = /^(submit|submit application)$/i;
 
@@ -66,12 +73,13 @@ async function controlDescriptor(locator) {
 }
 
 export class OracleRecruitingAdapter {
-  constructor({ headless, humanDelay, actionGap, postNextWait, pageSettle, runtimeDir }) {
+  constructor({ headless, humanDelay, actionGap, postNextWait, pageSettle, initialWait, runtimeDir }) {
     this.headless = headless;
     this.humanDelay = humanDelay ?? { min: 50, max: 200 };
     this.actionGap = actionGap ?? { min: 1000, max: 2000 };
     this.postNextWait = postNextWait ?? { min: 3000, max: 5000 };
     this.pageSettle = pageSettle;
+    this.initialWait = initialWait ?? 10_000;
     this.runtimeDir = runtimeDir;
   }
 
@@ -89,13 +97,52 @@ export class OracleRecruitingAdapter {
     await session?.browser?.close().catch(() => { });
   }
 
+  async #isAlreadyApplied(page) {
+    try {
+      if (/job-applied|already-applied|alreadySubmitted/i.test(page.url())) {
+        return true;
+      }
+
+      const appliedTextLocator = page.locator([
+        'text=/applied to this job/i',
+        'text=/already applied/i',
+        'text=/you have already applied/i',
+        'text=/already submitted/i',
+        'text=/application has already been submitted/i',
+        'text=/you already applied/i',
+        'text=/already submitted an application/i'
+      ].join(', ')).first();
+
+      if (await visible(appliedTextLocator)) {
+        return true;
+      }
+
+      const alerts = page.locator('[role="alert"], .oj-message-detail, .alert-container, .quick-apply-flow-error');
+      const alertCount = await alerts.count().catch(() => 0);
+      for (let i = 0; i < alertCount; i++) {
+        const alertText = (await alerts.nth(i).innerText().catch(() => '')) || '';
+        if (/applied to this job|already applied|already submitted/i.test(alertText)) {
+          return true;
+        }
+      }
+
+      const appliedButton = page.locator('button:has-text("Applied"):visible, [aria-label*="Already applied" i]:visible, [data-qa*="applied"]:visible').first();
+      if (await visible(appliedButton)) {
+        return true;
+      }
+    } catch {
+      // Ignore inspection errors and fall through
+    }
+    return false;
+  }
+
   async authenticate({ session, job, email, mailReader, companyDomains = [] }) {
     const { page } = session;
     console.error(`[Phase 1] Navigating to: ${job.canonicalUrl}`);
     await page.goto(job.canonicalUrl, { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('domcontentloaded').catch(() => { });
-    console.error(`[Phase 1] Waiting 10 seconds for initial page to load...`);
-    await delay(10_000);
+    console.error(`[Phase 1] Waiting for initial page to load...`);
+    await delay(this.initialWait);
     await humanPause(this.actionGap);
 
     const applyButton = page.locator([
@@ -105,7 +152,17 @@ export class OracleRecruitingAdapter {
       'button:has-text("Apply"):not(#filter-apply-handler):visible',
       'a[role="button"]:has-text("Apply"):visible'
     ].join(', ')).first();
-    await applyButton.waitFor({ state: 'visible', timeout: 15_000 });
+
+    const hasApplyButton = await applyButton.waitFor({ state: 'visible', timeout: 15_000 }).then(() => true).catch(() => false);
+    if (!hasApplyButton) {
+      if (await this.#isAlreadyApplied(page)) {
+        console.error(`[Phase 1] ⚠ Job already applied (indicated on job page). Skipping.`);
+        return { status: 'skipped', reason: 'ALREADY_APPLIED', message: 'Candidate has already applied to this job' };
+      }
+      console.error(`[Phase 1] ⚠ No Apply button found after wait. Skipping.`);
+      return { status: 'skipped', reason: 'NO_APPLY_BUTTON', message: 'No Apply button found on job page' };
+    }
+
     console.error(`[Phase 1] Scrolling to Apply Now button...`);
     await applyButton.scrollIntoViewIfNeeded().catch(() => { });
     await humanPause(this.actionGap);
@@ -285,9 +342,32 @@ export class OracleRecruitingAdapter {
       await humanPause(this.postNextWait);
     }
 
-    await page.waitForURL(/\/apply\/(section|flow|application)/, { timeout: 30_000 });
-    await delay(10_000);
-    return { url: page.url(), authenticatedAt: new Date().toISOString() };
+    console.error(`[Phase 1] Waiting for application flow or already applied notice...`);
+    const alreadyAppliedIndicator = page.locator([
+      'text=/applied to this job/i',
+      'text=/already applied/i',
+      'text=/you have already applied/i',
+      'text=/already submitted/i',
+      '[role="alert"]',
+      '.alert-container',
+      '.quick-apply-flow-error'
+    ].join(', ')).first();
+
+    await Promise.race([
+      page.waitForURL(/\/apply\/(section|flow|application)/, { timeout: 30_000 }),
+      alreadyAppliedIndicator.waitFor({ state: 'visible', timeout: 30_000 })
+    ]).catch(() => { });
+
+    console.error(`[Phase 1] Waiting for page to settle and checking application state...`);
+    await delay(this.initialWait);
+
+    if (await this.#isAlreadyApplied(page)) {
+      console.error(`[Phase 1] ⚠ 'Already applied' message detected after login. Skipping.`);
+      return { status: 'skipped', reason: 'ALREADY_APPLIED', message: 'Candidate has already applied to this job', url: page.url() };
+    }
+
+    await page.waitForURL(/\/apply\/(section|flow|application)/, { timeout: 5_000 }).catch(() => { });
+    return { status: 'authenticated', url: page.url(), authenticatedAt: new Date().toISOString() };
   }
 
   async #fillOtp(page, code) {
@@ -1084,7 +1164,19 @@ export class OracleRecruitingAdapter {
     if (field.type === 'radio') {
       const group = page.getByRole('radiogroup', { name: field.label }).first();
       await this.#smoothScrollIntoView(page, group);
-      const optionRadio = group.getByRole('radio', { name: String(answer), exact: true });
+
+      let availableOptions = field.options ?? [];
+      if (!availableOptions.length && (await visible(group))) {
+        const optionEls = group.locator('label, button[role="radio"], .cx-select-pill-section');
+        if (typeof optionEls.evaluateAll === 'function') {
+          availableOptions = await optionEls.evaluateAll(elements =>
+            elements.map(el => (el.textContent || '').replace(/\s+/g, ' ').trim()).filter(Boolean)
+          ).catch(() => []);
+        }
+      }
+
+      const targetValue = coerceToRadio(answer, availableOptions);
+      const optionRadio = group.getByRole('radio', { name: targetValue, exact: true });
       const optionId = await optionRadio.getAttribute('id').catch(() => null);
       if (optionId) {
         const optionLabel = page.locator(`label[for="${optionId}"]:visible, .apply-flow-input-radio[for="${optionId}"]:visible`).first();
@@ -1094,13 +1186,13 @@ export class OracleRecruitingAdapter {
           await optionRadio.click({ force: true }).catch(() => {});
         }
       } else {
-        const optionLabel = group.locator(`label:has-text("${String(answer)}"):visible, .apply-flow-input-radio:has-text("${String(answer)}"):visible`).first();
+        const optionLabel = group.locator(`label:has-text("${targetValue}"):visible, .apply-flow-input-radio:has-text("${targetValue}"):visible`).first();
         if (await visible(optionLabel)) {
           await optionLabel.click();
         } else if (await visible(optionRadio)) {
           await optionRadio.click({ force: true }).catch(() => {});
         } else {
-          const pillRadio = group.locator(`button[role="radio"]:has-text("${String(answer)}"), button.cx-select-pill-section:has-text("${String(answer)}")`).first();
+          const pillRadio = group.locator(`button[role="radio"]:has-text("${targetValue}"), button.cx-select-pill-section:has-text("${targetValue}")`).first();
           if (await visible(pillRadio)) {
             await pillRadio.click().catch(() => {});
           } else {
@@ -1112,7 +1204,7 @@ export class OracleRecruitingAdapter {
       return;
     }
     if (field.type === 'multi-checkbox') {
-      const desired = Array.isArray(answer) ? answer : (answer ? [answer] : []);
+      const desired = coerceToMultiSelect(answer, field.options);
       const row = page.locator(`.input-row:has-text("${field.label}"), [role="group"]:has-text("${field.label}"), .form-field:has-text("${field.label}")`).first();
       await this.#smoothScrollIntoView(page, row);
 
@@ -1162,12 +1254,13 @@ export class OracleRecruitingAdapter {
       return;
     }
     if (field.type === 'checkbox') {
+      const desired = coerceToBoolean(answer);
       const checkbox = field.sourceId
         ? page.locator(`[id="${field.sourceId.replaceAll('"', '\\"')}"]`).first()
         : page.locator(`label:has-text("${field.label}") input[type="checkbox"], .input-row:has-text("${field.label}") input[type="checkbox"]`).first();
       await this.#smoothScrollIntoView(page, checkbox);
       const isChecked = await checkbox.isChecked().catch(() => false);
-      if (Boolean(answer) !== isChecked) {
+      if (desired !== isChecked) {
         const customButton = field.sourceId
           ? page.locator(`label[for="${field.sourceId}"] .apply-flow-input-checkbox__button:visible, label[for="${field.sourceId}"]:visible, label:has-text("${field.label}") .apply-flow-input-checkbox__button:visible`).first()
           : page.locator(`label.apply-flow-input-checkbox:has-text("${field.label}") .apply-flow-input-checkbox__button:visible, label.apply-flow-input-checkbox:has-text("${field.label}"):visible, .input-row:has-text("${field.label}") .apply-flow-input-checkbox__button:visible, label:has-text("${field.label}"):visible`).first();
@@ -1209,24 +1302,26 @@ export class OracleRecruitingAdapter {
     const isLiveCombobox = field.type === 'combobox' || liveRole === 'combobox' ||
       (typeof locator.evaluate === 'function' ? await locator.evaluate(el => el.classList?.contains('cx-select-input') || el.closest('.cx-select-container') !== null || el.getAttribute('aria-haspopup') === 'grid').catch(() => false) : false);
 
+    const effectiveAnswer = coerceToString(answer, field.options);
+
     if (isLiveCombobox) {
-      await this.#fillCombobox(page, locator, field, answer, context);
+      await this.#fillCombobox(page, locator, field, effectiveAnswer, context);
       return;
     }
 
-    await humanType(locator, answer, this.humanDelay);
+    await humanType(locator, effectiveAnswer, this.humanDelay);
     await humanPause(this.actionGap);
     const actualVal = await locator.inputValue();
     if (field.type === 'tel' || field.id === 'phone_number') {
       const actualDigits = actualVal.replace(/\D/g, '');
-      const expectedDigits = String(answer).replace(/\D/g, '');
+      const expectedDigits = String(effectiveAnswer).replace(/\D/g, '');
       invariant(
         Boolean(actualDigits && expectedDigits && (actualDigits.endsWith(expectedDigits) || expectedDigits.endsWith(actualDigits))),
         'FIELD_VERIFICATION_FAILED',
         `Value did not persist for ${field.label} (expected digits "${expectedDigits}", got "${actualDigits}")`
       );
     } else {
-      invariant(actualVal === String(answer), 'FIELD_VERIFICATION_FAILED', `Value did not persist for ${field.label}`);
+      invariant(actualVal === String(effectiveAnswer), 'FIELD_VERIFICATION_FAILED', `Value did not persist for ${field.label}`);
     }
   }
 

@@ -47,6 +47,16 @@ async function main() {
       email
     });
     try {
+      if (result?.status === 'skipped') {
+        return {
+          success: false,
+          skipped: true,
+          reason: result.reason,
+          message: result.message,
+          jobId: job.jobId,
+          tenantHost: job.tenantHost
+        };
+      }
       return {
         success: true,
         jobId: job.jobId,
@@ -55,7 +65,7 @@ async function main() {
         authenticatedAt: result.authenticatedAt
       };
     } finally {
-      await workflow.oracle.closeSession(session);
+      if (session) await workflow.oracle.closeSession(session);
     }
   }
   if (command === 'scan') {
@@ -92,8 +102,18 @@ async function main() {
     }
 
     console.error(`Starting scan for job ${job.jobId} (${job.tenantHost}) using email: ${email}`);
-    const { session } = await workflow.phase1.authenticate({ applicationId: `scan-${job.jobId}`, job, email });
+    const { session, result } = await workflow.phase1.authenticate({ applicationId: `scan-${job.jobId}`, job, email });
     try {
+      if (result?.status === 'skipped') {
+        console.error(`[Phase 1] Job ${job.jobId} skipped: ${result.reason} - ${result.message}`);
+        return {
+          skipped: true,
+          reason: result.reason,
+          message: result.message,
+          jobId: job.jobId,
+          tenantHost: job.tenantHost
+        };
+      }
       const template = await workflow.phase2.scan({ session, job });
       await workflow.phase3.createOrResolveApplications();
       return {
@@ -107,7 +127,7 @@ async function main() {
         artifactDir: template.scan.artifactDir
       };
     } finally {
-      await workflow.oracle.closeSession(session);
+      if (session) await workflow.oracle.closeSession(session);
     }
   }
   if (command === 'prepare') return workflow.phase4.prepare(args[0]);

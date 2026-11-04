@@ -37,7 +37,19 @@ export class Phase4ApplyReviewSubmit {
       tenantHost: application.tenantHost,
       tenantKey: application.tenantKey
     };
-    const { session } = await this.phase1.authenticate({ applicationId, job, email: user.email });
+    const { session, result } = await this.phase1.authenticate({ applicationId, job, email: user.email });
+    if (result?.status === 'skipped') {
+      if (session) await this.oracle.closeSession(session);
+      const updated = await this.#patch(applicationId, {
+        status: result.reason === 'ALREADY_APPLIED' ? 'already_applied' : 'skipped',
+        reviewStatus: 'skipped',
+        skipReason: result.reason,
+        skipMessage: result.message,
+        updatedAt: nowIso()
+      });
+      await this.runLog.append('phase4.skipped', { applicationId, reason: result.reason });
+      return updated;
+    }
     this.sessions.set(applicationId, session);
     const fillTemplate = { ...template, fields: flattenTemplateFields(template).filter(field => !field.repeatableGroupId) };
     const fillResults = await this.oracle.fillApplication({

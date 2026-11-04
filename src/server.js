@@ -51,6 +51,15 @@ app.post('/api/auth', async (request, response) => {
     email
   });
   try {
+    if (result?.status === 'skipped') {
+      return response.json({
+        success: false,
+        skipped: true,
+        reason: result.reason,
+        message: result.message,
+        jobId: job.jobId
+      });
+    }
     response.json({
       success: true,
       jobId: job.jobId,
@@ -59,7 +68,7 @@ app.post('/api/auth', async (request, response) => {
       authenticatedAt: result.authenticatedAt
     });
   } finally {
-    await workflow.oracle.closeSession(session);
+    if (session) await workflow.oracle.closeSession(session);
   }
 });
 
@@ -69,13 +78,21 @@ app.post('/api/jobs/:jobId/scan', async (request, response) => {
   if (!job) return response.status(404).json({ error: 'Job not found' });
   const email = request.body.email ?? config.testEmail;
   if (!email) return response.status(400).json({ error: 'Scanner email is required' });
-  const { session } = await workflow.phase1.authenticate({ applicationId: `scan-${job.jobId}`, job, email });
+  const { session, result } = await workflow.phase1.authenticate({ applicationId: `scan-${job.jobId}`, job, email });
   try {
+    if (result?.status === 'skipped') {
+      return response.json({
+        skipped: true,
+        reason: result.reason,
+        message: result.message,
+        jobId: job.jobId
+      });
+    }
     const template = await workflow.phase2.scan({ session, job });
     await workflow.phase3.createOrResolveApplications();
     response.json(template);
   } finally {
-    await workflow.oracle.closeSession(session);
+    if (session) await workflow.oracle.closeSession(session);
   }
 });
 

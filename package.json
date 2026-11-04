@@ -14,7 +14,8 @@
     "auth": "node src/cli.js auth",
     "scan": "node src/cli.js scan",
     "resolve": "node src/cli.js resolve",
-    "prepare:application": "node src/cli.js prepare"
+    "prepare:application": "node src/cli.js prepare",
+    "fetch:clients": "node scripts/fetch_clients.mjs"
   },
   "dependencies": {
     "dotenv": "^17.2.3",

@@ -60,6 +60,17 @@ export class Phase1IngestAuth {
           companyDomains,
           mailReader: this.mailReader
         });
+        if (result.status === 'skipped') {
+          await this.oracle.closeSession(session);
+          await this.runLog.append('phase1.skipped', {
+            applicationId,
+            jobId: job.jobId,
+            tenantHost: job.tenantHost,
+            reason: result.reason,
+            message: result.message
+          });
+          return { session: null, result };
+        }
         await this.runLog.append('phase1.authenticated', { applicationId, jobId: job.jobId, tenantHost: job.tenantHost });
         return { session, result };
       } catch (error) {

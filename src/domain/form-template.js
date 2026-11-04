@@ -57,9 +57,18 @@ export function isFieldVisible(field, values) {
   if (condition.all) return condition.all.every(item => isFieldVisible({ visibleWhen: item }, values));
   const parentVal = values[condition.field]?.value;
   if (condition.includes !== undefined) {
-    return Array.isArray(parentVal) ? parentVal.includes(condition.includes) : parentVal === condition.includes;
+    if (Array.isArray(parentVal)) return parentVal.includes(condition.includes);
+    if (parentVal === condition.includes) return true;
+    if (condition.includes === 'Yes' && parentVal === true) return true;
+    if (condition.includes === 'No' && parentVal === false) return true;
+    return false;
   }
-  return parentVal === condition.equals;
+  if (parentVal === condition.equals) return true;
+  if (condition.equals === 'Yes' && parentVal === true) return true;
+  if (condition.equals === 'No' && parentVal === false) return true;
+  if (condition.equals === true && /^(yes|true)$/i.test(String(parentVal))) return true;
+  if (condition.equals === false && /^(no|false)$/i.test(String(parentVal))) return true;
+  return false;
 }
 
 export function valueType(value) {

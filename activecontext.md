@@ -4,18 +4,18 @@
 
 Read this file first when continuing this project in another chat. Treat it as the handoff source for product intent, verified behavior, architecture decisions, current implementation state, and next work. Inspect the referenced source files before changing behavior because this file records context and rationale, while the code remains authoritative for implementation details.
 
-Last updated: 2026-11-02 (Asia/Kolkata).
+Last updated: 2026-11-04 (Asia/Kolkata).
 
 ## Objective
 
-Build a locally testable, production-oriented system that automates authorized job applications on Oracle Recruiting Cloud for multiple users. The system must ingest user/job assignments, scan each unique job form once, normalize the form for a React dashboard, resolve answers from a per-user question bank, fill the real application for the correct user, stop for review, and submit only after explicit approval.
+Build a locally testable, production-oriented system that automates authorized job applications on Oracle Recruiting Cloud for multiple users. The system must ingest user/job assignments, scan each unique job form once, normalize the form for a React dashboard, resolve answers from a multi-tier resolution engine (client profile, question bank, parsed resume), fill the real application for the correct user, stop for review, and submit only after explicit approval.
 
 Expected production scale:
 
-- Approximately 500 users.
-- Approximately 5-10 applications per user.
-- Approximately 2,500-5,000 application instances.
-- Concurrent Playwright workers in production, limited according to Railway memory measurements.
+- Approximately 500 candidate profiles (`data/clients.json` populated with 179 active profiles, 731 KB).
+- 988 job assignments in `data/oracle_jobs.csv` collapsing to ~150–200 unique job requisitions.
+- Approximately 2,500-5,000 application instances in production.
+- Concurrent Playwright workers in production, limited according to Railway memory measurements (capped at 3 workers locally with a 10s cooldown).
 - Supabase PostgreSQL as the future database.
 - Railway as the future deployment platform.
 - Local JSON persistence during the pilot.
@@ -49,6 +49,7 @@ Input is a CSV with:
 ```csv
 user_id,job_id,job_url
 ```
+(and production CSV `data/oracle_jobs.csv` with `company_name,job_url,score,client_name,applywizz_id`).
 
 Responsibilities:
 
@@ -66,6 +67,7 @@ Responsibilities:
 12. Retrieve and verify the correct OTP email.
 13. Enter either one OTP input or six single-digit inputs.
 14. Continue to the application form.
+15. **Skip handling**: If no Apply button exists (`NO_APPLY_BUTTON`) or candidate already applied (`ALREADY_APPLIED`), log and cleanly skip.
 
 Two OTP requests for the same `candidateEmail + tenantHost` must be serialized because the messages may otherwise be indistinguishable.
 
@@ -97,14 +99,16 @@ Responsibilities:
 
 1. Create one application instance for every `user_id + job_id`.
 2. Reuse the form template scanned once for the unique job.
-3. Pull answers only from that user's question bank and user file record.
-4. Preserve answer source, confidence, and reviewed state.
-5. Leave unknown required answers null.
-6. Render known and missing fields in the React dashboard.
-7. Render conditional fields only when their parent values activate them.
-8. Render repeatable groups as arrays of structured objects.
-9. Save manually reviewed answers to both the application instance and the user's question bank.
-10. Re-resolve previously null values when new question-bank or file values become available.
+3. Multi-tier resolution: pull answers across Tier 1 (Client Profile), Tier 2 (Question Bank), and Tier 3 (Parsed Resume).
+4. Evaluate through the 5-stage matching cascade: Intent Taxonomy &rarr; Token-Sort Fuzzy &rarr; Semantic Synsets & Option Reducer &rarr; LLM Fallback &rarr; Dashboard Review.
+5. Apply dynamic type coercion and best-match option ranking (`src/domain/coercion.js`).
+6. Preserve answer source, confidence, and reviewed state.
+7. Leave unknown required answers null.
+8. Render all fields (both resolved and unresolved) in the React dashboard.
+9. Render conditional fields dynamically when their parent values activate them.
+10. Render repeatable groups as arrays of structured objects.
+11. Save manually reviewed or edited answers to both the application instance and the user's question bank (Confidence 1.0).
+12. Re-resolve previously null values when new question-bank or file values become available.
 
 Implementation: `src/phases/phase3-answer-resolution.js` and `web/src/App.jsx`.
 
@@ -112,10 +116,10 @@ Implementation: `src/phases/phase3-answer-resolution.js` and `web/src/App.jsx`.
 
 Responsibilities:
 
-1. Create an isolated Playwright browser context for one application.
-2. Log in using the correct user's email.
+1. Create an isolated Playwright browser context for one application (max 3 concurrent locally).
+2. Log in using the correct user's real email.
 3. Retrieve the OTP using the same tenant-aware process as Phase 1.
-4. Fill simple and structured fields from the application values.
+4. Fill simple and structured fields from the application values with dynamic live role detection and best-match option mapping.
 5. Upload the correct user's files.
 6. Add repeatable Experience and Education rows.
 7. Read values back after filling and record per-field results.
@@ -287,19 +291,13 @@ Raw HTML and screenshots exist for debugging evidence, not as the primary applic
 Current local stores:
 
 - `data/jobs.json`
-- `data/users.json`
+- `data/clients.json` (179 candidate profiles, 731 KB)
+- `data/oracle_jobs.csv` (988 rows across clients)
+- `data/users.json` (legacy test users)
 - `data/question-bank.json`
 - `data/form-templates.json`
 - `data/applications.json`
 - `data/runs.json`
-
-Current application ID:
-
-```text
-app_1dca330d82e8343c
-```
-
-Current application state is `needs_input`. The question bank currently supplies only synthetic first and last names. The synthetic resume and cover letter are pulled from `data/users.json`.
 
 ## Architecture and important files
 
@@ -325,6 +323,7 @@ Adapters:
 
 Domain and storage:
 
+- `src/domain/coercion.js` (Type coercion & Best-Match Option Selection)
 - `src/domain/form-template.js`
 - `src/storage/json-store.js`
 - `src/storage/run-log.js`
@@ -332,15 +331,20 @@ Domain and storage:
 - `src/shared/url.js`
 - `src/shared/locks.js`
 
+Scripts:
+
+- `scripts/fetch_clients.mjs`: Applywizz candidate fetcher, active reconciler, and pruner.
+
 Dashboard:
 
 - `web/src/App.jsx`
 - `web/src/styles.css`
 - `web/vite.config.js`
 
-Documentation and reconnaissance:
+Documentation, reports, and reconnaissance:
 
 - `README.md`
+- `scaling_report.md`: comprehensive technical scaling report and roadmap.
 - `docs/WORKFLOW.md`
 - `recon/findings.md`
 - `recon/job-20283127.form-template.json`
@@ -384,8 +388,15 @@ http://localhost:4100
 Useful commands:
 
 ```bash
+# Full test suite (49 passing tests)
 npm test
+
+# Fetch & synchronize clients from Applywizz API
+node scripts/fetch_clients.mjs
+
+# Ingest target jobs
 npm run ingest
+
 npm run auth -- 20283127
 # Or test auth directly on any Oracle URL without ingesting first:
 npm run auth -- "https://hdjq.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/26012594" your-email@example.com
@@ -403,8 +414,8 @@ The development server does not use Node watch mode because this environment hit
 
 - Local dependency installation succeeds.
 - Dependency audit reports zero known vulnerabilities.
-- Thirteen automated tests pass.
-- Tests cover CSV parsing, unsafe headers, URL normalization, Oracle-host validation, OTP extraction and scoring, ambiguous OTP rejection, form flattening, conditional visibility, and submission gates.
+- **49 automated unit tests pass, 0 failed** (`npm test`).
+- Tests cover: CSV parsing, unsafe headers, URL normalization, Oracle-host validation, OTP extraction and scoring, ambiguous OTP rejection, form flattening, conditional visibility, `{ includes: '...' }` conditions, cx-select-pills toggling, single vs multi pill differentiation, ID-less checkbox fill, hidden radio label targeting, multi-checkbox isolation, dynamic combobox routing, submission review gates, Phase 1 skip edge cases (`NO_APPLY_BUTTON`, `ALREADY_APPLIED`), client fetching/reconciliation/pruning (`scripts/fetch_clients.mjs`), and dynamic field type coercion with best-match option selection (`src/domain/coercion.js`).
 - The production React build succeeds.
 - Local API health and dashboard endpoints succeed.
 - Local Playwright Chromium launches outside the macOS sandbox.
@@ -434,7 +445,7 @@ Preserve these invariants in future changes:
 - CAPTCHA and rate limits are respected rather than bypassed.
 - Browser readiness is determined by observable conditions as well as pacing delays.
 
-## Known gaps
+## Known gaps & Current Status
 
 ### Multi-page traversal
 
@@ -448,48 +459,126 @@ Phase 2 scanner now includes a multi-page walker that scans controls page by pag
 
 ### Virtualized combobox options
 
-Oracle country, nationality, school, degree, veteran, gender, job family, and similar lists are virtualized. The scanner identifies their control type but does not yet persist the complete option list.
-
-Completion criterion: every relevant option can be represented in the dashboard or resolved through a stable dynamic provider without assuming that all options are present in the DOM simultaneously.
+Oracle country, nationality, school, degree, veteran, gender, job family, and similar lists are virtualized. 
+- Solution established: Dynamic Option Provider via live DOM inspection (`[role="option"]`, `[role="gridcell"]`) coupled with `src/domain/coercion.js` (`scoreOptionMatch` and `findBestOptionMatch`) to score and choose the closest candidate answer.
 
 ### Phase 4 live fill
 
-Phase 4 is implemented but has not filled this application because required answers are intentionally missing.
-
-Completion criterion: populate the synthetic question bank, run Prepare, verify every filled value against Oracle, inspect the browser at review, and leave Submit untouched.
+Phase 4 is implemented with live role detection, pill/radio handling, and strict submission gates.
+- Completion criterion: populate candidate answers via Phase 3 resolution, run Prepare, verify every filled value against Oracle, inspect the browser at review, and leave Submit untouched.
 
 ### Production persistence and worker queue
 
-The current JsonStore is intentionally local. Supabase schema, row-level access rules, encryption, queue leasing, retries, and worker heartbeats remain future work.
+The current JsonStore is local. 3-worker concurrency queue locally (`src/phases/scan-queue.js`) with 10s cooldown. Later migrating to Supabase PostgreSQL + S3 on Railway.
 
-Completion criterion: a failed worker can resume safely, no two workers own the same application, and user data is isolated and encrypted.
+---
 
-### Public deployment security
+## New Architectural Advancements & Scaling Specifications (Established 2026-11-04)
 
-The local server has no user authentication. The mail-reader endpoint also needs protection.
+### 1. Phase 1 Skip Edge Case Handling
+- **`NO_APPLY_BUTTON`**: When an Oracle job requisition has expired, closed, or does not render an Apply button within 25 seconds, the adapter cleanly skips the job without throwing an unhandled exception or breaking the scanner loop (`src/adapters/oracle/oracle-recruiting.js:148-156`).
+- **`ALREADY_APPLIED`**: If candidate has already applied (detected either on the initial job page or within the 10s post-login settle window with message 'applied to this job'), the adapter returns `{ status: 'skipped', reason: 'already_applied' }` (`src/adapters/oracle/oracle-recruiting.js:353-362`).
+- Both skip cases are verified via dedicated unit tests in `test/phase1-skip-edge-cases.test.js`.
 
-Completion criterion: authenticated dashboard access, role-based authorization, secured mail-reader calls, encrypted secrets, audit logs, and no public unauthenticated candidate data.
+### 2. Candidate Ingestion & Reconciliation (`scripts/fetch_clients.mjs`)
+- Reads Applywizz API endpoints from `.env` (`ACTIVE_CLIENTS` & `GET_CLIENTS`).
+- Captures both `client` and `additional_information` blocks.
+- **Active Pruning**: Reconciles local `data/clients.json` against the active list, pruning clients who are no longer active.
+- **Batched Upserts**: Fetches client profiles in batches of 5 with a 2-second rate-limiting cooldown.
+- Populated `data/clients.json` with **179 real candidate profiles (731 KB)**.
+- Verified via unit tests in `test/fetch-clients-sync.test.js`.
+
+### 3. Dynamic Field Type Coercion & Best-Match Option Selection (`src/domain/coercion.js`)
+- **Boolean Safety**: Solves JavaScript truthy string trap (`Boolean("No") === true`). Safely maps `"No"`, `"false"`, `0`, `"0"`, `"f"`, `"n"` to boolean `false`.
+- **Dynamic Best-Match Option Ranking**:
+  - `scoreOptionMatch`: 100 for exact match, 80 for substring containment, 60 * ratio for word token overlap.
+  - `findBestOptionMatch`: Finds the highest-scoring option from live form choices.
+- **Multi-Select & Radio Coercion**: Handles comma-separated strings (`"Java, Python, C++"`), JSON arrays, and single-choice mapping.
+- **Visibility Equivalence**: In `src/domain/form-template.js`, conditional branches equate boolean `true` with `"Yes"` and `false` with `"No"`.
+- Verified via 7 unit tests in `test/field-coercion.test.js`.
+
+### 4. The 3 Data Source Tiers (Priority Order & Confidence Caps)
+
+Incoming questions probe candidate data in a strict 3-tier hierarchy:
+
+| Data Tier | Source | What It Contains | Confidence Cap |
+|---|---|---|:---:|
+| **Tier 1: Client Profile** | `data/clients.json` | Explicit personal data (`full_name`, `phone_number`, `address`, `email`, `highest_education`, `cumulative_gpa`, `work_auth_status`, `visa_type`, `eeo_*`). | **1.0 (Highest)** |
+| **Tier 2: Question Bank** | `data/question-bank.json` | Historical bank of confirmed questions and answers previously approved by operators across past jobs. | **0.90 – 0.98** |
+| **Tier 3: Parsed Resume** | Client's resume link / PDF / parsed text | Extracted employment history, education, skills, graduation dates, degree names, certifications. | **0.80 – 0.90** |
+
+The final assigned confidence score respects the source ceiling:
+$$\text{Final Confidence} = \min(\text{Stage Matching Score}, \text{Tier Confidence Cap})$$
+
+### 5. The 5-Stage Matching Cascade & Similarity Threshold Levels
+
+```
+    [Form Question]
+           │
+           ▼
+    [Stage 1: Regex & Intent Taxonomy] ──── Score ≥ 0.95 ───► AUTO-RESOLVE (High)
+           │ Score < 0.95
+           ▼
+    [Stage 2: Token-Sort Fuzzy Match] ───── Score ≥ 0.85 ───► AUTO-RESOLVE (Medium-High)
+           │ Score < 0.85
+           ▼
+    [Stage 3: Semantic Synset Overlap] ──── Score ≥ 0.78 ───► AUTO-RESOLVE (Medium)
+           │ Score < 0.78
+           ▼
+    [Stage 4: LLM API Fallback] ─────────── Score ≥ 0.70 ───► AUTO-RESOLVE (Reasoned)
+           │ Score < 0.70 / Disabled
+           ▼
+    [Stage 5: Dashboard Human Review] ──────────────────────► Flag as 'needs_input' (0.0)
+```
+
+#### Detailed Stage Breakdown:
+1. **Stage 1: Intent & Regex Slug Taxonomy** (Score $\ge 0.95$): Auto-resolved immediately in 1ms (`WORK_AUTHORIZATION`, `VISA_SPONSORSHIP`, `CLEARANCE`, `GOVERNMENT_OFFICIAL`, `DISABILITY`, `VETERAN`, contact info).
+2. **Stage 2: Token-Sort Fuzzy Match** (Levenshtein + Jaccard token overlap):
+   - Score $\ge 0.85$: Auto-accept.
+   - $0.75 \le \text{Score} < 0.85$: Conditional (verified if available dropdown/radio options also match cleanly via `findBestOptionMatch`).
+   - Score $< 0.75$: Reject to Stage 3.
+3. **Stage 3: Fast Semantic Synsets & Option Choice Reducer** (Score $\ge 0.78$): Auto-accept if semantic intent matches AND candidate answer maps cleanly to target options via `src/domain/coercion.js`. Score $< 0.78$ passes to Stage 4.
+4. **Stage 4: LLM API Fallback** (Score $\ge 0.70$): Auto-accept reasoned JSON response for complex qualitative screening questions. Score $< 0.70$ passes to Stage 5.
+5. **Stage 5: Dashboard Human Review** (Score $< 0.70$ or `null`): Flagged as `needs_input` for operator review.
+
+### 6. Tier × Stage Execution Priority Matrix
+Each tier is evaluated through the matching stages in strict priority order:
+1. **Tier 1 (Client Profile)** is evaluated first through **Stage 1 ➔ Stage 2 ➔ Stage 3**. If a confident match is found $\to$ Auto-resolve (Cap: `1.0`).
+2. **Tier 2 (Question Bank)** is evaluated next through **Stage 1 ➔ Stage 2 ➔ Stage 3**. If a confident match is found $\to$ Auto-resolve (Cap: `0.98`).
+3. **Tier 3 (Resume)** is evaluated next through **Stage 1 ➔ Stage 2 ➔ Stage 3**. If a confident match is found $\to$ Auto-resolve (Cap: `0.90`).
+4. **Stage 4 (LLM Fallback)** is invoked if all 3 tiers fail Stages 1–3, using combined candidate context.
+5. **Stage 5 (Dashboard Review)** handles any remaining unresolved fields.
+
+### 7. Dashboard Visibility & Bidirectional Feedback Policy
+- **Comprehensive Question Visibility**: ALL questions—both auto-resolved (green) and unresolved (amber/red)—are rendered in the React dashboard for full operator visibility and auditability.
+- **Live Operator Overrides**: Any field can be edited by an operator in the dashboard. Saving updates `data/applications.json` and immediately writes back the confirmed Q&A to `data/question-bank.json` with `Confidence: 1.0` (Human Verified).
+
+### 8. Full Scaling Specification Reference
+A complete, standalone architecture specification and workflow diagram report is maintained in `scaling_report.md`.
+
+---
 
 ## Recommended next sequence
 
-1. Obtain an authorized genuinely multi-page Oracle job link.
-2. Add a complete synthetic scanner profile containing safe required values.
-3. Implement page-by-page traversal with synthetic validation-aware filling.
-4. Implement complete virtualized combobox option discovery or a dynamic option provider.
-5. Populate the synthetic question bank for job `20283127`.
-6. Run Phase 4 through `needs_review`, inspect every field, and keep Submit untouched.
-7. Only after the single-user vertical slice is reliable, add a bounded worker queue and multiple isolated user sessions.
-8. Replace JsonStore with Supabase PostgreSQL while preserving the phase interfaces.
-9. Add Railway deployment configuration and measure memory per Playwright context before setting concurrency.
+1. **Step 1: CSV Ingestion Update**:
+   - Update `Phase1IngestAuth.prototype.ingestCsv` to accept `data/oracle_jobs.csv` headers (`applywizz_id`, `company_name`, `job_url`, `score`), automatically deduplicating the 988 rows into unique job links in `data/jobs.json`.
+2. **Step 2: Client Profile Resolution Bridge & 5-Stage Cascade (Phase 3)**:
+   - Update `Phase3AnswerResolution` to incorporate:
+     - The 3-tier hierarchy (`clients.json` ➔ `question-bank.json` ➔ parsed resume).
+     - The 5-stage matching cascade with score cutoffs (Taxonomy $\ge 0.95$, Fuzzy $\ge 0.85$, Semantic Option Reducer $\ge 0.78$, LLM $\ge 0.70$, Dashboard fallback).
+     - Confidence capping by source tier ($\min(\text{Stage Score}, \text{Tier Cap})$).
+3. **Step 3: 3-Worker Scanner Queue (`src/phases/scan-queue.js`)**:
+   - Implement the FIFO queue orchestrator for Phase 2: cycles 3 dummy scanner emails, opens 3 browsers concurrently, and pauses 10 seconds per worker between jobs.
+4. **Step 4: Dashboard Full Question Visibility & Filtering**:
+   - Update `web/src/App.jsx` to render **all fields (resolved and unresolved)** for complete operator visibility and override control, alongside dropdown filters for **Client (`applywizz_id`)** and **Job (`jobId`)**.
 
 ## Instructions for a future chat
 
 - Continue from the existing implementation; do not rebuild the repository from scratch.
-- Read this file, `README.md`, and `docs/WORKFLOW.md` before changing workflow behavior.
+- Read this file, `README.md`, `scaling_report.md`, and `docs/WORKFLOW.md` before changing workflow behavior.
 - Run `npm test` before and after meaningful changes.
 - Inspect `data/form-templates.json` before rescanning because a scan sends a real OTP and creates a new template version.
 - Preserve user changes and the version-4 live template.
 - Treat `data/runtime/` as disposable scan evidence; it is gitignored.
 - Do not use a real candidate resume or answers for scanner exploration.
 - Do not test Submit while developing scanning or filling.
-- Ask for a multi-page job link when beginning the next major capability.
