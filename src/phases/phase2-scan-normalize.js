@@ -11,12 +11,20 @@ export class Phase2ScanNormalize {
     const scanned = await this.oracle.scanForm({ session, job });
     const template = this.#applyConditions(scanned);
     const templates = await this.store.read('form-templates', {});
-    const version = (templates[job.jobId]?.version ?? 0) + 1;
+    const primaryKey = job.jobKey ?? job.jobId;
+    const version = (templates[primaryKey]?.version ?? 0) + 1;
     const templateId = stableId('tpl', `${job.canonicalUrl}|${template.scan.scannedAt}`);
-    const versioned = { templateId, version, ...template };
-    await this.store.update('form-templates', {}, templates => ({ ...templates, [job.jobId]: versioned }));
+    const versioned = {
+      templateId,
+      version,
+      jobKey: job.jobKey ?? primaryKey,
+      jobUrl: job.jobUrl ?? job.canonicalUrl,
+      ...template
+    };
+    await this.store.update('form-templates', {}, current => ({ ...current, [primaryKey]: versioned }));
     await this.runLog.append('phase2.template_ready', {
       jobId: job.jobId,
+      jobKey: primaryKey,
       templateId,
       fields: template.fields.length,
       branches: template.conditionalBranches.length

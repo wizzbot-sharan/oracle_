@@ -11,9 +11,12 @@
     "test": "node --test",
     "seed": "node src/cli.js seed",
     "ingest": "node src/cli.js ingest",
+    "ingest:jobs": "node src/cli.js ingest",
     "auth": "node src/cli.js auth",
     "scan": "node src/cli.js scan",
+    "scan:queue": "node src/cli.js scan:queue",
     "resolve": "node src/cli.js resolve",
+    "resolve:answers": "node src/cli.js resolve",
     "prepare:application": "node src/cli.js prepare",
     "fetch:clients": "node scripts/fetch_clients.mjs"
   },

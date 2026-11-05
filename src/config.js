@@ -32,7 +32,30 @@ export const config = Object.freeze({
   },
   mailReaderBaseUrl: process.env.MAIL_READER_BASE_URL ?? 'https://zoho-mail-reader.onrender.com/api/zoho/ui',
   testEmail: process.env.TEST_EMAIL ?? null,
-  jobsCsvPath: path.resolve(rootDir, process.env.JOBS_CSV_PATH ?? 'data/jobs.sample.csv'),
+  jobsCsvPath: path.resolve(rootDir, process.env.JOBS_CSV_PATH ?? 'data/oracle_jobs.csv'),
+  jobsCleanCsvPath: path.resolve(rootDir, process.env.JOBS_CLEAN_CSV_PATH ?? 'data/jobs.csv'),
+  clientsPath: path.resolve(rootDir, process.env.CLIENTS_PATH ?? 'data/clients.json'),
+  questionBankCsvPath: path.resolve(rootDir, process.env.QUESTION_BANK_CSV_PATH ?? 'data/question_bank.csv'),
   dataDir: path.resolve(rootDir, 'data'),
-  runtimeDir: path.resolve(rootDir, 'data/runtime')
+  runtimeDir: path.resolve(rootDir, 'data/runtime'),
+  scanner: {
+    concurrency: numberEnv('SCANNER_CONCURRENCY', 3),
+    launchThrottleMs: numberEnv('SCANNER_LAUNCH_THROTTLE_MS', 30000),
+    cooldownMs: numberEnv('SCANNER_COOLDOWN_MS', 10000),
+    emails: [
+      process.env.SCANNER_EMAIL_1,
+      process.env.SCANNER_EMAIL_2,
+      process.env.SCANNER_EMAIL_3
+    ].map(e => e?.trim()).filter(Boolean),
+    statusPath: path.resolve(rootDir, process.env.SCAN_STATUS_PATH ?? 'data/scan-status.json')
+  },
+  submission: {
+    concurrency: numberEnv('SUBMISSION_CONCURRENCY', 3),
+    launchThrottleMs: numberEnv('SUBMISSION_LAUNCH_THROTTLE_MS', 30000),
+    cooldownMs: numberEnv('SUBMISSION_COOLDOWN_MS', 10000),
+    submitWaitMs: numberEnv('SUBMISSION_SETTLE_MS', 10000),
+    submitDir: path.resolve(rootDir, process.env.SUBMISSION_DIR ?? 'data/submit'),
+    resumeDir: path.resolve(rootDir, process.env.RESUME_DIR ?? 'data/runtime/resumes'),
+    statusPath: path.resolve(rootDir, process.env.SUBMISSION_STATUS_PATH ?? 'data/submission-status.json')
+  }
 });

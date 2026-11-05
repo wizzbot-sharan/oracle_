@@ -130,8 +130,42 @@ async function main() {
       if (session) await workflow.oracle.closeSession(session);
     }
   }
+  if (command === 'scan:queue') {
+    let limit;
+    let force = false;
+    for (let i = 0; i < args.length; i++) {
+      if (args[i] === '--limit' && args[i + 1]) {
+        limit = Number(args[i + 1]);
+        i++;
+      } else if (args[i] === '--force') {
+        force = true;
+      } else if (!isNaN(Number(args[i]))) {
+        limit = Number(args[i]);
+      }
+    }
+    return workflow.scanQueue.runQueue({ limit, force });
+  }
+  if (command === 'resolve' || command === 'resolve:answers') {
+    let limit;
+    let jobKey;
+    for (let i = 0; i < args.length; i++) {
+      if (args[i] === '--limit' && args[i + 1]) {
+        limit = Number(args[i + 1]);
+        i++;
+      } else if ((args[i] === '--job' || args[i] === '--jobs') && args[i + 1]) {
+        jobKey = jobKey ? `${jobKey},${args[i + 1]}` : args[i + 1];
+        i++;
+      }
+    }
+    const applications = await workflow.phase3.createOrResolveApplications({ limit, jobKey });
+    return {
+      totalApplications: applications.length,
+      resolved: applications.filter(a => a.status === 'answers_resolved').length,
+      needsInput: applications.filter(a => a.status === 'needs_input').length
+    };
+  }
   if (command === 'prepare') return workflow.phase4.prepare(args[0]);
-  throw new Error('Usage: node src/cli.js <seed|ingest|auth [jobId|url] [email]|scan [jobId]|resolve|prepare applicationId>');
+  throw new Error('Usage: node src/cli.js <seed|ingest|auth [jobId|url] [email]|scan [jobId]|scan:queue [--limit N]|resolve [--limit N] [--job job_id1,job_id2]|prepare applicationId>');
 }
 
 main()

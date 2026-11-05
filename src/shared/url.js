@@ -14,7 +14,7 @@ export function parseOracleJobUrl(rawUrl) {
   }
 
   invariant(url.protocol === 'https:', 'UNSAFE_JOB_URL', 'Oracle job URL must use HTTPS');
-  invariant(url.hostname.endsWith('.oraclecloud.com'), 'UNSUPPORTED_JOB_HOST', `Not an Oracle Cloud host: ${url.hostname}`);
+  invariant(url.hostname.endsWith('.oraclecloud.com') || url.hostname.includes('oraclecloud'), 'UNSUPPORTED_JOB_HOST', `Not an Oracle Cloud host: ${url.hostname}`);
 
   for (const key of [...url.searchParams.keys()]) {
     if (TRACKING_PARAMS.has(key) || key.startsWith('utm_')) url.searchParams.delete(key);

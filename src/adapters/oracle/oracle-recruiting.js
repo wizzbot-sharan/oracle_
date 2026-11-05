@@ -80,7 +80,7 @@ export class OracleRecruitingAdapter {
     this.postNextWait = postNextWait ?? { min: 3000, max: 5000 };
     this.pageSettle = pageSettle;
     this.initialWait = initialWait ?? 10_000;
-    this.runtimeDir = runtimeDir;
+    this.runtimeDir = runtimeDir ?? 'data/runtime';
   }
 
   async createSession({ applicationId }) {
@@ -134,6 +134,33 @@ export class OracleRecruitingAdapter {
       // Ignore inspection errors and fall through
     }
     return false;
+  }
+
+  async #ensureStandardApplyFlow(page) {
+    try {
+      const isEasyApply = (page.url() || '').includes('/easy-apply');
+      const manualLink = page.locator([
+        'a.quick-apply-flow__manually--link',
+        'a:has-text("manually")',
+        'button:has-text("manually")',
+        '[data-i18n-token="standard_flow_link"]',
+        '.quick-apply-flow__manually a'
+      ].join(', ')).first();
+
+      const isVisible = await visible(manualLink);
+      if (isEasyApply || isVisible) {
+        console.error('[Oracle Adapter] Detected /easy-apply splash screen. Clicking "manually" to open application form...');
+        await manualLink.click({ timeout: 5000 }).catch(() => {});
+        await Promise.race([
+          page.waitForURL(url => url.pathname.includes('/apply/section') || url.pathname.includes('/apply/application') || url.pathname.includes('/apply/flow'), { timeout: 15_000 }),
+          page.locator('.apply-flow, main, [role="main"]').first().waitFor({ state: 'visible', timeout: 15_000 })
+        ]).catch(() => {});
+        await humanPause(this.actionGap);
+        await delay(this.initialWait);
+      }
+    } catch {
+      // Non-fatal if splash screen check encounters transient issue
+    }
   }
 
   async authenticate({ session, job, email, mailReader, companyDomains = [] }) {
@@ -353,8 +380,9 @@ export class OracleRecruitingAdapter {
       '.quick-apply-flow-error'
     ].join(', ')).first();
 
+    console.error(`[Phase 1] Waiting for URL to exit /apply/email or already applied notice...`);
     await Promise.race([
-      page.waitForURL(/\/apply\/(section|flow|application)/, { timeout: 30_000 }),
+      page.waitForURL(url => !url.pathname.endsWith('/apply/email'), { timeout: 30_000 }),
       alreadyAppliedIndicator.waitFor({ state: 'visible', timeout: 30_000 })
     ]).catch(() => { });
 
@@ -365,6 +393,8 @@ export class OracleRecruitingAdapter {
       console.error(`[Phase 1] ⚠ 'Already applied' message detected after login. Skipping.`);
       return { status: 'skipped', reason: 'ALREADY_APPLIED', message: 'Candidate has already applied to this job', url: page.url() };
     }
+
+    await this.#ensureStandardApplyFlow(page);
 
     await page.waitForURL(/\/apply\/(section|flow|application)/, { timeout: 5_000 }).catch(() => { });
     return { status: 'authenticated', url: page.url(), authenticatedAt: new Date().toISOString() };
@@ -400,6 +430,8 @@ export class OracleRecruitingAdapter {
   async scanForm({ session, job }) {
     const { page } = session;
     invariant(!/submitted|confirmation/i.test(page.url()), 'UNSAFE_SCAN_STATE', 'Scanner reached a submitted page');
+
+    await this.#ensureStandardApplyFlow(page);
 
     const allFields = [];
     const allBranches = [];
@@ -1019,6 +1051,9 @@ export class OracleRecruitingAdapter {
     const { page } = session;
     const jobId = context.jobId ?? 'unknown';
     const userId = context.userId ?? 'unknown';
+
+    await this.#ensureStandardApplyFlow(page);
+
     const results = [];
     const filledFieldIds = new Set();
     let pageNumber = 1;

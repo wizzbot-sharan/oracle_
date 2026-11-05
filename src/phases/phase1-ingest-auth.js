@@ -1,8 +1,10 @@
 import fs from 'node:fs/promises';
+import path from 'node:path';
 import { parseOracleJobUrl } from '../shared/url.js';
-import { parseCsv } from '../shared/csv.js';
+import { parseCsv, formatCsv } from '../shared/csv.js';
 import { stableId } from '../shared/ids.js';
 import { invariant } from '../shared/errors.js';
+import { config } from '../config.js';
 
 export class Phase1IngestAuth {
   constructor({ store, runLog, oracle, mailReader, otpLock }) {
@@ -13,40 +15,99 @@ export class Phase1IngestAuth {
     this.otpLock = otpLock;
   }
 
-  async ingestCsv(csvPath) {
-    const rows = parseCsv(await fs.readFile(csvPath, 'utf8'));
-    const assignments = rows.map((row, index) => {
-      invariant(row.user_id && row.job_id && row.job_url, 'INVALID_CSV_ROW', `Row ${index + 2} requires user_id, job_id and job_url`);
-      const parsed = parseOracleJobUrl(row.job_url);
-      invariant(String(row.job_id) === parsed.sourceJobId, 'JOB_ID_MISMATCH', `CSV job_id does not match URL on row ${index + 2}`);
+  async ingestCsv(targetCsvPath, options = {}) {
+    const csvPath = path.resolve(targetCsvPath ?? config.jobsCsvPath);
+    const cleanCsvPath = path.resolve(options.cleanCsvPath ?? config.jobsCleanCsvPath);
+
+    const rawText = await fs.readFile(csvPath, 'utf8');
+    const rows = parseCsv(rawText);
+    invariant(rows.length > 0, 'EMPTY_CSV', 'CSV contains no data rows');
+
+    const urlToKey = new Map();
+    const uniqueJobs = [];
+    let counter = 1;
+
+    for (const [index, row] of rows.entries()) {
+      invariant(
+        row.company_name && row.job_url && row.score !== undefined && row.client_name && row.applywizz_id,
+        'INVALID_CSV_ROW',
+        `Row ${index + 2} requires company_name, job_url, score, client_name, and applywizz_id`
+      );
+
+      const rawUrl = String(row.job_url).trim();
+      if (!urlToKey.has(rawUrl)) {
+        const jobKey = `job_${counter}`;
+        counter += 1;
+        urlToKey.set(rawUrl, jobKey);
+        uniqueJobs.push({
+          job_key: jobKey,
+          job_url: rawUrl
+        });
+      }
+      row.job_key = urlToKey.get(rawUrl);
+    }
+
+    // 1. Cleanly overwrite data/jobs.csv with unique jobs
+    const jobsCsvContent = formatCsv(uniqueJobs, ['job_key', 'job_url']);
+    await fs.mkdir(path.dirname(cleanCsvPath), { recursive: true });
+    await fs.writeFile(cleanCsvPath, jobsCsvContent, 'utf8');
+
+    // 2. Append/update job_key as the last column in data/oracle_jobs.csv
+    const oracleJobsHeaders = ['company_name', 'job_url', 'score', 'client_name', 'applywizz_id', 'job_key'];
+    const updatedOracleCsvContent = formatCsv(rows, oracleJobsHeaders);
+    await fs.writeFile(csvPath, updatedOracleCsvContent, 'utf8');
+
+    // 3. Update store state and runLog for downstream components
+    const assignments = rows.map(row => {
+      let parsed = {};
+      try {
+        parsed = parseOracleJobUrl(row.job_url);
+      } catch {
+        parsed = { canonicalUrl: row.job_url, sourceJobId: row.job_key, tenantHost: '', tenantKey: '' };
+      }
       return {
-        assignmentId: stableId('asg', `${row.user_id}|${row.job_id}|${parsed.canonicalUrl}`),
-        userId: row.user_id,
-        jobId: String(row.job_id),
+        assignmentId: stableId('asg', `${row.applywizz_id}|${row.job_key}`),
+        userId: row.applywizz_id,
+        applywizzId: row.applywizz_id,
+        clientName: row.client_name,
+        companyName: row.company_name,
+        score: Number(row.score) || 0,
+        jobId: parsed.sourceJobId || row.job_key,
+        jobKey: row.job_key,
         originalUrl: row.job_url,
         ...parsed
       };
     });
 
-    const unique = new Map();
-    for (const assignment of assignments) {
-      const key = assignment.canonicalUrl;
-      const existing = unique.get(key) ?? {
-        jobId: assignment.jobId,
-        canonicalUrl: assignment.canonicalUrl,
-        tenantHost: assignment.tenantHost,
-        tenantKey: assignment.tenantKey,
-        userIds: []
-      };
-      if (!existing.userIds.includes(assignment.userId)) existing.userIds.push(assignment.userId);
-      unique.set(key, existing);
-    }
+    const storeResult = {
+      assignments,
+      uniqueJobs: uniqueJobs.map(j => ({
+        jobKey: j.job_key,
+        jobUrl: j.job_url,
+        jobId: j.job_key
+      }))
+    };
+    await this.store.write('jobs', storeResult);
+    await this.runLog.append('phase1.ingested', {
+      assignments: assignments.length,
+      uniqueJobs: uniqueJobs.length,
+      cleanCsvPath,
+      sourceCsvPath: csvPath
+    });
 
-    const result = { assignments, uniqueJobs: [...unique.values()] };
-    await this.store.write('jobs', result);
-    await this.runLog.append('phase1.ingested', { assignments: assignments.length, uniqueJobs: unique.size });
-    return result;
+    console.log(`[Phase 1 Ingestion] Processed ${rows.length} assignment rows.`);
+    console.log(`[Phase 1 Ingestion] Identified ${uniqueJobs.length} unique URLs (job_1 to job_${uniqueJobs.length}).`);
+    console.log(`[Phase 1 Ingestion] Overwrote clean jobs list: ${cleanCsvPath}`);
+    console.log(`[Phase 1 Ingestion] Appended job_key to source CSV: ${csvPath}`);
+
+    return {
+      assignments,
+      uniqueJobs,
+      cleanCsvPath,
+      sourceCsvPath: csvPath
+    };
   }
+
 
   async authenticate({ applicationId, job, email, companyDomains = [] }) {
     const lockKey = `${email.toLowerCase()}|${job.tenantHost}`;

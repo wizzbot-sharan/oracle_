@@ -66,12 +66,17 @@ Responsibilities:
 11. Trigger OTP delivery.
 12. Retrieve and verify the correct OTP email.
 13. Enter either one OTP input or six single-digit inputs.
-14. Continue to the application form.
-15. **Skip handling**: If no Apply button exists (`NO_APPLY_BUTTON`) or candidate already applied (`ALREADY_APPLIED`), log and cleanly skip.
+14. **URL State Verification & Transition Handover**:
+    - Confirm the URL leaves `/apply/email` before concluding Phase 1.
+    - Maintain the mandatory 10-second post-authentication settle window (`initialWait = 10_000`).
+15. **Profile Import / Splash Screen Bypass (`#ensureStandardApplyFlow`)**:
+    - If redirected to the `/easy-apply` "Drop your resume here / Upload Resume / Apply With LinkedIn/Indeed" splash screen, detect the `"manually"` text link (`a.quick-apply-flow__manually--link`) and click it.
+    - Confirm URL transitions to `/apply/section/1` (standard application flow) and allow page controls to stabilize.
+16. **Skip handling**: If no Apply button exists (`NO_APPLY_BUTTON`) or candidate already applied (`ALREADY_APPLIED`), log and cleanly skip.
 
 Two OTP requests for the same `candidateEmail + tenantHost` must be serialized because the messages may otherwise be indistinguishable.
 
-Implementation: `src/phases/phase1-ingest-auth.js`.
+Implementation: `src/phases/phase1-ingest-auth.js` and `src/adapters/oracle/oracle-recruiting.js`.
 
 ### Phase 2: scan and normalize
 
@@ -414,8 +419,8 @@ The development server does not use Node watch mode because this environment hit
 
 - Local dependency installation succeeds.
 - Dependency audit reports zero known vulnerabilities.
-- **49 automated unit tests pass, 0 failed** (`npm test`).
-- Tests cover: CSV parsing, unsafe headers, URL normalization, Oracle-host validation, OTP extraction and scoring, ambiguous OTP rejection, form flattening, conditional visibility, `{ includes: '...' }` conditions, cx-select-pills toggling, single vs multi pill differentiation, ID-less checkbox fill, hidden radio label targeting, multi-checkbox isolation, dynamic combobox routing, submission review gates, Phase 1 skip edge cases (`NO_APPLY_BUTTON`, `ALREADY_APPLIED`), client fetching/reconciliation/pruning (`scripts/fetch_clients.mjs`), and dynamic field type coercion with best-match option selection (`src/domain/coercion.js`).
+- **58 automated unit tests pass, 0 failed** (`npm test`).
+- Tests cover: CSV parsing and serialization (`formatCsv`), unsafe headers, URL normalization, Oracle-host validation, OTP extraction and scoring, ambiguous OTP rejection, form flattening, conditional visibility, `{ includes: '...' }` conditions, cx-select-pills toggling, single vs multi pill differentiation, ID-less checkbox fill, hidden radio label targeting, multi-checkbox isolation, dynamic combobox routing, submission review gates, Phase 1 skip edge cases (`NO_APPLY_BUTTON`, `ALREADY_APPLIED`), client fetching/reconciliation/pruning (`scripts/fetch_clients.mjs`), field type coercion with best-match option selection (`src/domain/coercion.js`), strict CSV ingestion with raw URL deduplication and `job_key` assignment (`test/ingest-csv.test.js`), and 3-worker concurrency queue management with global launch throttling, post-job cooldown, retry-once logic, and `job_key` template keying (`test/scan-queue.test.js`).
 - The production React build succeeds.
 - Local API health and dashboard endpoints succeed.
 - Local Playwright Chromium launches outside the macOS sandbox.
@@ -560,17 +565,46 @@ A complete, standalone architecture specification and workflow diagram report is
 
 ## Recommended next sequence
 
-1. **Step 1: CSV Ingestion Update**:
-   - Update `Phase1IngestAuth.prototype.ingestCsv` to accept `data/oracle_jobs.csv` headers (`applywizz_id`, `company_name`, `job_url`, `score`), automatically deduplicating the 988 rows into unique job links in `data/jobs.json`.
-2. **Step 2: Client Profile Resolution Bridge & 5-Stage Cascade (Phase 3)**:
-   - Update `Phase3AnswerResolution` to incorporate:
-     - The 3-tier hierarchy (`clients.json` ➔ `question-bank.json` ➔ parsed resume).
-     - The 5-stage matching cascade with score cutoffs (Taxonomy $\ge 0.95$, Fuzzy $\ge 0.85$, Semantic Option Reducer $\ge 0.78$, LLM $\ge 0.70$, Dashboard fallback).
-     - Confidence capping by source tier ($\min(\text{Stage Score}, \text{Tier Cap})$).
-3. **Step 3: 3-Worker Scanner Queue (`src/phases/scan-queue.js`)**:
-   - Implement the FIFO queue orchestrator for Phase 2: cycles 3 dummy scanner emails, opens 3 browsers concurrently, and pauses 10 seconds per worker between jobs.
-4. **Step 4: Dashboard Full Question Visibility & Filtering**:
-   - Update `web/src/App.jsx` to render **all fields (resolved and unresolved)** for complete operator visibility and override control, alongside dropdown filters for **Client (`applywizz_id`)** and **Job (`jobId`)**.
+1. **Step 1: CSV Ingestion & URL Deduplication (Completed & Verified)**:
+   - `Phase1IngestAuth.prototype.ingestCsv` parses `data/oracle_jobs.csv`, preserves raw URLs verbatim, maps 988 assignment rows to 196 unique jobs, writes `data/jobs.csv` (`job_key,job_url`), and appends `job_key` as the last column of `data/oracle_jobs.csv`.
+   - Dedicated commands: `npm run ingest` and `npm run ingest:jobs`.
+2. **Step 2: 3-Worker Scanner Queue (Completed & Verified)**:
+   - `ScanQueueRunner` (`src/phases/scan-queue.js`) orchestrates up to 3 concurrent Playwright workers with distinct dummy accounts (`SCANNER_EMAIL_1..3`).
+   - Enforces a shared global launch throttle ($\ge$ 30s gap across all workers between browser launches) and worker post-job cooldown ($\ge$ 10s).
+   - Retries unexpected errors once before marking failed, keys templates solely by `job_key` in `data/form-templates.json`, and records live status in `data/scan-status.json`.
+   - Dedicated command: `npm run scan:queue` (with `--limit N` support).
+3. **URL State Verification & Easy-Apply 'Manually' Bypass (Completed & Verified)**:
+   - Oracle adapter enforces exit from `/apply/email` during authentication.
+   - Retains the 10-second post-authentication settle window.
+   - Idempotent `#ensureStandardApplyFlow` checks for `/easy-apply` or `"manually"` link (`a.quick-apply-flow__manually--link`), clicks it to reveal `/apply/section/1`, and waits for standard application controls. Wired into `authenticate`, `scanForm`, and `fillApplication`.
+   - Verified with 3 tests in `test/easy-apply-manually.test.js` (61 total passing tests).
+4. **Step 3: Client Profile Resolution Bridge & 5-Stage Cascade (Phase 3) (Completed & Verified)**:
+   - Built `ResolutionEngine` (`src/domain/resolution-engine.js`) implementing the 3 Data Tiers (Client Profile Cap 1.0, Question Bank Cap 0.98/0.90, Resume Cap 0.90) and 5 Matching Stages (Taxonomy $\ge 0.95$, Token-Sort Fuzzy $\ge 0.85$ / Conditional $0.75 - 0.84$, Semantic Synsets $\ge 0.78$, Claude LLM $\ge 0.80$, Dashboard fallback).
+   - Built `ClaudeService` (`src/services/claude-service.js`) with complete prompt context (client profile + question bank history + resume) and graceful fallback.
+   - Refactored `Phase3AnswerResolution` (`src/phases/phase3-answer-resolution.js`):
+     - Parses and indexes `data/question_bank.csv` (14,026 rows) with client-specific lookup and PII-guarded cross-client fallback.
+     - Enforces the threshold rule: Only required visible fields block status, requiring confidence $\ge 0.80$. Unresolved optional fields do not block `'answers_resolved'`.
+     - Implements `saveAnswers` writing back directly to `data/question_bank.csv` in 9-column CSV format on operator dashboard confirmation.
+   - Added CLI commands `npm run resolve` and `npm run resolve:answers` (supporting `--limit N` and `--job job_key`).
+   - Verified with 6 unit tests in `test/phase3-resolution.test.js` (67 total passing tests across full project).
+5. **Step 4: Dashboard Full Question Visibility, Executive KPI Metrics & Filtering (Completed & Verified)**:
+   - Added `computeDashboardMetrics` in `src/server.js` delivered via `/api/dashboard`, computing all 11 real-time KPIs (Total Clients, Total Jobs, Unique URLs, Scanned Requisitions, Unlockable Applications, Pre-AI Resolved Apps & Questions, AI Resolved Apps & Questions, Dashboard Review Apps & Questions, Ready to Apply, Prepared, Submitted).
+   - Rendered a horizontal scrollable card row at the top of the React dashboard (`web/src/App.jsx`).
+   - Added cascading header filters: selecting Candidate (`applywizz_id - clientName`) dynamically filters the Job Requisition dropdown to assigned jobs.
+   - Complete Question Auditability: renders all questions in the template with green dot badges (`● Resolved`) and red dot badges (`● Unresolved`).
+   - In-Place Question Bank CSV Upsert: `saveAnswers` in `src/phases/phase3-answer-resolution.js` matches `(applywizz_id + question_label)` and modifies existing rows in place without duplicate row creation.
+   - Verified with 2 unit tests in `test/dashboard-audit.test.js` (69 total passing tests across full project).
+6. **Step 5: Resource-Constrained Live Candidate Form Filling Queue (Phase 4) (Completed & Verified)**:
+   - Built `SubmissionQueueRunner` (`src/phases/submission-queue.js`) orchestrating a maximum of 3 concurrent live browser sessions with dedicated slot state tracking (`idle`, `launching`, `filling`, `awaiting_review`, `submitting`, `cooldown`).
+   - Built `ResumeService` (`src/services/resume-service.js`) downloading and caching candidate resumes from S3 (`client.additional_information.resume_url`) to `data/runtime/resumes/<applywizz_id>_resume.pdf` for Playwright attachment.
+   - Refactored `Phase4ApplyReviewSubmit` (`src/phases/phase4-apply-review-submit.js`) to authenticate using candidate's real `company_email` (`data/clients.json`), attach cached resume, multi-pass fill forms, and halt strictly at the safety gate (`needs_review`).
+   - Slot remains occupied while an application sits at `awaiting_review`. If 3 workers are busy/awaiting review, any newly clicked application queues in `pendingQueue`.
+   - Dual Submit Support:
+     - Dashboard Submit: Typed Job ID confirmation triggers Playwright submit, settles 10 seconds post-submit on site, captures full-page receipt screenshot to `data/submit/<applywizz_id>_<job_key>_receipt.png`, closes browser, triggers 10s cooldown, and marks application `submitted`.
+     - Direct On-Site Submit: Engine observes page navigation and click on the live page; upon submit detection, settles 10 seconds, captures receipt screenshot, updates store, closes browser, and enters 10s cooldown.
+   - Manual Window Close Resilience: If operator closes browser window without submitting, slot automatically catches `page.on('close')`, runs 10s cooldown, and returns to `idle`.
+   - Live Dashboard Visibility: Added `WorkerPoolWidget` in `web/src/App.jsx` showing the 3 slots, status badges, candidate details, and pending queue count with 2.5s polling.
+   - Verified with 5 unit tests in `test/submission-queue.test.js` (74 total passing tests across full project).
 
 ## Instructions for a future chat
 

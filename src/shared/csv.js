@@ -51,3 +51,21 @@ export function parseCsv(text) {
     return record;
   });
 }
+
+export function formatCsvRow(row, headers) {
+  const escapeCell = value => {
+    const str = String(value ?? '');
+    if (str.includes('"') || str.includes(',') || str.includes('\n') || str.includes('\r')) {
+      return `"${str.replace(/"/g, '""')}"`;
+    }
+    return str;
+  };
+  return headers.map(h => escapeCell(row[h])).join(',');
+}
+
+export function formatCsv(rows, headers) {
+  const headerLine = formatCsvRow(Object.fromEntries(headers.map(h => [h, h])), headers);
+  const lines = rows.map(row => formatCsvRow(row, headers));
+  return [headerLine, ...lines].join('\n') + '\n';
+}
+

@@ -1,8 +1,101 @@
 import express from 'express';
+import fs from 'node:fs';
 import { config } from './config.js';
 import { workflow } from './workflow.js';
 import { seedReconData } from './seed.js';
 import { parseOracleJobUrl } from './shared/url.js';
+
+export async function computeDashboardMetrics({ jobs, applications, templates, clientsPath }) {
+  let clientsData = {};
+  try {
+    if (clientsPath && fs.existsSync(clientsPath)) {
+      clientsData = JSON.parse(await fs.promises.readFile(clientsPath, 'utf8'));
+    }
+  } catch {}
+
+  const totalClients = Object.keys(clientsData).length;
+  const assignments = jobs.assignments || [];
+  const uniqueJobs = jobs.uniqueJobs || [];
+  const totalJobs = assignments.length;
+  const uniqueUrls = uniqueJobs.length;
+
+  const scannedTemplates = Object.entries(templates).filter(([, t]) => (t.fields?.length || 0) > 0);
+  const scannedJobKeys = new Set(scannedTemplates.map(([k]) => k));
+  const scannedUrls = scannedJobKeys.size;
+
+  // Potential unlockable applications covered by scanned unique requisitions
+  const unlockableApplications = assignments.filter(a =>
+    scannedJobKeys.has(a.jobKey) || scannedJobKeys.has(a.jobId)
+  ).length;
+
+  let resolvedPreAiApps = 0;
+  let resolvedPreAiQuestions = 0;
+  let resolvedWithAiApps = 0;
+  let resolvedWithAiQuestions = 0;
+  let dashboardReviewApps = 0;
+  let dashboardReviewQuestions = 0;
+  let readyToApply = 0;
+  let prepared = 0;
+  let submitted = 0;
+
+  for (const app of applications) {
+    if (app.status === 'submitted') submitted++;
+    else if (app.status === 'needs_review') prepared++;
+    else if (app.status === 'answers_resolved' || app.reviewStatus === 'approved') readyToApply++;
+    else if (app.status === 'needs_input') dashboardReviewApps++;
+
+    let hasAi = false;
+
+    for (const [, val] of Object.entries(app.values || {})) {
+      if (!val || val.value === null || val.value === '' || (val.confidence ?? 0) < 0.80) {
+        dashboardReviewQuestions++;
+      } else if (val.stage === 'stage4_llm' || val.source === 'tier2_claude_llm') {
+        resolvedWithAiQuestions++;
+        hasAi = true;
+      } else {
+        resolvedPreAiQuestions++;
+      }
+    }
+
+    if (app.status === 'answers_resolved') {
+      if (hasAi) resolvedWithAiApps++;
+      else resolvedPreAiApps++;
+    }
+  }
+
+  // Unique clients and assignments for cascading filter
+  const clientMap = new Map();
+  for (const a of assignments) {
+    const id = a.applywizzId || a.userId;
+    if (id && !clientMap.has(id)) {
+      clientMap.set(id, {
+        applywizzId: id,
+        clientName: a.clientName || clientsData[id]?.client?.full_name || id
+      });
+    }
+  }
+  const clientsList = [...clientMap.values()].sort((a, b) => a.clientName.localeCompare(b.clientName));
+
+  return {
+    metrics: {
+      totalClients,
+      totalJobs,
+      uniqueUrls,
+      scannedUrls,
+      unlockableApplications,
+      resolvedPreAiApps,
+      resolvedPreAiQuestions,
+      resolvedWithAiApps,
+      resolvedWithAiQuestions,
+      dashboardReviewApps,
+      dashboardReviewQuestions,
+      readyToApply,
+      prepared,
+      submitted
+    },
+    clients: clientsList
+  };
+}
 
 const app = express();
 app.use(express.json({ limit: '2mb' }));
@@ -16,7 +109,27 @@ app.get('/api/dashboard', async (_request, response) => {
     workflow.store.read('form-templates', {}),
     workflow.store.read('runs', [])
   ]);
-  response.json({ jobs, applications, templates, runs: runs.slice(-100).reverse() });
+
+  const { metrics, clients } = await computeDashboardMetrics({
+    jobs,
+    applications,
+    templates,
+    clientsPath: config.clientsPath
+  });
+
+  response.json({
+    jobs,
+    applications,
+    templates,
+    runs: runs.slice(-100).reverse(),
+    metrics,
+    clients,
+    submissionStatus: workflow.submissionQueue.getStatus()
+  });
+});
+
+app.get('/api/submission/status', (_request, response) => {
+  response.json(workflow.submissionQueue.getStatus());
 });
 
 app.post('/api/seed', async (_request, response) => response.json(await seedReconData()));
@@ -103,7 +216,7 @@ app.put('/api/applications/:applicationId/answers', async (request, response) =>
 });
 
 app.post('/api/applications/:applicationId/prepare', async (request, response) => {
-  response.json(await workflow.phase4.prepare(request.params.applicationId));
+  response.json(await workflow.submissionQueue.enqueueApplication(request.params.applicationId));
 });
 
 app.post('/api/applications/:applicationId/approve', async (request, response) => {
@@ -111,7 +224,7 @@ app.post('/api/applications/:applicationId/approve', async (request, response) =
 });
 
 app.post('/api/applications/:applicationId/submit', async (request, response) => {
-  response.json(await workflow.phase4.submit(request.params.applicationId, request.body.confirmation));
+  response.json(await workflow.submissionQueue.submitApplication(request.params.applicationId, request.body.confirmation));
 });
 
 app.use((error, _request, response, _next) => {
@@ -123,6 +236,13 @@ app.use((error, _request, response, _next) => {
   });
 });
 
-app.listen(config.port, () => {
-  console.log(`Oracle application workflow listening on http://localhost:${config.port}`);
-});
+import { fileURLToPath } from 'node:url';
+
+const isMainModule = process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1];
+if (isMainModule) {
+  if (config.submission?.submitDir) fs.mkdirSync(config.submission.submitDir, { recursive: true });
+  if (config.submission?.resumeDir) fs.mkdirSync(config.submission.resumeDir, { recursive: true });
+  app.listen(config.port, () => {
+    console.log(`Oracle application workflow listening on http://localhost:${config.port}`);
+  });
+}
