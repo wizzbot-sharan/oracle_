@@ -1,6 +1,8 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { chromium } from 'playwright';
+import { chromium as vanillaChromium } from 'playwright';
+import { chromium as extraChromium } from 'playwright-extra';
+import stealthPlugin from 'puppeteer-extra-plugin-stealth';
 import { WorkflowError, invariant } from '../../shared/errors.js';
 import { delay, humanPause, randomBetween } from '../../shared/time.js';
 import {
@@ -10,6 +12,18 @@ import {
   coerceToString,
   coerceValueForField
 } from '../../domain/coercion.js';
+
+let stealthConfiguredChromium = extraChromium;
+try {
+  const plugin = typeof stealthPlugin === 'function' ? stealthPlugin() : stealthPlugin?.default?.();
+  if (plugin && typeof extraChromium?.use === 'function') {
+    extraChromium.use(plugin);
+  } else {
+    stealthConfiguredChromium = vanillaChromium;
+  }
+} catch {
+  stealthConfiguredChromium = vanillaChromium;
+}
 
 const SUBMIT_PATTERN = /^(submit|submit application)$/i;
 
@@ -73,7 +87,7 @@ async function controlDescriptor(locator) {
 }
 
 export class OracleRecruitingAdapter {
-  constructor({ headless, humanDelay, actionGap, postNextWait, pageSettle, initialWait, runtimeDir }) {
+  constructor({ headless, humanDelay, actionGap, postNextWait, pageSettle, initialWait, runtimeDir, browserChannel } = {}) {
     this.headless = headless;
     this.humanDelay = humanDelay ?? { min: 50, max: 200 };
     this.actionGap = actionGap ?? { min: 1000, max: 2000 };
@@ -81,13 +95,45 @@ export class OracleRecruitingAdapter {
     this.pageSettle = pageSettle;
     this.initialWait = initialWait ?? 10_000;
     this.runtimeDir = runtimeDir ?? 'data/runtime';
+    this.browserChannel = browserChannel ?? 'chrome';
   }
 
   async createSession({ applicationId }) {
-    const browser = await chromium.launch({ headless: this.headless });
+    const launchArgs = [
+      '--disable-blink-features=AutomationControlled',
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-infobars',
+      '--window-size=1440,1000'
+    ];
+
+    let browser;
+    if (this.browserChannel) {
+      try {
+        browser = await stealthConfiguredChromium.launch({
+          channel: this.browserChannel,
+          headless: this.headless,
+          args: launchArgs
+        });
+      } catch {
+        browser = await stealthConfiguredChromium.launch({
+          headless: this.headless,
+          args: launchArgs
+        });
+      }
+    } else {
+      browser = await stealthConfiguredChromium.launch({
+        headless: this.headless,
+        args: launchArgs
+      });
+    }
+
     const context = await browser.newContext({
       acceptDownloads: false,
-      viewport: { width: 1440, height: 1000 }
+      viewport: { width: 1440, height: 1000 },
+      userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+      locale: 'en-US',
+      timezoneId: 'America/New_York'
     });
     const page = await context.newPage();
     return { applicationId, browser, context, page, createdAt: Date.now() };
@@ -95,6 +141,42 @@ export class OracleRecruitingAdapter {
 
   async closeSession(session) {
     await session?.browser?.close().catch(() => { });
+  }
+
+  async detectCaptcha(page) {
+    try {
+      const captchaLocators = page.locator([
+        'iframe[src*="arkose" i]',
+        'iframe[title*="verification" i]',
+        '#fc-iframe-wrap',
+        '[data-bind*="arkose" i]',
+        'iframe[src*="recaptcha" i]',
+        '.g-recaptcha',
+        '.recaptcha-checkbox',
+        'iframe[src*="hcaptcha" i]',
+        '.h-captcha',
+        'iframe[src*="challenges.cloudflare.com" i]',
+        '.cf-turnstile',
+        '.captcha',
+        '.security-verification-container',
+        'input[name*="captcha" i]',
+        '[aria-label*="captcha" i]',
+        'text=/please verify you are human/i',
+        'text=/security verification/i'
+      ].join(', '));
+
+      const count = await captchaLocators.count().catch(() => 0);
+      if (count === 0) return false;
+
+      for (let i = 0; i < count; i += 1) {
+        const loc = captchaLocators.nth(i);
+        const isVis = await loc.isVisible().catch(() => false);
+        if (isVis) return true;
+      }
+      return false;
+    } catch {
+      return false;
+    }
   }
 
   async #isAlreadyApplied(page) {
@@ -336,6 +418,15 @@ export class OracleRecruitingAdapter {
     console.error(`[Phase 1] Pausing for post-Next settle...`);
     await humanPause(this.postNextWait);
 
+    if (await this.detectCaptcha(page)) {
+      console.error(`[Phase 1] ⚠ CAPTCHA challenge detected after email submission on ${job.tenantHost}.`);
+      return {
+        status: 'skipped',
+        reason: 'captcha_required',
+        message: 'CAPTCHA challenge presented after email submission'
+      };
+    }
+
     console.error(`[Phase 1] Waiting for OTP prompt or application flow...`);
     const otpMarker = page.getByRole('heading', { name: /confirm your identity|verify/i }).or(
       page.locator('input[aria-label*="digit" i], input[name*="verificationCode" i]')
@@ -344,6 +435,15 @@ export class OracleRecruitingAdapter {
       page.waitForURL(/\/apply\/(section|flow|application)/, { timeout: 20_000 }),
       otpMarker.first().waitFor({ state: 'visible', timeout: 20_000 })
     ]).catch(() => { });
+
+    if (await this.detectCaptcha(page)) {
+      console.error(`[Phase 1] ⚠ CAPTCHA challenge detected during verification flow on ${job.tenantHost}.`);
+      return {
+        status: 'skipped',
+        reason: 'captcha_required',
+        message: 'CAPTCHA challenge presented during verification flow'
+      };
+    }
 
     if (await visible(otpMarker.first())) {
       console.error(`[Phase 1] OTP screen presented. Polling mailbox for 6-digit code...`);
@@ -457,6 +557,7 @@ export class OracleRecruitingAdapter {
 
       const baseline = await this.#extractControls(page);
       for (const field of baseline) {
+        field.pageNumber = pageNumber;
         const key = this.#fieldIdentity(field);
         if (!seenFieldKeys.has(key)) {
           seenFieldKeys.add(key);
@@ -468,6 +569,14 @@ export class OracleRecruitingAdapter {
       const branches = await this.#scanDirectBranches(page, baseline);
       for (const branch of branches) {
         console.error(`[Phase 2] [Job ${job.jobId}] Discovered branch: when "${branch.triggerLabel}" = "${branch.triggerValue}" -> reveals ${branch.revealed.length} fields`);
+        for (const rf of branch.revealed ?? []) {
+          rf.pageNumber = pageNumber;
+          const key = this.#fieldIdentity(rf);
+          if (!seenFieldKeys.has(key)) {
+            seenFieldKeys.add(key);
+            allFields.push(rf);
+          }
+        }
       }
       allBranches.push(...branches);
 
@@ -482,7 +591,8 @@ export class OracleRecruitingAdapter {
 
       // Check if Submit is visible on this page
       const submitButton = page.getByRole('button', { name: SUBMIT_PATTERN }).first();
-      if (await visible(submitButton)) {
+      const isSubmitVisible = (await visible(submitButton)) && (await submitButton.isVisible().catch(() => false));
+      if (isSubmitVisible) {
         console.error(`[Phase 2] Submit button detected on page ${pageNumber}; stopping multi-page traversal.`);
         submitPresent = true;
         finalUrl = page.url();
@@ -544,7 +654,14 @@ export class OracleRecruitingAdapter {
   async #extractCheckboxGroups(page) {
     return page.evaluate(() => {
       const text = v => (v ?? '').replace(/\s+/g, ' ').trim();
-      const containers = document.querySelectorAll('.input-row, .form-field, [role="group"]');
+      const allContainers = document.querySelectorAll('.input-row, .form-field, [role="group"]');
+      const containers = Array.from(allContainers).filter(c => {
+        if (typeof c.closest === 'function') {
+          if (c.closest('.apply-flow-section[style*="display: none"]')) return false;
+          if (c.closest('[style*="display: none"]')) return false;
+        }
+        return true;
+      });
       const groups = [];
       const handledCheckboxIds = [];
 
@@ -556,15 +673,15 @@ export class OracleRecruitingAdapter {
         }
         if (inputMap.size > 1) {
           const groupLabelEl = container.querySelector('.input-row__label, legend, [class*="label"]:not(.apply-flow-input-checkbox__label)');
-          const region = container.closest('[role="region"][aria-label]');
+          const region = typeof container.closest === 'function' ? container.closest('[role="region"][aria-label]') : null;
           const groupLabel = text(groupLabelEl?.textContent || container.getAttribute('aria-label') || '');
           if (!groupLabel) continue;
 
           const options = [];
           for (const [key, input] of inputMap.entries()) {
             const optionLabelEl = container.querySelector(`label[for="${CSS.escape(input.id)}"] .apply-flow-input-checkbox__label, label[for="${CSS.escape(input.id)}"]`)
-              || input.closest('.input-row__control-item, label')?.querySelector('.apply-flow-input-checkbox__label, label')
-              || input.closest('label');
+              || (typeof input.closest === 'function' ? input.closest('.input-row__control-item, label')?.querySelector('.apply-flow-input-checkbox__label, label') : null)
+              || (typeof input.closest === 'function' ? input.closest('label') : null);
             const optText = text(optionLabelEl?.textContent || input.value || '');
             if (optText && !options.includes(optText)) {
               options.push(optText);
@@ -589,10 +706,17 @@ export class OracleRecruitingAdapter {
       }
 
       // Also discover Oracle cx-select-pills (multi-select pill button groups)
-      const pillContainers = document.querySelectorAll('.cx-multi-select-pills, .input-row--multiselect, [data-bind*="cx-select-pills"], .cx-select-pills-container');
+      const allPills = document.querySelectorAll('.cx-multi-select-pills, .input-row--multiselect, [data-bind*="cx-select-pills"], .cx-select-pills-container');
+      const pillContainers = Array.from(allPills).filter(c => {
+        if (typeof c.closest === 'function') {
+          if (c.closest('.apply-flow-section[style*="display: none"]')) return false;
+          if (c.closest('[style*="display: none"]')) return false;
+        }
+        return true;
+      });
       const seenPills = new Set();
       for (const el of pillContainers) {
-        const row = el.closest('.input-row, .form-field, [role="group"]') || el;
+        const row = (typeof el.closest === 'function' ? el.closest('.input-row, .form-field, [role="group"]') : null) || el;
         if (seenPills.has(row)) continue;
         seenPills.add(row);
 
@@ -601,7 +725,7 @@ export class OracleRecruitingAdapter {
           row.getAttribute('role') === 'radiogroup' ||
           row.querySelector('[role="radiogroup"], [role="radio"]') ||
           row.querySelector('[data-bind*="isMultiselect:false"], [data-bind*="isMultiselect: false"]') ||
-          row.closest('[role="radiogroup"]')
+          (typeof row.closest === 'function' && row.closest('[role="radiogroup"]'))
         );
         if (isRadio) continue;
 
@@ -609,7 +733,7 @@ export class OracleRecruitingAdapter {
         if (!buttons.length) continue;
 
         const groupLabelEl = row.querySelector('.input-row__label, legend, [class*="label"]') || row.querySelector('ul[aria-label]');
-        const region = row.closest('[role="region"][aria-label]');
+        const region = typeof row.closest === 'function' ? row.closest('[role="region"][aria-label]') : null;
         const groupLabel = text(groupLabelEl?.textContent || row.querySelector('ul')?.getAttribute('aria-label') || '');
         if (!groupLabel) continue;
 
@@ -649,17 +773,24 @@ export class OracleRecruitingAdapter {
     const { groups: multiCheckboxGroups, handledCheckboxIds } = await this.#extractCheckboxGroups(page);
     const handledSet = new Set(handledCheckboxIds);
 
+    const hasSections = (await page.locator('.apply-flow-section').count().catch(() => 0)) > 0;
+    const prefix = hasSections ? '.apply-flow-section:not([style*="display: none"]) ' : '';
+
     const candidates = page.locator([
-      'input:not([type="hidden"]):not([aria-hidden="true"]):visible',
-      'textarea:not([aria-hidden="true"]):not(.input-row__control--helper):visible',
-      'select:visible',
-      '[role="combobox"]:visible',
-      '[role="radiogroup"]:visible',
-      '[role="checkbox"]:visible',
-      'label:visible input[type="checkbox"]',
-      '.input-row:visible input[type="checkbox"]',
-      '.form-field:visible input[type="checkbox"]'
-    ].join(','));
+      `${prefix}input:not([type="hidden"]):not([aria-hidden="true"]):visible`,
+      `${prefix}textarea:not([aria-hidden="true"]):not(.input-row__control--helper):visible`,
+      `${prefix}select:visible`,
+      `${prefix}[role="combobox"]:visible`,
+      `${prefix}[role="radiogroup"]:visible`,
+      `${prefix}[role="checkbox"]:visible`,
+      `${prefix}label:visible input[type="checkbox"]`,
+      `${prefix}.input-row:visible input[type="checkbox"]`,
+      `${prefix}.form-field:visible input[type="checkbox"]`,
+      `${prefix}.apply-flow-block--file-upload input[type="file"]`,
+      `${prefix}.file-form-element input[type="file"]`,
+      `${prefix}input[type="file"][name="attachment-upload"]`,
+      `${prefix}input[type="file"].apply-flow-profile-import-awli__file-upload`
+    ].join(', '));
     const seen = new Set();
     const usedIds = new Set();
     const fields = [];
@@ -778,6 +909,15 @@ export class OracleRecruitingAdapter {
         const conditionPath = [{ triggerLabel: group.label, triggerValue: option, conditionType: 'includes' }];
 
         if (revealed.length) {
+          const triggerSlug = this.#slug(group.label);
+          for (const rf of revealed) {
+            rf.isConditional = true;
+            rf.triggerFieldId = triggerSlug;
+            rf.triggerLabel = group.label;
+            rf.triggerValue = option;
+            rf.conditionType = 'includes';
+            rf.visibleWhen = { field: triggerSlug, includes: option };
+          }
           branches.push({
             triggerLabel: group.label,
             triggerValue: option,
@@ -806,6 +946,15 @@ export class OracleRecruitingAdapter {
               const subAfter = await this.#extractControls(page);
               const subRevealed = subAfter.filter(f => !subBeforeKeys.has(this.#fieldIdentity(f)));
               if (subRevealed.length) {
+                const subTriggerSlug = this.#slug(subRadioLabel);
+                for (const srf of subRevealed) {
+                  srf.isConditional = true;
+                  srf.triggerFieldId = subTriggerSlug;
+                  srf.triggerLabel = subRadioLabel;
+                  srf.triggerValue = subOption;
+                  srf.conditionType = 'equals';
+                  srf.visibleWhen = { field: subTriggerSlug, equals: subOption };
+                }
                 const nestedPath = [
                   { triggerLabel: group.label, triggerValue: option, conditionType: 'includes' },
                   { triggerLabel: subRadioLabel, triggerValue: subOption }
@@ -867,7 +1016,18 @@ export class OracleRecruitingAdapter {
         const after = await this.#extractControls(page);
         const revealed = after.filter(field => !beforeKeys.has(this.#fieldIdentity(field)));
         const conditionPath = [...item.path, { triggerLabel: item.label, triggerValue: targetLabel }];
-        if (revealed.length) branches.push({ triggerLabel: item.label, triggerValue: targetLabel, path: conditionPath, revealed });
+        if (revealed.length) {
+          const triggerSlug = this.#slug(item.label);
+          for (const rf of revealed) {
+            rf.isConditional = true;
+            rf.triggerFieldId = triggerSlug;
+            rf.triggerLabel = item.label;
+            rf.triggerValue = targetLabel;
+            rf.conditionType = 'equals';
+            rf.visibleWhen = { field: triggerSlug, equals: targetLabel };
+          }
+          branches.push({ triggerLabel: item.label, triggerValue: targetLabel, path: conditionPath, revealed });
+        }
 
         for (const newLabel of await this.#visibleRadioGroupLabels(page)) {
           if (beforeGroups.has(newLabel)) continue;
@@ -883,7 +1043,13 @@ export class OracleRecruitingAdapter {
   }
 
   async #visibleRadioGroupLabels(page) {
-    return page.getByRole('radiogroup').evaluateAll(groups => [...new Set(groups.map(group => group.getAttribute('aria-label') || '').filter(Boolean))]);
+    const hasSections = (await page.locator('.apply-flow-section').count().catch(() => 0)) > 0;
+    const selector = hasSections
+      ? '.apply-flow-section:not([style*="display: none"]) [role="radiogroup"]'
+      : '[role="radiogroup"]';
+    return page.locator(selector).evaluateAll(groups =>
+      [...new Set(groups.map(group => group.getAttribute('aria-label') || '').filter(Boolean))]
+    ).catch(() => []);
   }
 
   async #radioOptionLabels(group) {
@@ -1074,75 +1240,147 @@ export class OracleRecruitingAdapter {
         filledAnyOnPass = false;
         pass += 1;
 
-        for (const field of template.fields ?? []) {
-          if (filledFieldIds.has(field.id)) continue;
-          const answer = values[field.id]?.value;
-          if (answer === null || answer === undefined || answer === '') continue;
+        // 1. Live DOM scan of active controls on this step
+        let liveControls = await this.#extractActivePageControls(page).catch(() => []);
+        if (!liveControls.length && (template.fields?.length ?? 0) > 0) {
+          liveControls = template.fields;
+        }
 
+        // 2. Discover visible repeatable section buttons (+ Add Experience, + Add Education)
+        const visibleAddButtons = await this.#visibleAddButtons(page).catch(() => []);
+
+        // 3. Process live controls top-to-bottom
+        for (const liveControl of liveControls) {
+          if (filledFieldIds.has(liveControl.id)) continue;
+
+          // Multi-tier match against values
+          const match = this.#matchLiveControlToValues(liveControl, values, template.fields);
+          if (!match) continue;
+
+          const { targetFieldId, targetField, answer } = match;
+          if (answer === null || answer === undefined || answer === '') continue;
+          if (filledFieldIds.has(targetFieldId)) continue;
+
+          const effectiveField = { ...targetField, ...liveControl, id: targetFieldId };
+
+          // Pre-check: is it already filled or locked/readonly?
+          const liveState = await this.#inspectLiveControlState(page, effectiveField);
+          if (liveState.matchesDesired(answer)) {
+            console.error(`[Phase 4] [Job ${jobId} | User ${userId}] ✓ Already filled with desired value: "${effectiveField.label}"`);
+            filledFieldIds.add(liveControl.id);
+            filledFieldIds.add(targetFieldId);
+            results.push({ fieldId: targetFieldId, status: 'verified', prefilled: true });
+            continue;
+          }
+
+          if (liveState.isLocked) {
+            console.error(`[Phase 4] [Job ${jobId} | User ${userId}] ℹ Pre-filled and locked by Oracle: "${effectiveField.label}" (current: "${liveState.currentValue}")`);
+            filledFieldIds.add(liveControl.id);
+            filledFieldIds.add(targetFieldId);
+            results.push({ fieldId: targetFieldId, status: 'verified', locked: true, currentValue: liveState.currentValue });
+            continue;
+          }
+
+          // Strict visibility check for the control on the active page
           let locator;
-          if (field.type === 'repeatable-group') {
-            locator = page.getByRole('button', { name: new RegExp(`^${field.addButton}$`, 'i') }).first();
-          } else if (field.type === 'multi-checkbox') {
-            locator = page.locator(`.input-row:has-text("${field.label}"), [role="group"]:has-text("${field.label}"), .form-field:has-text("${field.label}")`).first();
-          } else if (field.sourceName) {
-            locator = page.locator(`[name="${field.sourceName.replaceAll('"', '\\"')}"]:visible`).first();
-          } else if (field.sourceId) {
-            locator = page.locator(`[id="${field.sourceId.replaceAll('"', '\\"')}"]:visible`).first();
-          } else if (field.type === 'radio') {
-            locator = page.getByRole('radiogroup', { name: field.label }).first();
+          if (effectiveField.type === 'repeatable-group') {
+            locator = page.getByRole('button', { name: new RegExp(`^${effectiveField.addButton}$`, 'i') }).first();
+          } else if (effectiveField.type === 'multi-checkbox') {
+            locator = page.locator(`.input-row:has-text("${effectiveField.label}"), [role="group"]:has-text("${effectiveField.label}"), .form-field:has-text("${effectiveField.label}")`).first();
+          } else if (effectiveField.type === 'radio') {
+            locator = page.getByRole('radiogroup', { name: effectiveField.label }).first();
+            if (!(await visible(locator))) {
+              locator = page.locator(`.input-row[role="radiogroup"]:has-text("${effectiveField.label}"), [role="radiogroup"]:has-text("${effectiveField.label}"), .input-row:has-text("${effectiveField.label}") [role="radiogroup"]`).first();
+            }
+          } else if (effectiveField.sourceName) {
+            locator = page.locator(`[name="${effectiveField.sourceName.replaceAll('"', '\\"')}"]:visible`).first();
+          } else if (effectiveField.sourceId) {
+            locator = page.locator(`[id="${effectiveField.sourceId.replaceAll('"', '\\"')}"]:visible`).first();
           } else {
-            locator = page.getByLabel(field.label).first();
+            locator = page.getByLabel(effectiveField.label).first();
           }
 
           // Fallback if not matched with :visible selector
           if (!(await visible(locator))) {
-            if (field.sourceId) {
-              locator = page.locator(`[id="${field.sourceId.replaceAll('"', '\\"')}"]`).first();
-            } else if (field.sourceName) {
-              locator = page.locator(`[name="${field.sourceName.replaceAll('"', '\\"')}"]`).first();
+            if (effectiveField.type === 'radio') {
+              locator = page.getByRole('radiogroup', { name: effectiveField.label }).first();
+            } else if (effectiveField.sourceId) {
+              locator = page.locator(`[id="${effectiveField.sourceId.replaceAll('"', '\\"')}"]`).first();
+            } else if (effectiveField.sourceName) {
+              locator = page.locator(`[name="${effectiveField.sourceName.replaceAll('"', '\\"')}"]`).first();
             }
           }
 
           if (!(await visible(locator))) continue;
 
-          // STRICT CHECK: Is this control actually visible on the active page right now?
           let isActuallyVisible = await locator.isVisible().catch(() => false);
-          if (!isActuallyVisible && field.type === 'multi-checkbox') {
-            isActuallyVisible = await visible(locator);
+          if (!isActuallyVisible && effectiveField.type === 'radio') {
+            const groupVisible = (await visible(locator)) && (await locator.isVisible().catch(() => false));
+            isActuallyVisible = groupVisible;
+            if (!isActuallyVisible) {
+              const fallbackGroup = page.locator(`.input-row:has-text("${effectiveField.label}"), [role="radiogroup"]:has-text("${effectiveField.label}")`).first();
+              isActuallyVisible = (await visible(fallbackGroup)) && (await fallbackGroup.isVisible().catch(() => false));
+              if (isActuallyVisible) locator = fallbackGroup;
+            }
           }
-          if (!isActuallyVisible && field.type === 'checkbox') {
-            const customCheckbox = field.sourceId
-              ? page.locator(`label[for="${field.sourceId}"]:visible, [id="${field.sourceId}"] + .apply-flow-input-checkbox__button:visible, label:has-text("${field.label}"):visible`).first()
-              : page.locator(`label.apply-flow-input-checkbox:has-text("${field.label}"):visible, label:has-text("${field.label}"):visible, .input-row:has-text("${field.label}") .apply-flow-input-checkbox__button:visible`).first();
+          if (!isActuallyVisible && effectiveField.type === 'multi-checkbox') {
+            const rowVisible = (await visible(locator)) && (await locator.isVisible().catch(() => false));
+            isActuallyVisible = rowVisible;
+          }
+          if (!isActuallyVisible && effectiveField.type === 'checkbox') {
+            const customCheckbox = effectiveField.sourceId
+              ? page.locator(`label[for="${effectiveField.sourceId}"]:visible, [id="${effectiveField.sourceId}"] + .apply-flow-input-checkbox__button:visible, label:has-text("${effectiveField.label}"):visible`).first()
+              : page.locator(`label.apply-flow-input-checkbox:has-text("${effectiveField.label}"):visible, label:has-text("${effectiveField.label}"):visible, .input-row:has-text("${effectiveField.label}") .apply-flow-input-checkbox__button:visible`).first();
             isActuallyVisible = (await visible(customCheckbox)) && (await customCheckbox.isVisible().catch(() => false));
           }
-          if (!isActuallyVisible && field.type === 'file' && field.sourceId) {
-            const fileUploadArea = page.locator(`.file-upload-block:visible, .apply-flow-file-upload:visible, [id="${field.sourceId}"]:visible`).first();
+          if (!isActuallyVisible && effectiveField.type === 'file') {
+            const fileUploadArea = page.locator(`.file-upload-block:visible, .apply-flow-file-upload:visible, .apply-flow-block--file-upload:visible, .file-form-element:visible, [id="${effectiveField.sourceId}"]:visible`).first();
             isActuallyVisible = await visible(fileUploadArea);
           }
 
-          // If NOT currently visible on this active step, skip instantly in 0ms!
           if (!isActuallyVisible) continue;
 
-          const fieldLabel = field.label || field.id;
+          const fieldLabel = effectiveField.label || effectiveField.id;
           console.error(`[Phase 4] [Job ${jobId} | User ${userId}] Applying: "${fieldLabel}"`);
 
           try {
             await humanPause(this.actionGap);
-            if (field.type === 'repeatable-group') {
-              await this.#fillRepeatableGroup(page, field, answer, context);
+            if (effectiveField.type === 'repeatable-group') {
+              await this.#fillRepeatableGroup(page, effectiveField, answer, context);
             } else {
-              await this.#fillField(page, field, answer, files, context);
+              await this.#fillField(page, effectiveField, answer, files, context);
             }
-            filledFieldIds.add(field.id);
-            results.push({ fieldId: field.id, status: 'verified' });
+            filledFieldIds.add(liveControl.id);
+            filledFieldIds.add(targetFieldId);
+            results.push({ fieldId: targetFieldId, status: 'verified' });
             filledAnyOnPass = true;
             console.error(`[Phase 4] [Job ${jobId} | User ${userId}] ✓ Applied successfully: "${fieldLabel}"`);
           } catch (error) {
             console.error(`[Phase 4] [Job ${jobId} | User ${userId}] ✗ Failed: "${fieldLabel}" (${error.message})`);
-            results.push({ fieldId: field.id, status: 'failed', error: error.message });
+            results.push({ fieldId: targetFieldId, status: 'failed', error: error.message });
           }
           await humanPause(this.actionGap);
+        }
+
+        // 4. Process repeatable groups if matching add button is visible on page
+        for (const addBtnInfo of visibleAddButtons) {
+          const matchGroup = (template.repeatableGroups ?? []).find(g =>
+            g.id === addBtnInfo.id || (g.addButton && g.addButton.toLowerCase() === addBtnInfo.text.toLowerCase())
+          );
+          if (!matchGroup || filledFieldIds.has(matchGroup.id)) continue;
+          const answer = values[matchGroup.id]?.value;
+          if (!answer || !Array.isArray(answer) || !answer.length) continue;
+
+          console.error(`[Phase 4] [Job ${jobId} | User ${userId}] Filling repeatable group "${matchGroup.label}" (${answer.length} entries)...`);
+          try {
+            await this.#fillRepeatableGroup(page, matchGroup, answer, context);
+            filledFieldIds.add(matchGroup.id);
+            results.push({ fieldId: matchGroup.id, status: 'verified' });
+            filledAnyOnPass = true;
+          } catch (error) {
+            console.error(`[Phase 4] [Job ${jobId} | User ${userId}] ✗ Failed repeatable group "${matchGroup.label}": ${error.message}`);
+            results.push({ fieldId: matchGroup.id, status: 'failed', error: error.message });
+          }
         }
       }
 
@@ -1186,18 +1424,244 @@ export class OracleRecruitingAdapter {
     return results;
   }
 
+  async #extractActivePageControls(page) {
+    const hasSections = (await page.locator('.apply-flow-section').count().catch(() => 0)) > 0;
+    const prefix = hasSections ? '.apply-flow-section:not([style*="display: none"]) ' : '';
+
+    const { groups: multiCheckboxGroups, handledCheckboxIds } = await this.#extractCheckboxGroups(page);
+    const handledSet = new Set(handledCheckboxIds);
+
+    const candidates = page.locator([
+      `${prefix}input:not([type="hidden"]):not([aria-hidden="true"]):visible`,
+      `${prefix}textarea:not([aria-hidden="true"]):not(.input-row__control--helper):visible`,
+      `${prefix}select:visible`,
+      `${prefix}[role="combobox"]:visible`,
+      `${prefix}[role="radiogroup"]:visible`,
+      `${prefix}[role="checkbox"]:visible`,
+      `${prefix}label:visible input[type="checkbox"]`,
+      `${prefix}.input-row:visible input[type="checkbox"]`,
+      `${prefix}.form-field:visible input[type="checkbox"]`,
+      `${prefix}.apply-flow-block--file-upload input[type="file"]`,
+      `${prefix}.file-form-element input[type="file"]`,
+      `${prefix}input[type="file"][name="attachment-upload"]`,
+      `${prefix}input[type="file"].apply-flow-profile-import-awli__file-upload`
+    ].join(', '));
+
+    const seen = new Set();
+    const usedIds = new Set();
+    const fields = [];
+
+    for (const group of multiCheckboxGroups) {
+      let id = this.#slug(group.label);
+      if (usedIds.has(id)) id = `${id}_2`;
+      usedIds.add(id);
+      seen.add(group.label);
+      fields.push({ id, ...group, value: null });
+    }
+
+    const count = await candidates.count().catch(() => 0);
+    for (let index = 0; index < count; index += 1) {
+      const candidate = candidates.nth(index);
+      const isCandidateVisible = await candidate.isVisible().catch(() => false);
+      const isFile = await candidate.evaluate(el => el.type === 'file' || el.classList?.contains('upload-button')).catch(() => false);
+      if (!isCandidateVisible && !isFile) continue;
+
+      const field = await controlDescriptor(candidate);
+      if (field.sourceId && handledSet.has(field.sourceId)) continue;
+      const key = this.#fieldIdentity(field);
+      if (!field.label || /import your profile from resume/i.test(field.label) || seen.has(key)) continue;
+      seen.add(key);
+
+      if (field.role === 'radiogroup' || (field.tag === 'div' && field.role === 'radiogroup')) {
+        field.type = 'radio';
+        field.options = await this.#radioOptionLabels(candidate);
+      }
+
+      let id = this.#fieldId(field, fields.length);
+      if (usedIds.has(id)) id = `${id}_${this.#slug(field.label)}`;
+      let suffix = 2;
+      const baseId = id;
+      while (usedIds.has(id)) id = `${baseId}_${suffix++}`;
+      usedIds.add(id);
+      fields.push({ id, ...field, value: null });
+    }
+
+    return fields;
+  }
+
+  async #visibleAddButtons(page) {
+    const hasSections = (await page.locator('.apply-flow-section').count().catch(() => 0)) > 0;
+    const prefix = hasSections ? '.apply-flow-section:not([style*="display: none"]) ' : '';
+
+    const addButtons = page.locator([
+      `${prefix}button:has-text("Add"):not(.apply-flow-pagination__button):visible`,
+      `${prefix}button:has-text("+ Add"):visible`,
+      `${prefix}button:has-text("+Add"):visible`,
+      `${prefix}button[aria-label*="Add " i]:not(.apply-flow-pagination__button):visible`,
+      `${prefix}.apply-flow-repeatable__add-button:visible`,
+      `${prefix}button.candidate-links__add-link:visible`
+    ].join(', '));
+
+    const count = await addButtons.count().catch(() => 0);
+    const result = [];
+    for (let i = 0; i < count; i += 1) {
+      const btn = addButtons.nth(i);
+      const rawText = normalizeText(await btn.innerText().catch(() => '') || await btn.getAttribute('aria-label') || '');
+      if (!rawText || /^(next|cancel|continue|apply|back|close|submit)$/i.test(rawText)) continue;
+      const groupId = this.#slug(rawText.replace(/^(\+?\s*add|\+)\s+/i, ''));
+      result.push({ id: groupId, text: rawText, locator: btn });
+    }
+    return result;
+  }
+
+  #matchLiveControlToValues(liveControl, values, templateFields = []) {
+    // 1. Direct match by computed slug ID
+    if (values[liveControl.id]) {
+      const targetField = (templateFields ?? []).find(f => f.id === liveControl.id) || liveControl;
+      return { targetFieldId: liveControl.id, targetField, answer: values[liveControl.id]?.value };
+    }
+
+    // 2. Match by sourceId
+    if (liveControl.sourceId) {
+      for (const [key, val] of Object.entries(values)) {
+        const tField = (templateFields ?? []).find(f => f.id === key);
+        if (tField?.sourceId === liveControl.sourceId || key === liveControl.sourceId) {
+          return { targetFieldId: key, targetField: tField || liveControl, answer: val?.value };
+        }
+      }
+    }
+
+    // 3. Match by sourceName
+    if (liveControl.sourceName) {
+      for (const [key, val] of Object.entries(values)) {
+        const tField = (templateFields ?? []).find(f => f.id === key);
+        if (tField?.sourceName === liveControl.sourceName || key === liveControl.sourceName) {
+          return { targetFieldId: key, targetField: tField || liveControl, answer: val?.value };
+        }
+      }
+    }
+
+    // 4. Match by normalized label (+ section context)
+    const normLiveLabel = normalizeText(liveControl.label).toLowerCase().replace(/\s*\*$/, '');
+    if (normLiveLabel) {
+      for (const [key, val] of Object.entries(values)) {
+        const qLabel = normalizeText(val?.questionLabel || '').toLowerCase().replace(/\s*\*$/, '');
+        if (qLabel && (qLabel === normLiveLabel || qLabel.includes(normLiveLabel) || normLiveLabel.includes(qLabel))) {
+          const tField = (templateFields ?? []).find(f => f.id === key);
+          return { targetFieldId: key, targetField: tField || liveControl, answer: val?.value };
+        }
+      }
+    }
+
+    return null;
+  }
+
+  async #inspectLiveControlState(page, field) {
+    try {
+      if (field.type === 'radio') {
+        let group = page.getByRole('radiogroup', { name: field.label }).first();
+        if (!(await visible(group))) {
+          group = page.locator(`.input-row[role="radiogroup"]:has-text("${field.label}"), [role="radiogroup"]:has-text("${field.label}"), .input-row:has-text("${field.label}") [role="radiogroup"]`).first();
+        }
+        if (await visible(group)) {
+          const checkedRadio = group.locator('input[type="radio"]:checked, [role="radio"][aria-checked="true"], .cx-select-pill-section--selected').first();
+          if ((await checkedRadio.count().catch(() => 0)) > 0) {
+            const checkedId = await checkedRadio.getAttribute('id').catch(() => null);
+            let checkedText = '';
+            if (checkedId) {
+              checkedText = await page.locator(`label[for="${checkedId}"]`).innerText().catch(() => '');
+            }
+            if (!checkedText) {
+              checkedText = await checkedRadio.innerText().catch(() => '');
+            }
+            const normChecked = normalizeText(checkedText).toLowerCase();
+            return {
+              currentValue: checkedText,
+              isLocked: false,
+              matchesDesired: (desired) => {
+                const normDesired = normalizeText(String(desired)).toLowerCase();
+                return Boolean(normChecked && normDesired && (normChecked === normDesired || normChecked.includes(normDesired) || normDesired.includes(normChecked)));
+              }
+            };
+          }
+        }
+        return { matchesDesired: () => false, isLocked: false };
+      }
+
+      if (field.type === 'checkbox') {
+        const locator = field.sourceId ? page.locator(`[id="${field.sourceId}"]`).first() : page.locator(`label:has-text("${field.label}") input[type="checkbox"]`).first();
+        if (await visible(locator)) {
+          const isChecked = await locator.isChecked().catch(() => false);
+          return {
+            currentValue: isChecked,
+            isLocked: false,
+            matchesDesired: (desired) => Boolean(desired) === isChecked
+          };
+        }
+        return { matchesDesired: () => false, isLocked: false };
+      }
+
+      if (field.type === 'multi-checkbox') {
+        return { matchesDesired: () => false, isLocked: false };
+      }
+
+      // Input / Text / Email / Tel / Combobox
+      let locator;
+      if (field.sourceName) {
+        locator = page.locator(`[name="${field.sourceName}"]`).first();
+      } else if (field.sourceId) {
+        locator = page.locator(`[id="${field.sourceId}"]`).first();
+      } else {
+        locator = page.getByLabel(field.label).first();
+      }
+
+      if (await visible(locator)) {
+        const val = await locator.inputValue().catch(async () => {
+          return await locator.innerText().catch(() => '');
+        });
+        const isLocked = await locator.evaluate(el => {
+          return Boolean(
+            el.readOnly ||
+            el.disabled ||
+            el.getAttribute('readonly') !== null ||
+            el.classList?.contains('communication-channel__email-row--locked') ||
+            el.closest('.communication-channel__email-row--locked')
+          );
+        }).catch(() => false);
+
+        return {
+          currentValue: val,
+          isLocked,
+          matchesDesired: (desired) => {
+            if (!val) return false;
+            return normalizeText(String(val)).toLowerCase() === normalizeText(String(desired)).toLowerCase();
+          }
+        };
+      }
+    } catch {}
+    return { matchesDesired: () => false, isLocked: false };
+  }
+
   async #fillField(page, field, answer, files, context = {}) {
     if (field.type === 'file') {
       const file = files[field.id] ?? answer;
       invariant(file, 'MISSING_FILE', `No file supplied for ${field.label}`);
-      const locator = page.locator(`[id="${field.sourceId.replaceAll('"', '\\"')}"]`).first();
-      await this.#smoothScrollIntoView(page, locator);
+      const locator = page.locator([
+        '.apply-flow-block--file-upload input[type="file"]',
+        '.file-form-element input[type="file"]',
+        '.file-upload-block input[type="file"]',
+        'input[type="file"][name="attachment-upload"]',
+        field.sourceId ? `[id="${field.sourceId.replaceAll('"', '\\"')}"]` : null
+      ].filter(Boolean).join(', ')).first();
       await locator.setInputFiles(file);
       await humanPause(this.actionGap);
       return;
     }
     if (field.type === 'radio') {
-      const group = page.getByRole('radiogroup', { name: field.label }).first();
+      let group = page.getByRole('radiogroup', { name: field.label }).first();
+      if (!(await visible(group))) {
+        group = page.locator(`.input-row[role="radiogroup"]:has-text("${field.label}"), [role="radiogroup"]:has-text("${field.label}"), .input-row:has-text("${field.label}") [role="radiogroup"]`).first();
+      }
       await this.#smoothScrollIntoView(page, group);
 
       let availableOptions = field.options ?? [];
@@ -1341,6 +1805,21 @@ export class OracleRecruitingAdapter {
 
     if (isLiveCombobox) {
       await this.#fillCombobox(page, locator, field, effectiveAnswer, context);
+      return;
+    }
+
+    const isLocked = await locator.evaluate(el => {
+      return Boolean(
+        el.readOnly ||
+        el.disabled ||
+        el.getAttribute('readonly') !== null ||
+        el.classList?.contains('communication-channel__email-row--locked') ||
+        el.closest('.communication-channel__email-row--locked')
+      );
+    }).catch(() => false);
+
+    if (isLocked) {
+      console.error(`[Phase 4] [Job ${context.jobId} | User ${context.userId}] ℹ Field "${field.label}" is locked/readonly. Retaining pre-filled value.`);
       return;
     }
 

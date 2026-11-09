@@ -872,5 +872,787 @@
     "count": 46,
     "resolved": 4,
     "needsInput": 38
+  },
+  {
+    "eventId": "evt_f8874c5f-202c-4deb-a81c-9c677041ce03",
+    "type": "phase3.answers_saved",
+    "at": "2026-11-05T09:58:24.304Z",
+    "applicationId": "app_efc7a04f604b4454",
+    "fields": [
+      "check_all_of_the_following_statements_that_apply_to_you",
+      "phone_number",
+      "city",
+      "region2",
+      "region1",
+      "i_am_hispanic_or_latino",
+      "us_standard_ora_veteran_status_standard",
+      "current_or_former_us_government_employees_within_the_last_12_months_before_receiving_any_reimburseme",
+      "were_you_previously_employed_directly_by_honeywell_honeywell_aerospace_or_a_subsidiary_of_either_com",
+      "are_you_related_to_or_in_a_relationship_with_anyone_who_works_at_honeywell_aerospace",
+      "within_the_past_12_months_or_audit_cycle_whichever_is_longer_did_you_provide_audit_or_review_service",
+      "have_you_ever_been_suspended_or_debarred_from_receiving_u_s_government_contracts_or_proposed_for_sus",
+      "have_you_entered_into_any_restrictive_covenant_agreement_such_as_a_non_compete_no_solicitation_trade",
+      "experience",
+      "education"
+    ]
+  },
+  {
+    "eventId": "evt_e45d0803-6f2f-44a0-88e2-cc8d828a5c8f",
+    "type": "phase1.authentication_failed",
+    "at": "2026-11-05T09:58:49.105Z",
+    "applicationId": "app_efc7a04f604b4454",
+    "jobId": "127048",
+    "code": "UNKNOWN"
+  },
+  {
+    "eventId": "evt_db0fb6b9-8cab-4501-a38d-0bcdb2eb8f02",
+    "type": "phase1.ingested",
+    "at": "2026-11-05T10:26:31.509Z",
+    "assignments": 671,
+    "uniqueJobs": 343,
+    "cleanCsvPath": "/Users/sharan/Desktop/oracle/data/jobs.csv",
+    "sourceCsvPath": "/Users/sharan/Desktop/oracle/data/oracle_jobs.csv"
+  },
+  {
+    "eventId": "evt_f60a5276-a7be-426f-a281-6f0a5353e40c",
+    "type": "phase1.authenticated",
+    "at": "2026-11-05T10:29:27.348Z",
+    "applicationId": "scan-11294",
+    "jobId": "11294",
+    "tenantHost": "eewl.fa.us6.oraclecloud.com"
+  },
+  {
+    "eventId": "evt_9c4201d3-8afb-4936-82a9-03cc2559780a",
+    "type": "phase2.template_ready",
+    "at": "2026-11-05T10:30:05.027Z",
+    "jobId": "11294",
+    "jobKey": "11294",
+    "templateId": "tpl_fad3147a467385a8",
+    "fields": 45,
+    "branches": 2
+  },
+  {
+    "eventId": "evt_fa1bec1f-c4a9-4566-b330-3d2cc77173b6",
+    "type": "phase3.applications_resolved",
+    "at": "2026-11-05T10:30:10.102Z",
+    "count": 48,
+    "resolved": 0,
+    "needsInput": 2
+  },
+  {
+    "eventId": "evt_c0250270-8269-401d-b744-3943a0d4418b",
+    "type": "phase3.applications_resolved",
+    "at": "2026-11-05T10:32:17.273Z",
+    "count": 48,
+    "resolved": 0,
+    "needsInput": 2
+  },
+  {
+    "eventId": "evt_48f5ee57-3439-4771-a8b2-d324fc1a3264",
+    "type": "phase3.answers_saved",
+    "at": "2026-11-05T10:40:14.089Z",
+    "applicationId": "app_692767faa6e08c22",
+    "fields": [
+      "phone_number",
+      "use_sms_for_communication",
+      "postal_code",
+      "city",
+      "region2",
+      "region1",
+      "are_you_willing_to_travel_out_of_state",
+      "have_you_been_previously_employed_by_this_organization_including_in_a_contract_or_part_time_basis",
+      "do_you_have_any_relatives_employed_by_this_organization",
+      "desired_base_salary",
+      "travel_domestically",
+      "hispanic_or_latino",
+      "military_service_start_date",
+      "military_service_start_date_service_start_date_day",
+      "military_service_start_date_service_start_date_year",
+      "i_agree_to_receive_updates_about_new_job_opportunities",
+      "i_agree_to_receive_marketing_communications",
+      "domestic_travel_frequency",
+      "experience",
+      "education"
+    ]
+  },
+  {
+    "eventId": "evt_61b42acf-dc49-4f96-a5ad-404de6988137",
+    "type": "phase3.answers_saved",
+    "at": "2026-11-05T10:41:52.413Z",
+    "applicationId": "app_692767faa6e08c22",
+    "fields": [
+      "email",
+      "if_you_were_referred_by_a_sundt_employee_provide_employee_s_name_enter_n_a_if_you_were_not_referred"
+    ]
+  },
+  {
+    "eventId": "evt_7fb3c8cb-7931-4662-80af-b1d8fdbde86c",
+    "type": "phase1.authenticated",
+    "at": "2026-11-05T10:42:57.526Z",
+    "applicationId": "app_692767faa6e08c22",
+    "jobId": "11294",
+    "tenantHost": "eewl.fa.us6.oraclecloud.com"
+  },
+  {
+    "eventId": "evt_3a0355f7-9e96-4925-81ec-8ed7c1abf9b3",
+    "type": "phase4.fill_complete",
+    "at": "2026-11-05T10:43:00.678Z",
+    "applicationId": "app_692767faa6e08c22",
+    "failures": 0
+  },
+  {
+    "eventId": "evt_892b5ff3-e79b-4c2f-a745-b7651ada8a58",
+    "type": "phase1.authenticated",
+    "at": "2026-11-05T10:48:17.789Z",
+    "applicationId": "scan-105537",
+    "jobId": "105537",
+    "tenantHost": "fa-etjd-saasfaprod1.fa.ocs.oraclecloud.com"
+  },
+  {
+    "eventId": "evt_0161c9c7-ddf5-45ce-818d-5b3f94936ed8",
+    "type": "phase2.template_ready",
+    "at": "2026-11-05T10:49:52.848Z",
+    "jobId": "105537",
+    "jobKey": "105537",
+    "templateId": "tpl_ac9ef5878be6ccb1",
+    "fields": 49,
+    "branches": 7
+  },
+  {
+    "eventId": "evt_4e2293c2-81ba-47b6-912f-0239364c5b64",
+    "type": "phase3.applications_resolved",
+    "at": "2026-11-05T10:52:17.692Z",
+    "count": 60,
+    "resolved": 1,
+    "needsInput": 13
+  },
+  {
+    "eventId": "evt_1fd1b2e5-723b-441e-8344-4ab4b7e4bfb7",
+    "type": "phase3.answers_saved",
+    "at": "2026-11-05T11:03:59.516Z",
+    "applicationId": "app_07c6b4175505631d",
+    "fields": [
+      "phone_number",
+      "it_is_the_position_of_first_energy_that_all_employees_and_applicants_for_employment_be_evaluated_on_",
+      "do_you_currently_serve_on_any_boards_or_commissions_where_you_were_appointed_by_a_government_officia",
+      "have_you_ever_been_employed_by_any_of_first_energy_s_affiliated_companies_or_subsidiaries_first_ener",
+      "have_you_ever_been_a_contractor_of_first_energy_s_affiliated_companies_or_subsidiaries_first_energy_",
+      "are_you_a_current_or_former_employee_of_first_energy_s_independent_auditor_currently_price_waterhous",
+      "do_you_have_any_relatives_who_are_employed_by_any_of_first_energy_s_affiliated_companies_or_subsidia",
+      "have_you_ever_taken_any_employment_tests_at_any_of_first_energy_s_affiliated_companies_or_subsidiari",
+      "what_is_your_desired_rate_of_pay",
+      "political_figure_affiliation_are_you_a_political_figure_and_or_the_relative_of_a_political_figure_an",
+      "i_am_hispanic_or_latino",
+      "us_standard_ora_veteran_status_standard",
+      "experience",
+      "education"
+    ]
+  },
+  {
+    "eventId": "evt_78b76e25-cc9d-441e-adb5-af054e02d628",
+    "type": "phase3.answers_saved",
+    "at": "2026-11-05T11:05:16.752Z",
+    "applicationId": "app_07c6b4175505631d",
+    "fields": [
+      "please_identify_your_immediate_family_members_members_of_your_household_or_individuals_with_whom_you",
+      "if_yes_please_provide_the_relationship_s_to_the_political_figure_s"
+    ]
+  },
+  {
+    "eventId": "evt_b8b0b088-f920-4676-b0f5-1f4ed9f96ea8",
+    "type": "phase3.answers_saved",
+    "at": "2026-11-05T11:06:13.232Z",
+    "applicationId": "app_07c6b4175505631d",
+    "fields": [
+      "please_identify_your_immediate_family_members_members_of_your_household_or_individuals_with_whom_you"
+    ]
+  },
+  {
+    "eventId": "evt_87e9fd12-5572-451f-982d-cbfcb86eaed5",
+    "type": "phase1.authenticated",
+    "at": "2026-11-05T11:07:16.006Z",
+    "applicationId": "app_07c6b4175505631d",
+    "jobId": "105537",
+    "tenantHost": "fa-etjd-saasfaprod1.fa.ocs.oraclecloud.com"
+  },
+  {
+    "eventId": "evt_42ca4f27-e87a-4261-8701-b6d78e34b26c",
+    "type": "phase4.fill_complete",
+    "at": "2026-11-05T11:15:40.234Z",
+    "applicationId": "app_07c6b4175505631d",
+    "failures": 4
+  },
+  {
+    "eventId": "evt_edf2cf41-d186-446a-b1c1-1ee22dd91e93",
+    "type": "phase1.authenticated",
+    "at": "2026-11-06T06:15:09.489Z",
+    "applicationId": "scan-48657",
+    "jobId": "48657",
+    "tenantHost": "ejrz.fa.us2.oraclecloud.com"
+  },
+  {
+    "eventId": "evt_729ba836-c376-4a09-a43d-ecf5279185a8",
+    "type": "phase2.template_ready",
+    "at": "2026-11-06T06:15:14.812Z",
+    "jobId": "48657",
+    "jobKey": "48657",
+    "templateId": "tpl_3f43bf83526f7d3b",
+    "fields": 0,
+    "branches": 0
+  },
+  {
+    "eventId": "evt_69e52d18-df3a-4e54-9b4a-f7e35e9104e3",
+    "type": "phase3.applications_resolved",
+    "at": "2026-11-06T06:17:32.971Z",
+    "count": 68,
+    "resolved": 10,
+    "needsInput": 12
+  },
+  {
+    "eventId": "evt_6f995a6d-a7bd-40e4-918f-0b485f035cc1",
+    "type": "phase1.authenticated",
+    "at": "2026-11-06T06:28:58.702Z",
+    "applicationId": "app_75d702491b71d286",
+    "jobId": "48657",
+    "tenantHost": "ejrz.fa.us2.oraclecloud.com"
+  },
+  {
+    "eventId": "evt_1d07cb86-a326-47c0-96a3-707214aa6064",
+    "type": "phase4.fill_complete",
+    "at": "2026-11-06T06:29:05.547Z",
+    "applicationId": "app_75d702491b71d286",
+    "failures": 1
+  },
+  {
+    "eventId": "evt_8d022d81-cd3c-4120-a184-060a1bbdbc6a",
+    "type": "phase1.authenticated",
+    "at": "2026-11-06T06:39:31.220Z",
+    "applicationId": "scan-job_234",
+    "jobId": "48657",
+    "tenantHost": "ejrz.fa.us2.oraclecloud.com"
+  },
+  {
+    "eventId": "evt_16d8a262-a067-431f-ac8e-80c83720aa1f",
+    "type": "phase2.template_ready",
+    "at": "2026-11-06T06:39:35.842Z",
+    "jobId": "48657",
+    "jobKey": "job_234",
+    "templateId": "tpl_3ef78e29964a0f3d",
+    "fields": 0,
+    "branches": 0
+  },
+  {
+    "eventId": "evt_20e8a8fe-27f6-4d85-b78b-e71ba6a7f104",
+    "type": "phase3.applications_resolved",
+    "at": "2026-11-06T06:39:36.753Z",
+    "count": 68,
+    "resolved": 8,
+    "needsInput": 0
+  },
+  {
+    "eventId": "evt_1c492fe7-34e6-4c1b-b35b-d42a258a6bac",
+    "type": "phase1.authenticated",
+    "at": "2026-11-06T06:41:09.254Z",
+    "applicationId": "scan-job_211",
+    "jobId": "105537",
+    "tenantHost": "fa-etjd-saasfaprod1.fa.ocs.oraclecloud.com"
+  },
+  {
+    "eventId": "evt_7a75a8ad-eb2e-4836-8326-6b812af184c0",
+    "type": "phase2.template_ready",
+    "at": "2026-11-06T06:42:48.132Z",
+    "jobId": "105537",
+    "jobKey": "job_211",
+    "templateId": "tpl_84791a8adcdaec8a",
+    "fields": 33,
+    "branches": 7
+  },
+  {
+    "eventId": "evt_6ba6189f-0e75-432d-a479-0a8b7ef7096d",
+    "type": "phase3.applications_resolved",
+    "at": "2026-11-06T06:43:03.027Z",
+    "count": 68,
+    "resolved": 1,
+    "needsInput": 11
+  },
+  {
+    "eventId": "evt_a32bb6e4-2d9a-4546-816c-f2cc73e4c1fc",
+    "type": "phase1.authenticated",
+    "at": "2026-11-06T07:20:16.675Z",
+    "applicationId": "scan-job_234",
+    "jobId": "48657",
+    "tenantHost": "ejrz.fa.us2.oraclecloud.com"
+  },
+  {
+    "eventId": "evt_6a958e0f-3abc-4169-a0c0-5a13f136a76d",
+    "type": "phase2.template_ready",
+    "at": "2026-11-06T07:20:43.097Z",
+    "jobId": "48657",
+    "jobKey": "job_234",
+    "templateId": "tpl_3ef27dd9985cdb51",
+    "fields": 33,
+    "branches": 0
+  },
+  {
+    "eventId": "evt_a7c355cd-6647-4a05-8487-4d352cf941eb",
+    "type": "phase3.applications_resolved",
+    "at": "2026-11-06T07:21:08.466Z",
+    "count": 68,
+    "resolved": 0,
+    "needsInput": 8
+  },
+  {
+    "eventId": "evt_ffcc87f6-4d82-42bd-a581-f8f88bc802a0",
+    "type": "phase3.answers_saved",
+    "at": "2026-11-06T07:27:10.531Z",
+    "applicationId": "app_26699f82921c792e",
+    "fields": [
+      "phone_country_code",
+      "phone_number",
+      "postal_code",
+      "region2",
+      "region1",
+      "have_you_ever_been_excluded_debarred_suspended_or_otherwise_deemed_ineligible_to_participate_in_any_",
+      "have_you_ever_been_employed_by_vitas",
+      "has_your_nursing_or_other_professional_ever_been_suspended_or_revoked_explain_all_circumstances_if_n",
+      "is_any_accommodation_necessary_for_you_to_proceed_through_any_part_of_the_application_process_if_so_",
+      "do_you_have_any_relatives_employed_by_vitas_if_yes_please_provide_name_and_location",
+      "do_you_have_proof_of_legal_right_to_work_in_this_country",
+      "application_date_month",
+      "application_date_day",
+      "application_date_year",
+      "application_e_signature_the_job_application_data_you_provide_will_be_used_to_assess_your_application",
+      "experience"
+    ]
+  },
+  {
+    "eventId": "evt_cf30d517-8c9c-4d11-ae77-810ecba85234",
+    "type": "phase1.authenticated",
+    "at": "2026-11-06T07:27:57.431Z",
+    "applicationId": "app_26699f82921c792e",
+    "jobId": "48657",
+    "tenantHost": "ejrz.fa.us2.oraclecloud.com"
+  },
+  {
+    "eventId": "evt_71deeea1-dd0e-4f2e-ae46-99b2a4d31b65",
+    "type": "phase4.fill_complete",
+    "at": "2026-11-06T07:30:58.779Z",
+    "applicationId": "app_26699f82921c792e",
+    "failures": 0
+  },
+  {
+    "eventId": "evt_d9901db5-0ba3-4aa4-9396-07cae6acf487",
+    "type": "phase1.authenticated",
+    "at": "2026-11-06T08:08:29.293Z",
+    "applicationId": "scan-job_2",
+    "jobId": "33203",
+    "tenantHost": "fa-etbx-saasfaprod1.fa.ocs.oraclecloud.com"
+  },
+  {
+    "eventId": "evt_70c97774-c997-4564-be90-c18ce198048e",
+    "type": "phase1.authentication_failed",
+    "at": "2026-11-06T08:11:43.036Z",
+    "applicationId": "scan-job_15",
+    "jobId": "2015644",
+    "code": "UNKNOWN"
+  },
+  {
+    "eventId": "evt_8a543cf2-6960-4446-b914-6cd4509b434c",
+    "type": "phase1.authenticated",
+    "at": "2026-11-06T08:12:24.184Z",
+    "applicationId": "scan-job_17",
+    "jobId": "24635",
+    "tenantHost": "edel.fa.us2.oraclecloud.com"
+  },
+  {
+    "eventId": "evt_ceedbb12-ccb1-4a27-9cb0-0afa7a7f1dad",
+    "type": "phase1.authenticated",
+    "at": "2026-11-06T08:12:59.019Z",
+    "applicationId": "scan-job_16",
+    "jobId": "788291",
+    "tenantHost": "eofd.fa.us6.oraclecloud.com"
+  },
+  {
+    "eventId": "evt_0f6933c6-1589-418f-81c9-2c72cbc61036",
+    "type": "phase2.template_ready",
+    "at": "2026-11-06T08:13:05.306Z",
+    "jobId": "24635",
+    "jobKey": "job_17",
+    "templateId": "tpl_774b8e35aa38b185",
+    "fields": 28,
+    "branches": 2
+  },
+  {
+    "eventId": "evt_2da0f657-2c59-47c8-b455-14ba7b044756",
+    "type": "phase1.authentication_failed",
+    "at": "2026-11-06T08:13:12.875Z",
+    "applicationId": "scan-job_15",
+    "jobId": "2015644",
+    "code": "UNKNOWN"
+  },
+  {
+    "eventId": "evt_6c7652f9-da97-4606-b656-8d550589c107",
+    "type": "phase2.template_ready",
+    "at": "2026-11-06T08:14:13.477Z",
+    "jobId": "788291",
+    "jobKey": "job_16",
+    "templateId": "tpl_aff49f562cc0c855",
+    "fields": 41,
+    "branches": 2
+  },
+  {
+    "eventId": "evt_931cac17-a2c4-4b2b-98e6-0ecebb825a96",
+    "type": "phase1.authenticated",
+    "at": "2026-11-06T08:14:14.088Z",
+    "applicationId": "scan-job_18",
+    "jobId": "33296",
+    "tenantHost": "fa-etbx-saasfaprod1.fa.ocs.oraclecloud.com"
+  },
+  {
+    "eventId": "evt_f80f553d-b042-44d6-99fe-7696792f6dd7",
+    "type": "phase1.authenticated",
+    "at": "2026-11-06T08:14:52.822Z",
+    "applicationId": "scan-job_19",
+    "jobId": "611",
+    "tenantHost": "ejkz.fa.us2.oraclecloud.com"
+  },
+  {
+    "eventId": "evt_0635a584-82ed-4196-aa68-85eebe35984d",
+    "type": "phase1.authenticated",
+    "at": "2026-11-06T08:14:55.190Z",
+    "applicationId": "scan-job_20",
+    "jobId": "261017",
+    "tenantHost": "fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com"
+  },
+  {
+    "eventId": "evt_93cf828f-a22c-4b14-a414-d3e67c5d453d",
+    "type": "phase2.template_ready",
+    "at": "2026-11-06T08:15:34.560Z",
+    "jobId": "611",
+    "jobKey": "job_19",
+    "templateId": "tpl_8d2f8de2119c069e",
+    "fields": 34,
+    "branches": 1
+  },
+  {
+    "eventId": "evt_b389dd18-0e11-4b6a-9216-c8881f869860",
+    "type": "phase1.authenticated",
+    "at": "2026-11-06T08:16:04.665Z",
+    "applicationId": "scan-job_18",
+    "jobId": "33296",
+    "tenantHost": "fa-etbx-saasfaprod1.fa.ocs.oraclecloud.com"
+  },
+  {
+    "eventId": "evt_d41d0391-add0-49a8-94bc-615759c8e4bf",
+    "type": "phase2.template_ready",
+    "at": "2026-11-06T08:16:10.414Z",
+    "jobId": "261017",
+    "jobKey": "job_20",
+    "templateId": "tpl_73b85a762fc52702",
+    "fields": 44,
+    "branches": 2
+  },
+  {
+    "eventId": "evt_d0df129e-8cc5-4840-b6f3-f962a46a17f8",
+    "type": "phase1.authenticated",
+    "at": "2026-11-06T08:16:28.685Z",
+    "applicationId": "scan-job_22",
+    "jobId": "349100",
+    "tenantHost": "eeho.fa.us2.oraclecloud.com"
+  },
+  {
+    "eventId": "evt_372783ca-29f9-4734-98a5-8482a1ee141a",
+    "type": "phase2.template_ready",
+    "at": "2026-11-06T08:17:05.342Z",
+    "jobId": "349100",
+    "jobKey": "job_22",
+    "templateId": "tpl_357b73d3d5897f33",
+    "fields": 35,
+    "branches": 1
+  },
+  {
+    "eventId": "evt_d7412ba0-c898-417c-901c-89180a76e4a8",
+    "type": "phase1.authenticated",
+    "at": "2026-11-06T08:17:14.984Z",
+    "applicationId": "scan-job_23",
+    "jobId": "20262196",
+    "tenantHost": "ecge.fa.us2.oraclecloud.com"
+  },
+  {
+    "eventId": "evt_387a2a98-2620-4d02-a6d4-f874ceb2957a",
+    "type": "phase1.authenticated",
+    "at": "2026-11-06T08:17:54.061Z",
+    "applicationId": "scan-job_24",
+    "jobId": "2805",
+    "tenantHost": "ibxwjb.fa.ocs.oraclecloud.com"
+  },
+  {
+    "eventId": "evt_026d9619-62ff-43f3-9174-5699e999ed22",
+    "type": "phase1.authenticated",
+    "at": "2026-11-06T08:18:11.902Z",
+    "applicationId": "scan-job_21",
+    "jobId": "260225",
+    "tenantHost": "fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com"
+  },
+  {
+    "eventId": "evt_f8562a74-65ec-4484-8416-5d16bf9cb4fe",
+    "type": "phase2.template_ready",
+    "at": "2026-11-06T08:18:26.514Z",
+    "jobId": "2805",
+    "jobKey": "job_24",
+    "templateId": "tpl_fb1b6241ac2b5594",
+    "fields": 22,
+    "branches": 0
+  },
+  {
+    "eventId": "evt_d05a9298-7b93-4426-a5b5-4eaec0c79b6a",
+    "type": "phase2.template_ready",
+    "at": "2026-11-06T08:19:27.414Z",
+    "jobId": "260225",
+    "jobKey": "job_21",
+    "templateId": "tpl_0b8b20afd1a0933e",
+    "fields": 42,
+    "branches": 1
+  },
+  {
+    "eventId": "evt_109e712d-30c5-4cfc-a1da-d047fc2589aa",
+    "type": "phase2.template_ready",
+    "at": "2026-11-06T08:20:34.885Z",
+    "jobId": "20262196",
+    "jobKey": "job_23",
+    "templateId": "tpl_2e1a1c6c92ca7fc7",
+    "fields": 60,
+    "branches": 15
+  },
+  {
+    "eventId": "evt_0b8b5306-4d04-4664-80e9-fa361ebb77ab",
+    "type": "phase3.applications_resolved",
+    "at": "2026-11-06T08:22:35.657Z",
+    "count": 68,
+    "resolved": 3,
+    "needsInput": 19
+  },
+  {
+    "eventId": "evt_27d7e3a2-afbd-4086-a52b-e96eba1b57d3",
+    "type": "phase1.ingested",
+    "at": "2026-11-06T08:26:26.086Z",
+    "assignments": 671,
+    "uniqueJobs": 343,
+    "cleanCsvPath": "/Users/sharan/Desktop/oracle/data/jobs.csv",
+    "sourceCsvPath": "/Users/sharan/Desktop/oracle/data/oracle_jobs.csv"
+  },
+  {
+    "eventId": "evt_52edcef3-abf8-4868-98a1-9f74c7973278",
+    "type": "phase3.applications_resolved",
+    "at": "2026-11-06T08:26:47.541Z",
+    "count": 68,
+    "resolved": 3,
+    "needsInput": 19
+  },
+  {
+    "eventId": "evt_c5c9072f-321e-46d5-870c-fecfce0e80a7",
+    "type": "phase1.authenticated",
+    "at": "2026-11-06T09:07:39.496Z",
+    "applicationId": "scan-job_200",
+    "jobId": "11294",
+    "tenantHost": "eewl.fa.us6.oraclecloud.com"
+  },
+  {
+    "eventId": "evt_d939e07d-3c73-41cd-8be2-15a4c52cda5e",
+    "type": "phase1.authenticated",
+    "at": "2026-11-06T09:08:18.820Z",
+    "applicationId": "scan-job_201",
+    "jobId": "9145",
+    "tenantHost": "iazuqy.fa.ocs.oraclecloud.com"
+  },
+  {
+    "eventId": "evt_d73c22db-4ac6-4d71-b7cc-7c0115d82141",
+    "type": "phase1.authenticated",
+    "at": "2026-11-06T09:08:23.225Z",
+    "applicationId": "scan-job_202",
+    "jobId": "228889",
+    "tenantHost": "fa-evzu-saasfaprod1.fa.ocs.oraclecloud.com"
+  },
+  {
+    "eventId": "evt_67e33d07-161c-4c2b-a7dc-d4510745947b",
+    "type": "phase2.template_ready",
+    "at": "2026-11-06T09:08:29.604Z",
+    "jobId": "11294",
+    "jobKey": "job_200",
+    "templateId": "tpl_e96517f7a7b21ebc",
+    "fields": 45,
+    "branches": 2
+  },
+  {
+    "eventId": "evt_a322299f-7580-45bf-b45b-d0b71a8adbec",
+    "type": "phase1.skipped",
+    "at": "2026-11-06T09:08:57.628Z",
+    "applicationId": "scan-job_203",
+    "jobId": "26016065",
+    "tenantHost": "egug.fa.us2.oraclecloud.com",
+    "reason": "NO_APPLY_BUTTON",
+    "message": "No Apply button found on job page"
+  },
+  {
+    "eventId": "evt_a4fced8e-54e6-4351-952f-0f021cb7b62a",
+    "type": "phase1.skipped",
+    "at": "2026-11-06T09:09:31.623Z",
+    "applicationId": "scan-job_204",
+    "jobId": "459",
+    "tenantHost": "exzj.fa.us8.oraclecloud.com",
+    "reason": "NO_APPLY_BUTTON",
+    "message": "No Apply button found on job page"
+  },
+  {
+    "eventId": "evt_87988b7e-a228-4e13-a5b9-057c843279eb",
+    "type": "phase2.template_ready",
+    "at": "2026-11-06T09:09:39.797Z",
+    "jobId": "228889",
+    "jobKey": "job_202",
+    "templateId": "tpl_6eb58a98e22b031b",
+    "fields": 43,
+    "branches": 4
+  },
+  {
+    "eventId": "evt_fd75bf79-52b5-4b7d-93cd-f002e74ee627",
+    "type": "phase1.authenticated",
+    "at": "2026-11-06T09:10:17.888Z",
+    "applicationId": "scan-job_205",
+    "jobId": "130498",
+    "tenantHost": "iaucqy.fa.ocs.oraclecloud.com"
+  },
+  {
+    "eventId": "evt_1464b023-6b66-4af2-a469-2a9b8b840acd",
+    "type": "phase2.template_ready",
+    "at": "2026-11-06T09:10:35.848Z",
+    "jobId": "130498",
+    "jobKey": "job_205",
+    "templateId": "tpl_4dd836e15086f76c",
+    "fields": 29,
+    "branches": 0
+  },
+  {
+    "eventId": "evt_a0a261fc-e828-40d9-a693-46dc3d89e7e9",
+    "type": "phase1.authenticated",
+    "at": "2026-11-06T09:11:00.768Z",
+    "applicationId": "scan-job_206",
+    "jobId": "6615",
+    "tenantHost": "fa-etnf-saasfaprod1.fa.ocs.oraclecloud.com"
+  },
+  {
+    "eventId": "evt_26bbec36-d4a0-4a6a-a2e0-b21e9a3cd397",
+    "type": "phase2.template_ready",
+    "at": "2026-11-06T09:11:04.456Z",
+    "jobId": "9145",
+    "jobKey": "job_201",
+    "templateId": "tpl_5a488f7cb8b15e8c",
+    "fields": 52,
+    "branches": 9
+  },
+  {
+    "eventId": "evt_e99c5fd9-27ee-4820-957c-9b1c1defd5d6",
+    "type": "phase1.authenticated",
+    "at": "2026-11-06T09:11:17.645Z",
+    "applicationId": "scan-job_208",
+    "jobId": "55023",
+    "tenantHost": "erhk.fa.us2.oraclecloud.com"
+  },
+  {
+    "eventId": "evt_98d5a465-6ad2-49e8-b4a3-9f8ddbebfd91",
+    "type": "phase2.template_ready",
+    "at": "2026-11-06T09:11:46.332Z",
+    "jobId": "6615",
+    "jobKey": "job_206",
+    "templateId": "tpl_700b788da7696df6",
+    "fields": 35,
+    "branches": 1
+  },
+  {
+    "eventId": "evt_6d0bb436-c571-49cd-9c7f-22c1bbef5db5",
+    "type": "phase1.authenticated",
+    "at": "2026-11-06T09:12:22.152Z",
+    "applicationId": "scan-job_209",
+    "jobId": "40001596",
+    "tenantHost": "fa-eqzh-saasfaprod1.fa.ocs.oraclecloud.com"
+  },
+  {
+    "eventId": "evt_099b0fbc-93bd-415b-94aa-f754fecba555",
+    "type": "phase1.authenticated",
+    "at": "2026-11-06T09:12:46.690Z",
+    "applicationId": "scan-job_210",
+    "jobId": "11149",
+    "tenantHost": "fa-eups-saasfaprod1.fa.ocs.oraclecloud.com"
+  },
+  {
+    "eventId": "evt_bcea6de2-0a39-4349-b7b4-49fe66c93825",
+    "type": "phase2.template_ready",
+    "at": "2026-11-06T09:12:48.429Z",
+    "jobId": "55023",
+    "jobKey": "job_208",
+    "templateId": "tpl_9bbab2486b1ac727",
+    "fields": 48,
+    "branches": 6
+  },
+  {
+    "eventId": "evt_fb67ef75-637e-4ef4-8507-18e172b42d45",
+    "type": "phase2.template_ready",
+    "at": "2026-11-06T09:13:26.665Z",
+    "jobId": "40001596",
+    "jobKey": "job_209",
+    "templateId": "tpl_a3c3940162a2b02f",
+    "fields": 43,
+    "branches": 2
+  },
+  {
+    "eventId": "evt_e0385ef1-32e7-4670-aee7-43bd638db047",
+    "type": "phase1.authenticated",
+    "at": "2026-11-06T09:13:34.174Z",
+    "applicationId": "scan-job_207",
+    "jobId": "7035",
+    "tenantHost": "fa-etnf-saasfaprod1.fa.ocs.oraclecloud.com"
+  },
+  {
+    "eventId": "evt_89c61e23-0c85-4e5b-b506-e044d0f3d947",
+    "type": "phase2.template_ready",
+    "at": "2026-11-06T09:14:03.166Z",
+    "jobId": "11149",
+    "jobKey": "job_210",
+    "templateId": "tpl_97807288fe369699",
+    "fields": 45,
+    "branches": 6
+  },
+  {
+    "eventId": "evt_68f039cd-f983-4544-8eef-1e42bffd0ac9",
+    "type": "phase2.template_ready",
+    "at": "2026-11-06T09:14:18.586Z",
+    "jobId": "7035",
+    "jobKey": "job_207",
+    "templateId": "tpl_af10ce1edb7eade1",
+    "fields": 35,
+    "branches": 1
+  },
+  {
+    "eventId": "evt_6bdd6278-5297-4ed8-9ebe-03db3a5fb064",
+    "type": "phase3.applications_resolved",
+    "at": "2026-11-06T09:21:45.440Z",
+    "count": 113,
+    "resolved": 3,
+    "needsInput": 64
+  },
+  {
+    "eventId": "evt_b1136c52-08a2-4221-9950-529a36a81d82",
+    "type": "phase3.applications_resolved",
+    "at": "2026-11-06T10:48:27.783Z",
+    "count": 113,
+    "resolved": 2,
+    "needsInput": 31
+  },
+  {
+    "eventId": "evt_3ca5f757-9eaa-4914-a6b0-e7b3b49b1788",
+    "type": "phase3.applications_resolved",
+    "at": "2026-11-06T10:50:17.744Z",
+    "count": 113,
+    "resolved": 1,
+    "needsInput": 3
   }
 ]

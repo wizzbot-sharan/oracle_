@@ -2,6 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { parseCsv } from '../shared/csv.js';
 import { parseOracleJobUrl } from '../shared/url.js';
+import { parseJobSelector, isJobSelected } from '../shared/job-filter.js';
 import { config } from '../config.js';
 
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -40,12 +41,37 @@ export class ScanQueueRunner {
     }
   }
 
+  static interleaveByTenant(jobs) {
+    const buckets = new Map();
+    for (const job of jobs) {
+      const key = job.tenantHost || 'unknown';
+      if (!buckets.has(key)) buckets.set(key, []);
+      buckets.get(key).push(job);
+    }
+
+    const interleaved = [];
+    let remaining = jobs.length;
+    while (remaining > 0) {
+      for (const bucket of buckets.values()) {
+        if (bucket.length > 0) {
+          interleaved.push(bucket.shift());
+          remaining -= 1;
+        }
+      }
+    }
+    return interleaved;
+  }
+
   async runQueue(options = {}) {
     const jobsCsvPath = path.resolve(options.jobsCsvPath ?? this.config.jobsCleanCsvPath);
     const statusPath = path.resolve(options.statusPath ?? this.config.scanner?.statusPath ?? path.resolve(this.config.dataDir, 'scan-status.json'));
     const concurrency = options.concurrency ?? this.config.scanner?.concurrency ?? 3;
     const launchThrottleMs = options.launchThrottleMs ?? this.config.scanner?.launchThrottleMs ?? 30000;
-    const cooldownMs = options.cooldownMs ?? this.config.scanner?.cooldownMs ?? 10000;
+    const tenantCooldownBaseMs = options.tenantCooldownMs ?? options.cooldownMs ?? this.config.scanner?.tenantCooldownMs ?? 45000;
+    const hasCustomCooldown = options.cooldownMs !== undefined || options.tenantCooldownMs !== undefined;
+    const jitterMinMs = options.jitterMinMs ?? (hasCustomCooldown ? 0 : (this.config.scanner?.tenantJitterMs?.min ?? 10000));
+    const jitterMaxMs = options.jitterMaxMs ?? (hasCustomCooldown ? 0 : (this.config.scanner?.tenantJitterMs?.max ?? 20000));
+    const captchaBackoffMs = options.captchaBackoffMs ?? this.config.scanner?.captchaBackoffMs ?? 300000;
     const limit = options.limit ? Number(options.limit) : Infinity;
     const force = Boolean(options.force);
 
@@ -71,10 +97,27 @@ export class ScanQueueRunner {
 
     const existingTemplates = await this.store.read('form-templates', {});
 
-    // 3. Determine pending queue
+    const selector = parseJobSelector(options);
+
+    // 3. Determine pending queue and parse tenantHost
+    let totalInScope = 0;
     const queue = [];
     for (const job of allJobs) {
       const key = job.job_key;
+      if (!isJobSelected(key, selector)) {
+        continue;
+      }
+      totalInScope += 1;
+
+      let parsed = {};
+      try {
+        parsed = parseOracleJobUrl(job.job_url);
+      } catch {
+        parsed = { canonicalUrl: job.job_url, sourceJobId: key, tenantHost: 'unknown', tenantKey: '' };
+      }
+      job.tenantHost = parsed.tenantHost || 'unknown';
+      job.parsedUrl = parsed;
+
       const existingStatus = scanStatus.jobs?.[key];
       const hasTemplate = Boolean(existingTemplates[key]);
 
@@ -93,16 +136,24 @@ export class ScanQueueRunner {
       queue.push(job);
     }
 
-    // Apply batch limit if specified
+    // Apply batch limit if specified, then interleave by tenantHost
     const targetQueue = Number.isFinite(limit) && limit > 0 ? queue.slice(0, limit) : queue;
+    const pendingJobs = ScanQueueRunner.interleaveByTenant(targetQueue);
 
     console.log(`\n=== Oracle 3-Worker Scanner Queue ===`);
-    console.log(`Total jobs in jobs.csv:  ${allJobs.length}`);
-    console.log(`Already scanned/skipped: ${allJobs.length - queue.length}`);
-    console.log(`Queued for this run:     ${targetQueue.length}${Number.isFinite(limit) ? ` (capped by --limit ${limit})` : ''}`);
+    if (selector.hasFilter) {
+      console.log(`Target Scope:            ${selector.description}`);
+      console.log(`Jobs matching scope:     ${totalInScope}`);
+      console.log(`Already scanned/skipped: ${totalInScope - queue.length}`);
+    } else {
+      console.log(`Total jobs in jobs.csv:  ${allJobs.length}`);
+      console.log(`Already scanned/skipped: ${allJobs.length - queue.length}`);
+    }
+    console.log(`Queued for this run:     ${pendingJobs.length}${Number.isFinite(limit) ? ` (capped by --limit ${limit})` : ''}`);
     console.log(`Concurrency workers:     ${concurrency}`);
     console.log(`Launch throttle:         ${launchThrottleMs / 1000}s`);
-    console.log(`Worker cooldown:         ${cooldownMs / 1000}s`);
+    console.log(`Tenant cooldown:         ${tenantCooldownBaseMs / 1000}s base (+${jitterMinMs / 1000}s-${jitterMaxMs / 1000}s jitter)`);
+    console.log(`CAPTCHA backoff:         ${captchaBackoffMs / 1000}s`);
     console.log(`Scanner accounts:        ${emails.join(', ')}\n`);
 
     const updateStatusFile = async () => {
@@ -115,7 +166,7 @@ export class ScanQueueRunner {
         if (item.status === 'completed') completed += 1;
         else if (item.status === 'skipped') skipped += 1;
         else if (item.status === 'failed') failed += 1;
-        else if (item.status === 'in_progress') inProgress += 1;
+        else if (item.status === 'in_progress' || item.status === 'retry_backoff') inProgress += 1;
       }
 
       const total = allJobs.length;
@@ -130,18 +181,70 @@ export class ScanQueueRunner {
 
     await updateStatusFile();
 
-    let jobIndex = 0;
+    const activeTenants = new Set();
+    const tenantCooldowns = new Map();
+    const tenantEmailIndex = new Map();
+    const jobAttemptCount = new Map();
+
+    const getNextEligibleJob = () => {
+      const now = Date.now();
+      for (let i = 0; i < pendingJobs.length; i++) {
+        const candidate = pendingJobs[i];
+        const tenant = candidate.tenantHost;
+
+        if (activeTenants.has(tenant)) continue;
+
+        const cooldownExpiry = tenantCooldowns.get(tenant) ?? 0;
+        if (cooldownExpiry > now) continue;
+
+        pendingJobs.splice(i, 1);
+        activeTenants.add(tenant);
+        return { job: candidate, waitMs: 0 };
+      }
+
+      if (pendingJobs.length === 0) {
+        return { job: null, waitMs: 0 };
+      }
+
+      let minWait = Infinity;
+      for (const candidate of pendingJobs) {
+        const tenant = candidate.tenantHost;
+        if (!activeTenants.has(tenant)) {
+          const cooldownExpiry = tenantCooldowns.get(tenant) ?? 0;
+          const wait = Math.max(0, cooldownExpiry - now);
+          if (wait < minWait) minWait = wait;
+        }
+      }
+
+      if (!Number.isFinite(minWait) || minWait === 0) {
+        minWait = 500;
+      }
+
+      return { job: null, waitMs: minWait };
+    };
+
+    const getEmailForTenant = tenant => {
+      const idx = tenantEmailIndex.get(tenant) ?? 0;
+      tenantEmailIndex.set(tenant, idx + 1);
+      return emails[idx % emails.length];
+    };
 
     const workerLoop = async workerId => {
-      const email = emails[workerId % emails.length];
       const workerTag = `[Worker ${workerId + 1}]`;
 
       while (true) {
-        if (jobIndex >= targetQueue.length) break;
-        const currentJob = targetQueue[jobIndex];
-        jobIndex += 1;
+        let eligible = getNextEligibleJob();
+        while (!eligible.job && pendingJobs.length > 0) {
+          const sleepTime = Math.min(eligible.waitMs, 5000);
+          await delay(sleepTime);
+          eligible = getNextEligibleJob();
+        }
 
-        const { job_key, job_url } = currentJob;
+        if (!eligible.job) break;
+
+        const currentJob = eligible.job;
+        const { job_key, job_url, tenantHost, parsedUrl } = currentJob;
+        const email = getEmailForTenant(tenantHost);
 
         scanStatus.jobs[job_key] = {
           job_key,
@@ -153,13 +256,7 @@ export class ScanQueueRunner {
         };
         await updateStatusFile();
 
-        let parsed = {};
-        try {
-          parsed = parseOracleJobUrl(job_url);
-        } catch {
-          parsed = { canonicalUrl: job_url, sourceJobId: job_key, tenantHost: '', tenantKey: '' };
-        }
-
+        const parsed = parsedUrl || { canonicalUrl: job_url, sourceJobId: job_key, tenantHost, tenantKey: '' };
         const jobData = {
           jobId: parsed.sourceJobId || job_key,
           jobKey: job_key,
@@ -167,11 +264,23 @@ export class ScanQueueRunner {
           ...parsed
         };
 
+        const releaseTenant = (customCooldown = null) => {
+          activeTenants.delete(tenantHost);
+          if (customCooldown !== null) {
+            tenantCooldowns.set(tenantHost, Date.now() + customCooldown);
+          } else {
+            const jitter = jitterMinMs >= jitterMaxMs
+              ? jitterMinMs
+              : Math.floor(Math.random() * (jitterMaxMs - jitterMinMs + 1)) + jitterMinMs;
+            tenantCooldowns.set(tenantHost, Date.now() + tenantCooldownBaseMs + jitter);
+          }
+        };
+
         const executeScanAttempt = async attemptNumber => {
           console.log(`${workerTag} [${job_key}] Waiting for launch slot (${launchThrottleMs / 1000}s throttle)...`);
           await this.waitForLaunchSlot(launchThrottleMs);
 
-          console.log(`${workerTag} [${job_key}] Launching browser session (Attempt ${attemptNumber}) using ${email}...`);
+          console.log(`${workerTag} [${job_key}] Launching browser session (Attempt ${attemptNumber}) on ${tenantHost} using ${email}...`);
           const startTime = Date.now();
 
           const { session, result } = await this.phase1.authenticate({
@@ -181,19 +290,58 @@ export class ScanQueueRunner {
           });
 
           if (result?.status === 'skipped') {
-            console.log(`${workerTag} [${job_key}] ⚠ Skipped: ${result.reason} (${result.message})`);
-            scanStatus.jobs[job_key] = {
-              job_key,
-              job_url,
-              status: 'skipped',
-              reason: result.reason,
-              message: result.message,
-              workerId: workerId + 1,
-              durationMs: Date.now() - startTime,
-              completedAt: new Date().toISOString()
-            };
-            await updateStatusFile();
-            return { skipped: true };
+            if (result?.reason === 'captcha_required') {
+              const attempts = (jobAttemptCount.get(job_key) ?? 0) + 1;
+              jobAttemptCount.set(job_key, attempts);
+
+              if (attempts < 2) {
+                console.warn(`${workerTag} [${job_key}] ⚠ CAPTCHA encountered on ${tenantHost}. Applying 5-minute penalty cooldown and re-enqueuing for retry.`);
+                releaseTenant(captchaBackoffMs);
+                scanStatus.jobs[job_key] = {
+                  job_key,
+                  job_url,
+                  status: 'retry_backoff',
+                  reason: 'captcha_backoff',
+                  workerId: workerId + 1,
+                  attempt: attempts,
+                  updatedAt: new Date().toISOString()
+                };
+                await updateStatusFile();
+                pendingJobs.push(currentJob);
+                return { handled: true };
+              } else {
+                console.error(`${workerTag} [${job_key}] ✖ CAPTCHA persisted after backoff retry. Marking as skipped.`);
+                releaseTenant();
+                scanStatus.jobs[job_key] = {
+                  job_key,
+                  job_url,
+                  status: 'skipped',
+                  reason: 'captcha_required',
+                  message: 'CAPTCHA persisted after backoff retry',
+                  workerId: workerId + 1,
+                  attempt: attempts,
+                  durationMs: Date.now() - startTime,
+                  completedAt: new Date().toISOString()
+                };
+                await updateStatusFile();
+                return { handled: true };
+              }
+            } else {
+              console.log(`${workerTag} [${job_key}] ⚠ Skipped: ${result.reason} (${result.message})`);
+              releaseTenant();
+              scanStatus.jobs[job_key] = {
+                job_key,
+                job_url,
+                status: 'skipped',
+                reason: result.reason,
+                message: result.message,
+                workerId: workerId + 1,
+                durationMs: Date.now() - startTime,
+                completedAt: new Date().toISOString()
+              };
+              await updateStatusFile();
+              return { handled: true };
+            }
           }
 
           try {
@@ -203,6 +351,7 @@ export class ScanQueueRunner {
 
             console.log(`${workerTag} [${job_key}] ✓ Completed in ${(durationMs / 1000).toFixed(1)}s (${template.fields.length} fields, ${template.conditionalBranches.length} branches).`);
 
+            releaseTenant();
             scanStatus.jobs[job_key] = {
               job_key,
               job_url,
@@ -225,17 +374,21 @@ export class ScanQueueRunner {
           }
         };
 
-        // Execution with Retry-Once logic
+        // Execution with Retry-Once logic for transient errors
         try {
-          await executeScanAttempt(1);
+          const outcome = await executeScanAttempt(1);
+          if (outcome?.handled || outcome?.completed) continue;
         } catch (error) {
-          console.warn(`${workerTag} [${job_key}] ⚠ Attempt 1 failed: ${error.message}. Pausing ${cooldownMs / 1000}s before retry...`);
-          await delay(cooldownMs);
+          console.warn(`${workerTag} [${job_key}] ⚠ Attempt 1 failed: ${error.message}. Pausing before retry...`);
+          const retryWait = tenantCooldownBaseMs > 0 ? Math.min(tenantCooldownBaseMs, 5000) : 5;
+          await delay(retryWait);
 
           try {
-            await executeScanAttempt(2);
+            const retryOutcome = await executeScanAttempt(2);
+            if (retryOutcome?.handled || retryOutcome?.completed) continue;
           } catch (retryError) {
             console.error(`${workerTag} [${job_key}] ✖ Failed attempt 2: ${retryError.message}`);
+            releaseTenant();
             scanStatus.jobs[job_key] = {
               job_key,
               job_url,
@@ -248,9 +401,6 @@ export class ScanQueueRunner {
             await updateStatusFile();
           }
         }
-
-        console.log(`${workerTag} [${job_key}] Cooldown of ${cooldownMs / 1000}s starting...`);
-        await delay(cooldownMs);
       }
 
       console.log(`${workerTag} Finished all assigned tasks.`);
@@ -263,6 +413,9 @@ export class ScanQueueRunner {
 
     console.log(`\n========================================`);
     console.log(`Scanner Queue Finished!`);
+    if (selector.hasFilter) {
+      console.log(`Scope:     ${selector.description}`);
+    }
     console.log(`Completed: ${scanStatus.summary.completed}`);
     console.log(`Skipped:   ${scanStatus.summary.skipped}`);
     console.log(`Failed:    ${scanStatus.summary.failed}`);

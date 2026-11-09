@@ -82,8 +82,8 @@ Company C,https://test.oraclecloud.com/job/303,85,Alice Smith,AWL-1
   await fs.rm(tmpDir, { recursive: true, force: true });
 });
 
-test('ingestCsv cleanly overwrites jobs.csv fresh from job_1 on subsequent runs', async () => {
-  const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'test-ingest-overwrite-'));
+test('ingestCsv preserves existing job_keys and monotonically increments next key for new URLs', async () => {
+  const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'test-ingest-persistent-'));
   const sourceCsvPath = path.join(tmpDir, 'source.csv');
   const cleanCsvPath = path.join(tmpDir, 'jobs.csv');
 
@@ -106,19 +106,30 @@ Comp2,https://test.oraclecloud.com/job/2,80,User2,AWL-2
   let jobs = parseCsv(await fs.readFile(cleanCsvPath, 'utf8'));
   assert.equal(jobs.length, 2);
   assert.equal(jobs[0].job_key, 'job_1');
+  assert.equal(jobs[1].job_key, 'job_2');
 
-  // Run 2: Completely new single URL
+  // Run 2: Mix of existing URL (https://test.oraclecloud.com/job/1) and a brand new URL (https://test.oraclecloud.com/job/999)
   const run2Content = `company_name,job_url,score,client_name,applywizz_id
+Comp1,https://test.oraclecloud.com/job/1,90,User1,AWL-1
 CompNew,https://test.oraclecloud.com/job/999,99,UserNew,AWL-99
 `;
   await fs.writeFile(sourceCsvPath, run2Content, 'utf8');
   await phase1.ingestCsv(sourceCsvPath, { cleanCsvPath });
 
-  // Verify jobs.csv was cleanly overwritten and starts from job_1
+  // Verify jobs.csv preserved job_1 and job_2, and assigned job_3 to the new URL
   jobs = parseCsv(await fs.readFile(cleanCsvPath, 'utf8'));
-  assert.equal(jobs.length, 1, 'Previous jobs should be cleanly overwritten');
+  assert.equal(jobs.length, 3, 'Cumulative unique jobs should contain job_1, job_2, and job_3');
   assert.equal(jobs[0].job_key, 'job_1');
-  assert.equal(jobs[0].job_url, 'https://test.oraclecloud.com/job/999');
+  assert.equal(jobs[0].job_url, 'https://test.oraclecloud.com/job/1');
+  assert.equal(jobs[1].job_key, 'job_2');
+  assert.equal(jobs[1].job_url, 'https://test.oraclecloud.com/job/2');
+  assert.equal(jobs[2].job_key, 'job_3');
+  assert.equal(jobs[2].job_url, 'https://test.oraclecloud.com/job/999');
+
+  // Verify source CSV received matching persistent job_keys
+  const updatedSource = parseCsv(await fs.readFile(sourceCsvPath, 'utf8'));
+  assert.equal(updatedSource[0].job_key, 'job_1', 'Existing URL preserves original job_1');
+  assert.equal(updatedSource[1].job_key, 'job_3', 'New URL receives next incremented key job_3');
 
   await fs.rm(tmpDir, { recursive: true, force: true });
 });

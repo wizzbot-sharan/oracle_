@@ -324,3 +324,81 @@ test('Phase3AnswerResolution enforces required-field >= 0.80 status rule and syn
   assert.ok(resolvedKeys.includes('job_A') && resolvedKeys.includes('job_B'));
   assert.ok(!resolvedKeys.includes('job_C'), 'Unselected job_C should not be resolved');
 });
+
+test('Phase3AnswerResolution supports range, client, and company filters with dual summary metrics', async () => {
+  const tmpDir = path.join(os.tmpdir(), `phase3-range-test-${Date.now()}`);
+  fs.mkdirSync(tmpDir, { recursive: true });
+
+  const qbCsvPath = path.join(tmpDir, 'question_bank.csv');
+  fs.writeFileSync(qbCsvPath, 'id,applywizz_id,question_label,field_type,value,source,confidence,created_at,updated_at\n', 'utf8');
+
+  const clientsJsonPath = path.join(tmpDir, 'clients.json');
+  fs.writeFileSync(clientsJsonPath, JSON.stringify({
+    'AWL-C1': {
+      client: { full_name: 'Candidate One', personal_email: 'c1@example.com', callable_phone: '+1 555-0001' },
+      additional_information: { is_over_18: true, eligible_to_work_in_us: true }
+    },
+    'AWL-C2': {
+      client: { full_name: 'Candidate Two', personal_email: 'c2@example.com', callable_phone: '+1 555-0002' },
+      additional_information: { is_over_18: true, eligible_to_work_in_us: true }
+    }
+  }), 'utf8');
+
+  const tpl = {
+    templateId: 'tpl_standard',
+    fields: [
+      { id: 'first_name', label: 'First Name', type: 'text', required: true },
+      { id: 'phone', label: 'Phone', type: 'tel', required: true }
+    ]
+  };
+
+  const inMemoryStore = {
+    data: {
+      jobs: {
+        assignments: [
+          { applywizzId: 'AWL-C1', jobKey: 'job_10', companyName: 'Acme Corp', canonicalUrl: 'https://test/job/10' },
+          { applywizzId: 'AWL-C1', jobKey: 'job_20', companyName: 'FirstEnergy', canonicalUrl: 'https://test/job/20' },
+          { applywizzId: 'AWL-C2', jobKey: 'job_20', companyName: 'FirstEnergy', canonicalUrl: 'https://test/job/20' },
+          { applywizzId: 'AWL-C2', jobKey: 'job_30', companyName: 'Beta LLC', canonicalUrl: 'https://test/job/30' }
+        ]
+      },
+      'form-templates': {
+        job_10: tpl,
+        job_20: tpl,
+        job_30: tpl
+      },
+      applications: []
+    },
+    async read(key) { return this.data[key] ?? []; },
+    readSync(key) { return this.data[key] ?? []; },
+    async write(key, val) { this.data[key] = val; },
+    async update(key, fallback, fn) { this.data[key] = fn(this.data[key] ?? fallback); }
+  };
+
+  const phase3 = new Phase3AnswerResolution({
+    store: inMemoryStore,
+    config: {
+      clientsPath: clientsJsonPath,
+      questionBankCsvPath: qbCsvPath
+    }
+  });
+
+  // 1. Test Range Filtering: range "15-25" should only select job_20 (which has 2 assignments)
+  const rangeResult = await phase3.createOrResolveApplications({ range: '15-25' });
+  assert.equal(rangeResult.batchSummary.candidateApplications, 2);
+  assert.equal(rangeResult.batchSummary.targetedJobs, 1);
+  assert.equal(rangeResult.batchSummary.resolved, 2);
+  assert.equal(rangeResult.globalSummary.totalApplications, 2);
+
+  // 2. Test Client Filtering: client "AWL-C2" should update job_30 for AWL-C2
+  const clientResult = await phase3.createOrResolveApplications({ client: 'AWL-C2', range: '25-35' });
+  assert.equal(clientResult.batchSummary.candidateApplications, 1);
+  assert.equal(clientResult.batchSummary.targetedJobs, 1);
+  // In-place persistence: Total global apps should now be 3 (2 from job_20 + 1 from job_30)
+  assert.equal(clientResult.globalSummary.totalApplications, 3);
+
+  // 3. Test Company Filtering: company "firstenergy"
+  const companyResult = await phase3.createOrResolveApplications({ company: 'firstenergy' });
+  assert.equal(companyResult.batchSummary.candidateApplications, 2);
+  assert.equal(companyResult.batchSummary.targetedJobs, 1);
+});

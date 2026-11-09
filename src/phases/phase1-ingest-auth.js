@@ -23,10 +23,45 @@ export class Phase1IngestAuth {
     const rows = parseCsv(rawText);
     invariant(rows.length > 0, 'EMPTY_CSV', 'CSV contains no data rows');
 
+    // 0. Load existing jobs.csv if it exists to preserve existing job_keys and find highest index
     const urlToKey = new Map();
-    const uniqueJobs = [];
-    let counter = 1;
+    const existingUniqueJobs = [];
+    let maxIndex = 0;
 
+    try {
+      const existingCleanRaw = await fs.readFile(cleanCsvPath, 'utf8');
+      const existingRows = parseCsv(existingCleanRaw);
+      for (const r of existingRows) {
+        if (r.job_key && r.job_url) {
+          const u = String(r.job_url).trim();
+          urlToKey.set(u, r.job_key);
+          existingUniqueJobs.push({ job_key: r.job_key, job_url: u });
+          const match = r.job_key.match(/^job_(\d+)$/);
+          if (match) {
+            maxIndex = Math.max(maxIndex, parseInt(match[1], 10));
+          }
+        }
+      }
+    } catch {
+      // File does not exist yet; starts clean from job_1
+    }
+
+    // Also inspect input rows for existing assigned job_keys
+    for (const row of rows) {
+      if (row.job_key && row.job_url) {
+        const u = String(row.job_url).trim();
+        const match = row.job_key.match(/^job_(\d+)$/);
+        if (match) {
+          maxIndex = Math.max(maxIndex, parseInt(match[1], 10));
+        }
+        if (!urlToKey.has(u)) {
+          urlToKey.set(u, row.job_key);
+          existingUniqueJobs.push({ job_key: row.job_key, job_url: u });
+        }
+      }
+    }
+
+    // Process all assignment rows
     for (const [index, row] of rows.entries()) {
       invariant(
         row.company_name && row.job_url && row.score !== undefined && row.client_name && row.applywizz_id,
@@ -36,10 +71,10 @@ export class Phase1IngestAuth {
 
       const rawUrl = String(row.job_url).trim();
       if (!urlToKey.has(rawUrl)) {
-        const jobKey = `job_${counter}`;
-        counter += 1;
+        maxIndex += 1;
+        const jobKey = `job_${maxIndex}`;
         urlToKey.set(rawUrl, jobKey);
-        uniqueJobs.push({
+        existingUniqueJobs.push({
           job_key: jobKey,
           job_url: rawUrl
         });
@@ -47,7 +82,23 @@ export class Phase1IngestAuth {
       row.job_key = urlToKey.get(rawUrl);
     }
 
-    // 1. Cleanly overwrite data/jobs.csv with unique jobs
+    // Deduplicate and sort uniqueJobs by job_key numeric index
+    const uniqueMap = new Map();
+    for (const j of existingUniqueJobs) {
+      if (!uniqueMap.has(j.job_key)) {
+        uniqueMap.set(j.job_key, j);
+      }
+    }
+
+    const uniqueJobs = Array.from(uniqueMap.values()).sort((a, b) => {
+      const matchA = a.job_key.match(/^job_(\d+)$/);
+      const matchB = b.job_key.match(/^job_(\d+)$/);
+      const numA = matchA ? parseInt(matchA[1], 10) : 0;
+      const numB = matchB ? parseInt(matchB[1], 10) : 0;
+      return numA - numB;
+    });
+
+    // 1. Write cumulative unique jobs to data/jobs.csv
     const jobsCsvContent = formatCsv(uniqueJobs, ['job_key', 'job_url']);
     await fs.mkdir(path.dirname(cleanCsvPath), { recursive: true });
     await fs.writeFile(cleanCsvPath, jobsCsvContent, 'utf8');
@@ -96,9 +147,9 @@ export class Phase1IngestAuth {
     });
 
     console.log(`[Phase 1 Ingestion] Processed ${rows.length} assignment rows.`);
-    console.log(`[Phase 1 Ingestion] Identified ${uniqueJobs.length} unique URLs (job_1 to job_${uniqueJobs.length}).`);
-    console.log(`[Phase 1 Ingestion] Overwrote clean jobs list: ${cleanCsvPath}`);
-    console.log(`[Phase 1 Ingestion] Appended job_key to source CSV: ${csvPath}`);
+    console.log(`[Phase 1 Ingestion] Cumulative unique jobs: ${uniqueJobs.length} (up to job_${maxIndex}).`);
+    console.log(`[Phase 1 Ingestion] Updated clean jobs list: ${cleanCsvPath}`);
+    console.log(`[Phase 1 Ingestion] Saved job_key mappings to source CSV: ${csvPath}`);
 
     return {
       assignments,

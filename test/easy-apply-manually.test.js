@@ -193,3 +193,49 @@ test('fillApplication clicks manually link if starting on /easy-apply splash scr
   assert.equal(manualClicked, true, 'Should click manually link at start of fillApplication');
   assert.ok(result, 'Fill result should be returned');
 });
+
+test('scanForm extracts controls across all visible sub-sections when page contains multiple apply-flow-section containers', async () => {
+  const adapter = new OracleRecruitingAdapter({
+    actionGap: { min: 0, max: 0 },
+    postNextWait: { min: 0, max: 0 },
+    humanDelay: { min: 0, max: 0 },
+    initialWait: 0,
+    runtimeDir: path.join(os.tmpdir(), 'oracle-multisection-test-' + Date.now())
+  });
+
+  const discoveredSelectors = [];
+  const mockLocator = (selector) => {
+    discoveredSelectors.push(selector);
+    const loc = {
+      count: async () => {
+        if (selector.includes('.apply-flow-section')) return 2;
+        return 0;
+      },
+      first: () => loc,
+      nth: () => loc,
+      isVisible: async () => false,
+      evaluateAll: async () => [],
+      evaluate: async () => ({})
+    };
+    return loc;
+  };
+
+  const mockPage = {
+    url: () => 'https://test.oraclecloud.com/job/13095/apply/section/1',
+    waitForLoadState: async () => {},
+    evaluate: async () => ({ groups: [], handledCheckboxIds: [] }),
+    content: async () => '<html></html>',
+    screenshot: async () => {},
+    locator: mockLocator,
+    getByRole: () => mockLocator('')
+  };
+
+  await adapter.scanForm({
+    session: { page: mockPage },
+    job: { jobId: '13095', canonicalUrl: 'https://test.oraclecloud.com/job/13095', tenantHost: 'test.oraclecloud.com' }
+  });
+
+  const candidateCall = discoveredSelectors.find(s => s.includes('.apply-flow-section:not([style*="display: none"]) input'));
+  assert.ok(candidateCall, 'Should query candidates across all active sections');
+});
+

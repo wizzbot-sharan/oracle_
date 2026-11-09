@@ -21,7 +21,11 @@ function visibleWhen(condition, answers) {
 }
 
 function Field({ field, value, onChange, answers, fieldAudit }) {
-  if (!visibleWhen(field.visibleWhen, answers)) return null;
+  const effectiveCondition = field.visibleWhen || (field.isConditional && field.triggerFieldId ? {
+    field: field.triggerFieldId,
+    [field.conditionType === 'includes' ? 'includes' : 'equals']: field.triggerValue
+  } : null);
+  if (!visibleWhen(effectiveCondition, answers)) return null;
   const required = field.required ? <span className="required">*</span> : null;
 
   const isResolved = fieldAudit && fieldAudit.value !== null && fieldAudit.value !== '' && (fieldAudit.confidence ?? 0) >= 0.80;
@@ -33,20 +37,32 @@ function Field({ field, value, onChange, answers, fieldAudit }) {
 
   const header = (
     <div className="field-header">
-      <span className="field-label">{field.label} {required}</span>
-      <span
-        className={`audit-badge ${isResolved ? 'resolved' : 'unresolved'}`}
-        title={isResolved ? `Source: ${fieldAudit?.source || 'N/A'}` : 'Requires operator input'}
-      >
-        <span className={`audit-dot ${isResolved ? 'green' : 'red'}`} />
-        {badgeText}
+      <span className="field-label">
+        {field.isConditional && <span className="conditional-marker" title="Conditional Question">↳ </span>}
+        {field.label} {required}
       </span>
+      <div className="field-header-badges">
+        {field.isConditional && (
+          <span className="conditional-tag" title={`Revealed when "${field.triggerLabel || field.triggerFieldId}" = "${field.triggerValue}"`}>
+            Conditional ({field.triggerValue})
+          </span>
+        )}
+        <span
+          className={`audit-badge ${isResolved ? 'resolved' : 'unresolved'}`}
+          title={isResolved ? `Source: ${fieldAudit?.source || 'N/A'}` : 'Requires operator input'}
+        >
+          <span className={`audit-dot ${isResolved ? 'green' : 'red'}`} />
+          {badgeText}
+        </span>
+      </div>
     </div>
   );
 
+  const fieldClass = `field ${field.isConditional ? 'conditional-field' : ''}`;
+
   if (field.type === 'compound-phone') {
     return (
-      <fieldset className="field">
+      <fieldset className={fieldClass}>
         {header}
         {field.children.map(child => (
           <Field
@@ -68,7 +84,7 @@ function Field({ field, value, onChange, answers, fieldAudit }) {
 
   if (field.type === 'radio') {
     return (
-      <fieldset className="field">
+      <fieldset className={fieldClass}>
         {header}
         <div className="choices">
           {(field.options ?? []).map(option => (
@@ -89,7 +105,7 @@ function Field({ field, value, onChange, answers, fieldAudit }) {
 
   if (field.type === 'checkbox') {
     return (
-      <div className="field">
+      <div className={fieldClass}>
         {header}
         <label className="choice">
           <input
@@ -106,7 +122,7 @@ function Field({ field, value, onChange, answers, fieldAudit }) {
   if (field.type === 'multi-checkbox') {
     const selected = Array.isArray(value) ? value : [];
     return (
-      <fieldset className="field">
+      <fieldset className={fieldClass}>
         {header}
         <div className="choices">
           {(field.options ?? []).map(option => (
@@ -132,7 +148,7 @@ function Field({ field, value, onChange, answers, fieldAudit }) {
   if (field.type === 'month-year') {
     const date = value && typeof value === 'object' ? value : { month: '', year: '' };
     return (
-      <div className="field">
+      <div className={fieldClass}>
         {header}
         <div className="date-row">
           <input
@@ -154,7 +170,7 @@ function Field({ field, value, onChange, answers, fieldAudit }) {
 
   if (field.type === 'textarea') {
     return (
-      <div className="field">
+      <div className={fieldClass}>
         {header}
         <textarea value={value ?? ''} onChange={event => onChange(field.id, event.target.value)} />
       </div>
@@ -163,7 +179,7 @@ function Field({ field, value, onChange, answers, fieldAudit }) {
 
   const inputType = field.type === 'email' ? 'email' : field.type === 'url' ? 'url' : 'text';
   return (
-    <div className="field">
+    <div className={fieldClass}>
       {header}
       <input
         type={inputType}

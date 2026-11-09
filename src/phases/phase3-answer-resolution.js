@@ -8,6 +8,7 @@ import { invariant } from '../shared/errors.js';
 import { parseCsv, formatCsv, formatCsvRow } from '../shared/csv.js';
 import { ResolutionEngine } from '../domain/resolution-engine.js';
 import { ClaudeService } from '../services/claude-service.js';
+import { parseJobSelector, isAssignmentSelected } from '../shared/job-filter.js';
 
 const QB_HEADERS = [
   'id',
@@ -97,7 +98,10 @@ export class Phase3AnswerResolution {
   /**
    * Creates or resolves application instances across all assignments that have templates.
    */
-  async createOrResolveApplications({ limit, jobKey, jobUrl } = {}) {
+  async createOrResolveApplications(options = {}) {
+    const { limit, jobUrl } = options;
+    const selector = parseJobSelector(options);
+
     const jobs = await this.store.read('jobs', { assignments: [], uniqueJobs: [] });
     const templates = await this.store.read('form-templates', {});
     const existing = await this.store.read('applications', []);
@@ -109,27 +113,27 @@ export class Phase3AnswerResolution {
     ]);
 
     let assignments = jobs.assignments || [];
-    if (jobKey) {
-      const keys = Array.isArray(jobKey)
-        ? jobKey
-        : String(jobKey).split(',').map(k => k.trim()).filter(Boolean);
-      const keySet = new Set(keys);
-      assignments = assignments.filter(a => keySet.has(a.jobKey) || keySet.has(a.jobId));
+    if (selector.hasFilter) {
+      assignments = assignments.filter(a => isAssignmentSelected(a, selector));
     }
     if (jobUrl) {
       assignments = assignments.filter(a => a.canonicalUrl === jobUrl || a.originalUrl === jobUrl);
     }
 
+    const targetedJobKeys = new Set(assignments.map(a => a.jobKey || a.jobId));
     // Filter to assignments that have scanned templates
-    assignments = assignments.filter(a => Boolean(templates[a.jobKey] || templates[a.jobId]));
+    const matchedAssignments = assignments.filter(a => Boolean(templates[a.jobKey] || templates[a.jobId]));
+    const matchedJobKeys = new Set(matchedAssignments.map(a => a.jobKey || a.jobId));
+
+    let toProcess = matchedAssignments;
     if (limit && limit > 0) {
-      assignments = assignments.slice(0, limit);
+      toProcess = toProcess.slice(0, limit);
     }
 
     let resolvedCount = 0;
     let needsInputCount = 0;
 
-    for (const assignment of assignments) {
+    for (const assignment of toProcess) {
       const template = templates[assignment.jobKey] || templates[assignment.jobId];
 
       const applywizzId = assignment.applywizzId || assignment.userId;
@@ -180,6 +184,33 @@ export class Phase3AnswerResolution {
         needsInput: needsInputCount
       });
     }
+
+    const globalResolved = applications.filter(a => a.status === 'answers_resolved').length;
+    const globalNeedsInput = applications.filter(a => a.status === 'needs_input').length;
+
+    applications.target = {
+      description: selector.description,
+      hasFilter: selector.hasFilter,
+      targetedJobsCount: targetedJobKeys.size,
+      matchedTemplatesCount: matchedJobKeys.size
+    };
+
+    applications.batchSummary = {
+      scope: selector.description,
+      targetedJobs: targetedJobKeys.size,
+      matchedTemplates: matchedJobKeys.size,
+      candidateApplications: toProcess.length,
+      resolved: resolvedCount,
+      needsInput: needsInputCount,
+      resolutionRate: toProcess.length > 0 ? `${((resolvedCount / toProcess.length) * 100).toFixed(1)}%` : '0%'
+    };
+
+    applications.globalSummary = {
+      totalApplications: applications.length,
+      totalResolved: globalResolved,
+      totalNeedsInput: globalNeedsInput,
+      globalResolutionRate: applications.length > 0 ? `${((globalResolved / applications.length) * 100).toFixed(1)}%` : '0%'
+    };
 
     return applications;
   }

@@ -42,6 +42,13 @@ export const config = Object.freeze({
     concurrency: numberEnv('SCANNER_CONCURRENCY', 3),
     launchThrottleMs: numberEnv('SCANNER_LAUNCH_THROTTLE_MS', 30000),
     cooldownMs: numberEnv('SCANNER_COOLDOWN_MS', 10000),
+    tenantCooldownMs: numberEnv('SCANNER_TENANT_COOLDOWN_MS', 45000),
+    tenantJitterMs: {
+      min: numberEnv('SCANNER_TENANT_JITTER_MIN_MS', 10000),
+      max: numberEnv('SCANNER_TENANT_JITTER_MAX_MS', 20000)
+    },
+    captchaBackoffMs: numberEnv('SCANNER_CAPTCHA_BACKOFF_MS', 300000),
+    browserChannel: process.env.BROWSER_CHANNEL ?? 'chrome',
     emails: [
       process.env.SCANNER_EMAIL_1,
       process.env.SCANNER_EMAIL_2,

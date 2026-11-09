@@ -313,3 +313,202 @@ test('Phase2ScanNormalize keys form-templates store solely by jobKey', async () 
   assert.equal(templatesStore['99999'], undefined, 'Store must NOT be keyed by raw numeric jobId');
 });
 
+test('ScanQueueRunner interleaves jobs by tenant host', async () => {
+  const jobs = [
+    { job_key: 'j1', tenantHost: 'hostA' },
+    { job_key: 'j2', tenantHost: 'hostA' },
+    { job_key: 'j3', tenantHost: 'hostA' },
+    { job_key: 'j4', tenantHost: 'hostB' },
+    { job_key: 'j5', tenantHost: 'hostB' },
+    { job_key: 'j6', tenantHost: 'hostC' }
+  ];
+
+  const interleaved = ScanQueueRunner.interleaveByTenant(jobs);
+  const hosts = interleaved.map(j => j.tenantHost);
+
+  assert.equal(hosts[0], 'hostA');
+  assert.equal(hosts[1], 'hostB');
+  assert.equal(hosts[2], 'hostC');
+  assert.equal(hosts[3], 'hostA');
+  assert.equal(hosts[4], 'hostB');
+  assert.equal(hosts[5], 'hostA');
+});
+
+test('ScanQueueRunner enforces 1-worker-per-tenant isolation', async () => {
+  const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'test-scan-isolation-'));
+  const jobsCsvPath = path.join(tmpDir, 'jobs.csv');
+  const statusPath = path.join(tmpDir, 'scan-status.json');
+
+  const jobsData = `job_key,job_url
+job_a1,https://tenant-a.oraclecloud.com/job/1
+job_a2,https://tenant-a.oraclecloud.com/job/2
+`;
+  await fs.writeFile(jobsCsvPath, jobsData, 'utf8');
+
+  let activeWorkersOnTenantA = 0;
+  let maxConcurrentOnTenantA = 0;
+
+  const runner = new ScanQueueRunner({
+    store: { read: async () => ({}) },
+    oracle: { createSession: async () => ({ id: 's' }), closeSession: async () => {} },
+    phase1: {
+      authenticate: async () => {
+        activeWorkersOnTenantA += 1;
+        if (activeWorkersOnTenantA > maxConcurrentOnTenantA) {
+          maxConcurrentOnTenantA = activeWorkersOnTenantA;
+        }
+        await new Promise(r => setTimeout(r, 15));
+        return { session: { id: 's' }, result: { status: 'authenticated' } };
+      }
+    },
+    phase2: {
+      scan: async ({ job }) => {
+        await new Promise(r => setTimeout(r, 15));
+        activeWorkersOnTenantA -= 1;
+        return { templateId: `tpl-${job.jobKey}`, fields: [], conditionalBranches: [], repeatableGroups: [] };
+      }
+    },
+    config: {
+      dataDir: tmpDir,
+      jobsCleanCsvPath: jobsCsvPath,
+      scanner: {
+        concurrency: 2,
+        launchThrottleMs: 0,
+        tenantCooldownMs: 0,
+        emails: ['dummy@test.com'],
+        statusPath
+      }
+    }
+  });
+
+  await runner.runQueue({
+    jobsCsvPath,
+    statusPath,
+    concurrency: 2,
+    launchThrottleMs: 0,
+    tenantCooldownMs: 0
+  });
+
+  assert.equal(maxConcurrentOnTenantA, 1, 'Only 1 worker must access tenant-a simultaneously');
+  await fs.rm(tmpDir, { recursive: true, force: true });
+});
+
+test('ScanQueueRunner handles CAPTCHA with 5-minute penalty and re-enqueues for retry', async () => {
+  const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'test-scan-captcha-'));
+  const jobsCsvPath = path.join(tmpDir, 'jobs.csv');
+  const statusPath = path.join(tmpDir, 'scan-status.json');
+
+  const jobsData = `job_key,job_url
+job_c1,https://tenant-captcha.oraclecloud.com/job/1
+`;
+  await fs.writeFile(jobsCsvPath, jobsData, 'utf8');
+
+  let attempts = 0;
+  const runner = new ScanQueueRunner({
+    store: { read: async () => ({}) },
+    oracle: { createSession: async () => ({ id: 's1' }), closeSession: async () => {} },
+    phase1: {
+      authenticate: async () => {
+        attempts += 1;
+        if (attempts === 1) {
+          return { session: { id: 's1' }, result: { status: 'skipped', reason: 'captcha_required', message: 'Challenge' } };
+        }
+        return { session: { id: 's1' }, result: { status: 'authenticated' } };
+      }
+    },
+    phase2: {
+      scan: async ({ job }) => ({ templateId: `tpl-${job.jobKey}`, fields: [], conditionalBranches: [], repeatableGroups: [] })
+    },
+    config: {
+      dataDir: tmpDir,
+      jobsCleanCsvPath: jobsCsvPath,
+      scanner: {
+        concurrency: 1,
+        launchThrottleMs: 0,
+        tenantCooldownMs: 0,
+        captchaBackoffMs: 10,
+        emails: ['dummy@test.com'],
+        statusPath
+      }
+    }
+  });
+
+  const result = await runner.runQueue({
+    jobsCsvPath,
+    statusPath,
+    concurrency: 1,
+    launchThrottleMs: 0,
+    tenantCooldownMs: 0,
+    captchaBackoffMs: 10,
+    force: true
+  });
+
+  assert.equal(attempts, 2, 'Should retry job after initial CAPTCHA backoff');
+  assert.equal(result.summary.completed, 1);
+  assert.equal(result.summary.skipped, 0);
+
+  await fs.rm(tmpDir, { recursive: true, force: true });
+});
+
+test('ScanQueueRunner filters queue by range and explicit job keys', async () => {
+  const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'test-scan-range-'));
+  const jobsCsvPath = path.join(tmpDir, 'jobs.csv');
+  const statusPath = path.join(tmpDir, 'scan-status.json');
+
+  const jobsData = `job_key,job_url
+job_1,https://ebez.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/101
+job_2,https://ebez.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/102
+job_3,https://ebez.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/103
+job_4,https://ebez.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/104
+job_5,https://ebez.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/105
+`;
+  await fs.writeFile(jobsCsvPath, jobsData, 'utf8');
+
+  const scannedJobs = [];
+
+  const runner = new ScanQueueRunner({
+    store: { read: async () => ({}) },
+    oracle: { createSession: async () => ({ id: 's1' }), closeSession: async () => {} },
+    phase1: {
+      authenticate: async ({ job }) => {
+        scannedJobs.push(job.jobKey);
+        return { session: { id: 's1' }, result: { status: 'authenticated' } };
+      }
+    },
+    phase2: {
+      scan: async ({ job }) => ({
+        templateId: `tpl-${job.jobKey}`,
+        fields: [],
+        conditionalBranches: [],
+        repeatableGroups: []
+      })
+    },
+    config: {
+      dataDir: tmpDir,
+      jobsCleanCsvPath: jobsCsvPath,
+      scanner: {
+        concurrency: 1,
+        launchThrottleMs: 0,
+        tenantCooldownMs: 0,
+        emails: ['dummy@test.com'],
+        statusPath
+      }
+    }
+  });
+
+  // Run with range: '2-3'
+  const result = await runner.runQueue({
+    jobsCsvPath,
+    statusPath,
+    concurrency: 1,
+    launchThrottleMs: 0,
+    tenantCooldownMs: 0,
+    range: '2-3',
+    force: true
+  });
+
+  assert.deepEqual(scannedJobs.sort(), ['job_2', 'job_3'], 'Should only scan jobs within range 2-3');
+  assert.equal(result.summary.completed, 2);
+
+  await fs.rm(tmpDir, { recursive: true, force: true });
+});

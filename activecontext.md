@@ -565,8 +565,8 @@ A complete, standalone architecture specification and workflow diagram report is
 
 ## Recommended next sequence
 
-1. **Step 1: CSV Ingestion & URL Deduplication (Completed & Verified)**:
-   - `Phase1IngestAuth.prototype.ingestCsv` parses `data/oracle_jobs.csv`, preserves raw URLs verbatim, maps 988 assignment rows to 196 unique jobs, writes `data/jobs.csv` (`job_key,job_url`), and appends `job_key` as the last column of `data/oracle_jobs.csv`.
+1. **Step 1: CSV Ingestion & Persistent Monotonic Job Key Ingestion (Completed & Verified)**:
+   - `Phase1IngestAuth.prototype.ingestCsv` parses `data/oracle_jobs.csv`, preserves raw verbatim URLs, checks existing `data/jobs.csv`, reuses existing `job_key` mappings, and assigns the next incremental integer key (`job_${maxIndex + 1}`) strictly to new unique URLs without resetting or renumbering. Writes cumulative `data/jobs.csv` and preserves `job_key` in `data/oracle_jobs.csv`.
    - Dedicated commands: `npm run ingest` and `npm run ingest:jobs`.
 2. **Step 2: 3-Worker Scanner Queue (Completed & Verified)**:
    - `ScanQueueRunner` (`src/phases/scan-queue.js`) orchestrates up to 3 concurrent Playwright workers with distinct dummy accounts (`SCANNER_EMAIL_1..3`).

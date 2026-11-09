@@ -70,7 +70,11 @@ textarea { min-height: 96px; resize: vertical; }
 
 /* Question Auditability Dot Badges */
 .field-header { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 6px; }
+.field-header-badges { display: inline-flex; align-items: center; gap: 8px; }
 .field-label { font-size: 14px; font-weight: 750; color: #31423d; display: inline-flex; align-items: center; gap: 4px; }
+.conditional-marker { color: #588073; font-weight: 800; font-size: 15px; margin-right: 2px; }
+.conditional-tag { display: inline-flex; align-items: center; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 99px; background: #f0f4f8; color: #2c5270; border: 1px solid #d0deeb; text-transform: uppercase; letter-spacing: .03em; }
+.conditional-field { margin-left: 20px; padding-left: 14px; border-left: 2px dashed #b9cbbf; background: #fafcfa; border-radius: 0 8px 8px 0; }
 .audit-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 99px; white-space: nowrap; }
 .audit-badge.resolved { background: #f0f7ec; color: #2c5e1a; border: 1px solid #d4ebd0; }
 .audit-badge.unresolved { background: #fdf2f0; color: #9a2c20; border: 1px solid #f9d6d1; }

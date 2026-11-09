@@ -1,0 +1,989 @@
+company_name,job_url,score,client_name,applywizz_id,job_key
+CBIZ,https://ebez.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/6677,83,Kalyani Lakkaram,AWL-46661,job_1
+Navy Federal Credit Union,https://fa-etbx-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/33203,65,Ganjigunta Narendar,AWL-32241,job_2
+CBIZ,https://ebez.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/6677,56,Ganjigunta Narendar,AWL-32241,job_1
+Safeway,https://eofd.fa.us6.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/788440,88,Sai Charan Rottla,AWL-4724,job_3
+CooperCompanies,https://hcjy.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/13095,85,Sai Charan Rottla,AWL-4724,job_4
+HealthPartners,https://fa-etnv-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/124686,80,Sai Charan Rottla,AWL-4724,job_5
+UCSF Health,https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/10554,97,RINKU KASALA,AWL-4220,job_6
+Con Edison,https://ejcu.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1033/requisitions/preview/1000358,97,RINKU KASALA,AWL-4220,job_7
+S&C Electric Company,https://ejia.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/107294,96,RINKU KASALA,AWL-4220,job_8
+Wesco,https://eklm.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/job/35738,76,Sai Charan Rottla,AWL-4724,job_9
+UCSF Health,https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/10554,72,Sai Charan Rottla,AWL-4724,job_6
+Wesco,https://eklm.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/job/35872,70,Sai Charan Rottla,AWL-4724,job_10
+AutoZone,https://egud.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/172799,92,RINKU KASALA,AWL-4220,job_11
+CooperCompanies,https://hcjy.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/13095,90,RINKU KASALA,AWL-4220,job_4
+Wesco,https://eklm.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/job/35798,90,RINKU KASALA,AWL-4220,job_12
+Honeywell,https://ibqbjb.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/160848,88,RINKU KASALA,AWL-4220,job_13
+Con Edison,https://ejcu.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1033/requisitions/preview/1000358,68,Sai Charan Rottla,AWL-4724,job_7
+Wesco,https://eklm.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/job/35798,57,Sai Charan Rottla,AWL-4724,job_12
+Honeywell Aerospace,https://icfcjb.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/127048,81,RINKU KASALA,AWL-4220,job_14
+Coherent Corp.,https://hcwp.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/2015644,78,RINKU KASALA,AWL-4220,job_15
+Safeway,https://eofd.fa.us6.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/788440,71,RINKU KASALA,AWL-4220,job_3
+Wesco,https://eklm.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/job/35738,67,RINKU KASALA,AWL-4220,job_9
+Safeway,https://eofd.fa.us6.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/788291,63,RINKU KASALA,AWL-4220,job_16
+Fortinet,https://edel.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_xx/requisitions/preview/24635,61,TEJESHWAR Junnareddy boopathi,AWL-26459,job_17
+Navy Federal Credit Union,https://fa-etbx-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/33296,91,Sai Chander,AWL-32411,job_18
+PEMCO,https://ejkz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/611/?utm_medium=jobboard&utm_source=linkedin,91,Sai Chander,AWL-32411,job_19
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/261017/?utm_medium=jobboard&utm_source=linkedin,91,Sai Chander,AWL-32411,job_20
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260225/?utm_medium=jobboard&utm_source=linkedin,86,Sai Chander,AWL-32411,job_21
+Oracle,https://eeho.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/349100/?utm_medium=jobboard&utm_source=LinkedIn,79,Sai Chander,AWL-32411,job_22
+Blue Shield of California,https://ecge.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/20262196/?utm_medium=jobboard&utm_source=linkedin,78,Sai Chander,AWL-32411,job_23
+Dollar General,https://ibxwjb.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/2805,72,Sai Chander,AWL-32411,job_24
+Honeywell Aerospace,https://icfcjb.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/127345,68,Sai Chander,AWL-32411,job_25
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10009068,61,Sai Chander,AWL-32411,job_26
+Oracle,https://eeho.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/349383,82,VAMSHI TEJESH NALABOLU,AWL-32982,job_27
+ACCO Engineered Systems,https://ekkt.fa.us2.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/6967,60,VAMSHI TEJESH NALABOLU,AWL-32982,job_28
+MidAmerican Energy,https://fa-essf-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10005990,59,VAMSHI TEJESH NALABOLU,AWL-32982,job_29
+Vertiv,https://egup.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/20283389,97,Ravi Teja Vadla,AWL-38247,job_30
+Advanced Manufacturing Group,https://fa-esgu-saasfaprod1.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/24324,93,Ravi Teja Vadla,AWL-38247,job_31
+Linamar,https://fa-epmd-saasfaprod1.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/14732,86,Ravi Teja Vadla,AWL-38247,job_32
+Newmark,https://hdow.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/250364,83,Ravi Teja Vadla,AWL-38247,job_33
+Southern Company,https://emje.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/22538,81,Ravi Teja Vadla,AWL-38247,job_34
+Hoffman Construction Company,https://efsp.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/requisitions/preview/1606,79,Ravi Teja Vadla,AWL-38247,job_35
+WSP,https://emit.fa.ca3.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_2001/requisitions/preview/98678,76,Ravi Teja Vadla,AWL-38247,job_36
+Zachry Group,https://fa-evfm-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1029/requisitions/preview/16287,76,Ravi Teja Vadla,AWL-38247,job_37
+Ascension,https://jobs-oraclecloud.ascension.org/en/job/18250,74,Ravi Teja Vadla,AWL-38247,job_38
+ADI Global Distribution,https://ehtl.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_2/requisitions/preview/19821,68,Ravi Teja Vadla,AWL-38247,job_39
+Zachry Group,https://fa-evfm-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1029/requisitions/preview/16285,57,Ravi Teja Vadla,AWL-38247,job_40
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/10008932?utm_source=linkedin&utm_medium=jobboard,89,VENKATESWARI KALVA,AWL-32097,job_41
+Coherent Corp.,https://hcwp.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/2015704,95,Apoorva Talari,AWL-32645,job_42
+Coherent Corp.,https://hcwp.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/2015704,96,Balamurali Siriki,AWL-32310,job_42
+The Citco Group Limited,https://fa-euxc-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/17821/?utm_medium=jobboard&utm_source=linkedin,53,Enukapally Hemanth kumar,AWL-41977,job_43
+Ascension,https://jobs-oraclecloud.ascension.org/en/job/18029,81,Bhavani  Mogilipaka,AWL-32830,job_44
+Ascension,https://jobs-oraclecloud.ascension.org/en/job/18029,68,AJAYKUMAR REDDY DEVARAPALLI,AWL-26257,job_44
+Ascension,https://jobs-oraclecloud.ascension.org/en/job/18029,74,Adarsh Teakaigari,AWL-39223,job_44
+Ascension,https://jobs-oraclecloud.ascension.org/en/job/18029,71,Srujana Reddy,AWL-36116,job_44
+Honeywell Aerospace,https://icfcjb.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/127005,73,NIKESH REDDY ADDULA,AWL-36117,job_45
+The Depository Trust & Clearing Corporation (DTCC),https://ebxr.fa.us2.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/213540?utm_source=linkedin&utm_medium=jobboard,89,Siva Bobbili,AWL-39785,job_46
+Community Health Systems,https://fa-evxo-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/169392?utm_source=linkedin&utm_medium=jobboard,74,Dileep  Dasarapu,AWL-31134,job_47
+Loma Linda University Health,https://egln.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/17920/?utm_medium=jobshare,71,Dileep  Dasarapu,AWL-31134,job_48
+Oracle,https://eeho.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/348551,68,Sateesh Tondepu,AWL-25695,job_49
+Oracle,https://eeho.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/348554,68,Sateesh Tondepu,AWL-25695,job_50
+Tri-State Generation & Transmission,https://fa-exbd-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/762,46,Sateesh Tondepu,AWL-25695,job_51
+Coherent Corp.,https://hcwp.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/2015704,73,Sameer Ali Dhanaliwala,AWL-41702,job_42
+Rockland Trust Company,https://eehb.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/3028,70,Sameer Ali Dhanaliwala,AWL-41702,job_52
+Ascension,https://jobs-oraclecloud.ascension.org/en/job/19468,57,Sameer Ali Dhanaliwala,AWL-41702,job_53
+HarbisonWalker International,https://egmk.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_2005/requisitions/preview/4603,59,Amulya Found V,AWL-33084,job_54
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/10008932?utm_source=linkedin&utm_medium=jobboard,60,Prakash Jakagalla,AWL-32936,job_41
+American Express,https://egug.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/26011275/?utm_medium=jobboard&utm_source=LinkedIn,33,Prakash Jakagalla,AWL-32936,job_55
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10009052,87,Vinay Kumar Reddy Budideti,AWL-6307,job_56
+Southern Company,https://emje.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/22524,67,Vinay Kumar Reddy Budideti,AWL-6307,job_57
+Fortinet,https://edel.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_xx/requisitions/preview/24851,67,Vinay Kumar Reddy Budideti,AWL-6307,job_58
+Fortinet,https://edel.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_xx/requisitions/preview/24852,55,Vinay Kumar Reddy Budideti,AWL-6307,job_59
+Navy Federal Credit Union,https://fa-etbx-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/33203,83,SAI CHAND KONDAPALLI,AWL-39786,job_2
+Coherent Corp.,https://hcwp.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/2015704,94,BHUVANA CHANDRA SEKHAR POSA,AWL-36105,job_42
+CBIZ,https://ebez.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/6677,79,BHUVANA CHANDRA SEKHAR POSA,AWL-36105,job_1
+Ascension,https://jobs-oraclecloud.ascension.org/en/job/19468,78,BHUVANA CHANDRA SEKHAR POSA,AWL-36105,job_53
+Coherent Corp.,https://hcwp.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/2015704,93,NAVEEN KUMAR MODEPALLI,AWL-32898,job_42
+Ascension,https://jobs-oraclecloud.ascension.org/en/job/19468,83,NAVEEN KUMAR MODEPALLI,AWL-32898,job_53
+CBIZ,https://ebez.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/6677,77,NAVEEN KUMAR MODEPALLI,AWL-32898,job_1
+Texas Children's Hospital,https://eohh.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/427956/?utm_medium=jobshare,35,AISHWARYA REDDY PARUPATI,AWL-42044,job_60
+Fortinet,https://edel.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_xx/requisitions/preview/24851,88,RAJASEKHAR REDDY KOTHAPALLI,AWL-32876,job_58
+MidAmerican Energy,https://fa-essf-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10005990,78,RAJASEKHAR REDDY KOTHAPALLI,AWL-32876,job_29
+Oracle,https://eeho.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/349383,73,RAJASEKHAR REDDY KOTHAPALLI,AWL-32876,job_27
+Southern Company,https://emje.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/22524,71,RAJASEKHAR REDDY KOTHAPALLI,AWL-32876,job_57
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10009052,65,RAJASEKHAR REDDY KOTHAPALLI,AWL-32876,job_56
+Fortinet,https://edel.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_xx/requisitions/preview/24852,51,RAJASEKHAR REDDY KOTHAPALLI,AWL-32876,job_59
+MidAmerican Energy,https://fa-essf-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10005990,88,Ananya Chittineni,AWL-39197,job_29
+Fortinet,https://edel.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_xx/requisitions/preview/24852,79,Ananya Chittineni,AWL-39197,job_59
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10009052,72,Ananya Chittineni,AWL-39197,job_56
+Fortinet,https://edel.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_xx/requisitions/preview/24851,71,Ananya Chittineni,AWL-39197,job_58
+Oracle,https://eeho.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/349383,50,Ananya Chittineni,AWL-39197,job_27
+Compare the Market,https://ebet.fa.em3.oraclecloud.com/hcmUI/CandidateExperience/en/job/100329/?utm_medium=jobboard&utm_source=linkedin,77,MANIKANTA KATHAM,AWL-41701,job_61
+Navy Federal Credit Union,https://fa-etbx-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/33203,82,AKHIL Setty Balija,AWL-2211,job_2
+CBIZ,https://ebez.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/6677,73,AKHIL Setty Balija,AWL-2211,job_1
+Coherent Corp.,https://hcwp.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/2015704,94,Kamalakar Bulipe,AWL-35215,job_42
+CBIZ,https://ebez.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/6677,94,Kamalakar Bulipe,AWL-35215,job_1
+CBIZ,https://ebez.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/6677,97,Vamshi Krishna ⭐,AWL-28532,job_1
+Coherent Corp.,https://hcwp.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/2015704,95,Vamshi Krishna ⭐,AWL-28532,job_42
+Ascension,https://jobs-oraclecloud.ascension.org/en/job/19468,83,Kamalakar Bulipe,AWL-35215,job_53
+Ascension,https://jobs-oraclecloud.ascension.org/en/job/19468,81,Vamshi Krishna ⭐,AWL-28532,job_53
+Coherent Corp.,https://hcwp.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/2015704,100,Pavanjeevan BUDDALA,AWL-37259,job_42
+Rockland Trust,https://eehb.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/3028/?utm_medium=jobboard&utm_source=linkedin,84,Pavanjeevan BUDDALA,AWL-37259,job_62
+Navy Federal Credit Union,https://fa-etbx-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/33203,71,Kamalakar Bulipe,AWL-35215,job_2
+Hertz,https://fa-evlf-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/42097/?utm_medium=jobboard&utm_source=linkedin,81,Pavanjeevan BUDDALA,AWL-37259,job_63
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/10008932?utm_source=linkedin&utm_medium=jobboard,81,Pavanjeevan BUDDALA,AWL-37259,job_41
+Coherent Corp.,https://hcwp.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/2015704/?utm_medium=jobshare,74,Pavanjeevan BUDDALA,AWL-37259,job_64
+The Depository Trust & Clearing Corporation (DTCC),https://ebxr.fa.us2.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/213540?utm_source=linkedin&utm_medium=jobboard,72,Pavanjeevan BUDDALA,AWL-37259,job_46
+Navy Federal Credit Union,https://fa-etbx-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/33203,66,Vamshi Krishna ⭐,AWL-28532,job_2
+Coherent Corp.,https://hcwp.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/2015704,93,Ravindra reddy bijjam,AWL-26675,job_42
+CBIZ,https://ebez.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/6677,89,Ravindra reddy bijjam,AWL-26675,job_1
+Ascension,https://jobs-oraclecloud.ascension.org/en/job/19468,81,Ravindra reddy bijjam,AWL-26675,job_53
+Navy Federal Credit Union,https://fa-etbx-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/33203,61,Ravindra reddy bijjam,AWL-26675,job_2
+CBIZ,https://ebez.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/6677,96,Pranav Prasasth B,AWL-35184,job_1
+Coherent Corp.,https://hcwp.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/2015704,90,Pranav Prasasth B,AWL-35184,job_42
+CBIZ,https://ebez.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/6677,93,Balamurali Siriki,AWL-32310,job_1
+Ascension,https://jobs-oraclecloud.ascension.org/en/job/19468,83,Balamurali Siriki,AWL-32310,job_53
+Navy Federal Credit Union,https://fa-etbx-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/33203,80,Balamurali Siriki,AWL-32310,job_2
+Ascension,https://jobs-oraclecloud.ascension.org/en/job/19468,78,Pranav Prasasth B,AWL-35184,job_53
+Navy Federal Credit Union,https://fa-etbx-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/33203,70,Pranav Prasasth B,AWL-35184,job_2
+Coherent Corp.,https://hcwp.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/2015704,94,Prathyusha Gangisetty⭐⭐,AWL-28492,job_42
+CBIZ,https://ebez.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/6677,94,Prathyusha Gangisetty⭐⭐,AWL-28492,job_1
+Coherent Corp.,https://hcwp.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/2015704,75,Kalyani Lakkaram,AWL-46661,job_42
+Ascension,https://jobs-oraclecloud.ascension.org/en/job/19468,80,Prathyusha Gangisetty⭐⭐,AWL-28492,job_53
+CBIZ,https://ebez.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/6677,96,Rajesh Chandaluri,AWL-30711,job_1
+Coherent Corp.,https://hcwp.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/2015704,95,Sairaj Reddy Maddur,AWL-46670,job_42
+Navy Federal Credit Union,https://fa-etbx-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/33203,86,Sairaj Reddy Maddur,AWL-46670,job_2
+CBIZ,https://ebez.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/6677,78,Sairaj Reddy Maddur,AWL-46670,job_1
+Navy Federal Credit Union,https://fa-etbx-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/33203,69,Prathyusha Gangisetty⭐⭐,AWL-28492,job_2
+Coherent Corp.,https://hcwp.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/2015704,95,Rajesh Chandaluri,AWL-30711,job_42
+Ascension,https://jobs-oraclecloud.ascension.org/en/job/19468,82,Rajesh Chandaluri,AWL-30711,job_53
+CBIZ,https://ebez.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/6677,82,Apoorva Talari,AWL-32645,job_1
+Navy Federal Credit Union,https://fa-etbx-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/33203,81,Apoorva Talari,AWL-32645,job_2
+Navy Federal Credit Union,https://fa-etbx-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/33203,70,Kalyani Lakkaram,AWL-46661,job_2
+Ascension,https://jobs-oraclecloud.ascension.org/en/job/19468,49,Kalyani Lakkaram,AWL-46661,job_53
+Ascension,https://jobs-oraclecloud.ascension.org/en/job/19468,74,Apoorva Talari,AWL-32645,job_53
+Ascension,https://jobs-oraclecloud.ascension.org/en/job/19468,72,Sairaj Reddy Maddur,AWL-46670,job_53
+Navy Federal Credit Union,https://fa-etbx-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/33203,69,Rajesh Chandaluri,AWL-30711,job_2
+BNY,https://eofe.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_3001/requisitions/preview/81915,66,Vivek Singh,AWL-43537,job_65
+BNY,https://eofe.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_3001/requisitions/preview/81912,66,Vivek Singh,AWL-43537,job_66
+Navy Federal Credit Union,https://fa-etbx-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/33203,93,Chandra Mouli Mekala,AWL-25884,job_2
+CBIZ,https://ebez.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/6677,94,Dora Sai Ganesh Reddy Satti,AWL-25015,job_1
+Coherent Corp.,https://hcwp.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/2015704,93,Dora Sai Ganesh Reddy Satti,AWL-25015,job_42
+CBIZ,https://ebez.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/6677,81,Chandra Mouli Mekala,AWL-25884,job_1
+ACCO Engineered Systems,https://ekkt.fa.us2.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/6967,58,Vivek Singh,AWL-43537,job_28
+Ascension,https://jobs-oraclecloud.ascension.org/en/job/19468,78,Dora Sai Ganesh Reddy Satti,AWL-25015,job_53
+Navy Federal Credit Union,https://fa-etbx-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/33203,72,Dora Sai Ganesh Reddy Satti,AWL-25015,job_2
+Ascension,https://jobs-oraclecloud.ascension.org/en/job/19468,75,Chandra Mouli Mekala,AWL-25884,job_53
+Coherent Corp.,https://hcwp.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/2015704,73,Chandra Mouli Mekala,AWL-25884,job_42
+Coherent Corp.,https://hcwp.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/2015704,93,Sai Kumar,AWL-31874,job_42
+CBIZ,https://ebez.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/6677,79,Sai Kumar,AWL-31874,job_1
+Navy Federal Credit Union,https://fa-etbx-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/33203,77,Sai Kumar,AWL-31874,job_2
+Ascension,https://jobs-oraclecloud.ascension.org/en/job/19468,65,Sai Kumar,AWL-31874,job_53
+Sundt,https://eewl.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/requisitions/preview/11746,76,SANJANA KRISHNA REDDY NAVAR,AWL-29197,job_67
+Tremco CPG Inc.,https://hcwx.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/15386/?utm_medium=jobshare,58,SANJANA KRISHNA REDDY NAVAR,AWL-29197,job_68
+BGIS,https://fa-evcg-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/fr-CA/sites/CX_1/requisitions/preview/234041,48,SANJANA KRISHNA REDDY NAVAR,AWL-29197,job_69
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10009068,85,Bhawan Kumar Chinavada,AWL-29945,job_26
+Dollar General,https://ibxwjb.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/2805,79,Bhawan Kumar Chinavada,AWL-29945,job_24
+The Depository Trust & Clearing Corporation (DTCC),https://ebxr.fa.us2.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/213540?utm_source=linkedin&utm_medium=jobboard,70,Bhawan Kumar Chinavada,AWL-29945,job_46
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/10009068?utm_source=linkedin&utm_medium=jobboard,68,Bhawan Kumar Chinavada,AWL-29945,job_70
+Vertiv,https://egup.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/20282012,52,Bhawan Kumar Chinavada,AWL-29945,job_71
+Navy Federal Credit Union,https://fa-etbx-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/33296,46,Bhawan Kumar Chinavada,AWL-29945,job_18
+Datavail,https://eifn.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/job/1993/?utm_medium=jobshare,83,Malavika Palupunuri,AWL-31930,job_72
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260821/?utm_medium=jobboard&utm_source=linkedin,63,Malavika Palupunuri,AWL-31930,job_73
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/10008932?utm_source=linkedin&utm_medium=jobboard,62,Malavika Palupunuri,AWL-31930,job_41
+Dollar General,https://ibxwjb.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/2805,93,ADITYA POLA,AWL-32933,job_24
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10009068,84,ADITYA POLA,AWL-32933,job_26
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/261073/?utm_medium=jobboard&utm_source=linkedin,79,ADITYA POLA,AWL-32933,job_74
+Navy Federal Credit Union,https://fa-etbx-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/33296,76,ADITYA POLA,AWL-32933,job_18
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/261017/?utm_medium=jobboard&utm_source=linkedin,65,ADITYA POLA,AWL-32933,job_20
+Vertiv,https://egup.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/20282012,46,ADITYA POLA,AWL-32933,job_71
+Honeywell,https://ibqbjb.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/159782,76,Sathvik Manoj Karpurapu,AWL-33083,job_75
+Legrand,https://iadugs.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/1769,74,Sathvik Manoj Karpurapu,AWL-33083,job_76
+Curia,https://hcug.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/2005015,65,Sathvik Manoj Karpurapu,AWL-33083,job_77
+Howmet Aerospace,https://fa-exty-saasfaprod1.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/120249,61,Sathvik Manoj Karpurapu,AWL-33083,job_78
+Coherent Corp.,https://hcwp.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/2015532,54,Sathvik Manoj Karpurapu,AWL-33083,job_79
+ACCO Engineered Systems,https://ekkt.fa.us2.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/6967,92,Karthik P,AWL-27613,job_28
+Oracle,https://eeho.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/349383,85,Karthik P,AWL-27613,job_27
+ACCO Engineered Systems,https://ekkt.fa.us2.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/6967,44,Siva Lakshmaiah Ankipalli,AWL-43306,job_28
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/261003/?utm_medium=jobboard&utm_source=linkedin,85,RADHIKA CHAUHAN,AWL-44794,job_80
+Inova Health,https://elar.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/686005/?utm_medium=jobshare&Codes=W-LINKEDIN,100,Yamini Yesaswini Dusi,AWL-25972,job_81
+Navy Federal Credit Union,https://fa-etbx-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/33203,77,RADHIKA CHAUHAN,AWL-44794,job_2
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260987/?utm_medium=jobboard&utm_source=linkedin,71,RADHIKA CHAUHAN,AWL-44794,job_82
+Dallas County,https://fa-etvc-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/25001046/?utm_medium=jobshare,62,Abhi,AWL-35262,job_83
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/10008932?utm_source=linkedin&utm_medium=jobboard,58,Abhi,AWL-35262,job_41
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/10008932?utm_source=linkedin&utm_medium=jobboard,54,Abhi,AWL-35262,job_41
+ACCO Engineered Systems,https://ekkt.fa.us2.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/6967,74,DORA BABU CHINTALA,AWL-32516,job_28
+CBIZ,https://ebez.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/6677,61,RADHIKA CHAUHAN,AWL-44794,job_1
+Datavail,https://eifn.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/job/1993/?utm_medium=jobshare,52,Abhi,AWL-35262,job_72
+Coherent Corp.,https://hcwp.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/2015704,93,Dedeepya Peyyala,AWL-45425,job_42
+CBIZ,https://ebez.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/6677,76,Dedeepya Peyyala,AWL-45425,job_1
+Wingstop Restaurants Inc.,https://iaxmqy.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/1111?utm_source=linkedin&utm_medium=jobboard,76,Dedeepya Peyyala,AWL-45425,job_84
+Ascension,https://jobs-oraclecloud.ascension.org/en/job/19468,74,Dedeepya Peyyala,AWL-45425,job_53
+Westfield Insurance,https://fa-exdv-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/12053,73,Dedeepya Peyyala,AWL-45425,job_85
+Southern Company,https://emje.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/22485,69,Dedeepya Peyyala,AWL-45425,job_86
+StandardAero,https://cva.fa.us1.oraclecloud.com/hcmUI/CandidateExperience/en/job/9610/?utm_medium=jobboard&utm_source=linkedin,63,Dedeepya Peyyala,AWL-45425,job_87
+UCSF Health,https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/10852/?utm_medium=jobboard&utm_source=linkedin,61,Dedeepya Peyyala,AWL-45425,job_88
+Coherent Corp.,https://hcwp.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/2015704,96,Keerthi raj Sathelli,AWL-39240,job_42
+Nabors Industries,https://fa-eyem-saasfaprod1.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/1001911,61,Dedeepya Peyyala,AWL-45425,job_89
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260987/?utm_medium=jobboard&utm_source=linkedin,60,Dedeepya Peyyala,AWL-45425,job_82
+Ascension,https://jobs-oraclecloud.ascension.org/en/job/19468,85,Keerthi raj Sathelli,AWL-39240,job_53
+CBIZ,https://ebez.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/6677,80,Keerthi raj Sathelli,AWL-39240,job_1
+Wingstop Restaurants Inc.,https://iaxmqy.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/1111?utm_source=linkedin&utm_medium=jobboard,80,Keerthi raj Sathelli,AWL-39240,job_84
+UCSF Health,https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/10852/?utm_medium=jobboard&utm_source=linkedin,80,Keerthi raj Sathelli,AWL-39240,job_88
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260987/?utm_medium=jobboard&utm_source=linkedin,78,Keerthi raj Sathelli,AWL-39240,job_82
+Majesco,https://fa-emad-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/5507/?utm_medium=jobshare,52,Dedeepya Peyyala,AWL-45425,job_90
+Bank of Hawaii,https://fa-enlf-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/3002871/?utm_medium=jobshare,50,Dedeepya Peyyala,AWL-45425,job_91
+UN Women,https://estm.fa.em2.oraclecloud.com/hcmUI/CandidateExperience/en/job/37744/?utm_medium=jobshare,38,Dedeepya Peyyala,AWL-45425,job_92
+StandardAero,https://cva.fa.us1.oraclecloud.com/hcmUI/CandidateExperience/en/job/9610/?utm_medium=jobboard&utm_source=linkedin,70,Keerthi raj Sathelli,AWL-39240,job_87
+Westfield Insurance,https://fa-exdv-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/12053,69,Keerthi raj Sathelli,AWL-39240,job_85
+Bank of Hawaii,https://fa-enlf-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/3002871/?utm_medium=jobshare,69,Keerthi raj Sathelli,AWL-39240,job_91
+Nabors Industries,https://fa-eyem-saasfaprod1.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/1001911,65,Keerthi raj Sathelli,AWL-39240,job_89
+Southern Company,https://emje.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/22485,60,Keerthi raj Sathelli,AWL-39240,job_86
+Texas Children's Hospital,https://eohh.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/427956/?utm_medium=jobshare,53,Keerthi raj Sathelli,AWL-39240,job_60
+UN Women,https://estm.fa.em2.oraclecloud.com/hcmUI/CandidateExperience/en/job/37744/?utm_medium=jobshare,37,Keerthi raj Sathelli,AWL-39240,job_92
+Inova Health,https://elar.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/686005/?utm_medium=jobshare&Codes=W-LINKEDIN,78,Sai Karthik Inkulu,AWL-45411,job_81
+Copper Springs,https://ibnjjb.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/361505,76,SINDHU MOTAPOTHULA,AWL-36115,job_93
+Copper Springs,https://ibnjjb.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/361507,76,SINDHU MOTAPOTHULA,AWL-36115,job_94
+TriHealth Inc.,https://fa-evly-saasfaprod1.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/312857,61,SINDHU MOTAPOTHULA,AWL-36115,job_95
+Oracle,https://eeho.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/348604,57,SINDHU MOTAPOTHULA,AWL-36115,job_96
+University of Tennessee Health Science Center,https://fa-ewlq-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10627,45,SINDHU MOTAPOTHULA,AWL-36115,job_97
+University of Tennessee,https://fa-ewlq-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10627,30,SINDHU MOTAPOTHULA,AWL-36115,job_97
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/261021/?utm_medium=jobboard&utm_source=linkedin,83,Saiteja Benkannagari,AWL-4039,job_98
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260225/?utm_medium=jobboard&utm_source=linkedin,71,Saiteja Benkannagari,AWL-4039,job_21
+Zachry Group,https://fa-evfm-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/16275/?utm_medium=jobshare,68,Saiteja Benkannagari,AWL-4039,job_99
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/261046/?utm_medium=jobboard&utm_source=linkedin,56,Saiteja Benkannagari,AWL-4039,job_100
+Coherent Corp.,https://hcwp.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/2015704,92,SANAPALA MOUNICA,AWL-44801,job_42
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260836/?utm_medium=jobboard&utm_source=linkedin,48,Saiteja Benkannagari,AWL-4039,job_101
+Wingstop Restaurants Inc.,https://iaxmqy.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/1111?utm_source=linkedin&utm_medium=jobboard,82,SANAPALA MOUNICA,AWL-44801,job_84
+Ascension,https://jobs-oraclecloud.ascension.org/en/job/19468,78,SANAPALA MOUNICA,AWL-44801,job_53
+Honeywell,https://ibqbjb.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/160848,73,MANOJKUMAR KOLLI,AWL-28684,job_13
+UCSF Health,https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/10852/?utm_medium=jobboard&utm_source=linkedin,72,SANAPALA MOUNICA,AWL-44801,job_88
+Honeywell Aerospace,https://icfcjb.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/127048,72,MANOJKUMAR KOLLI,AWL-28684,job_14
+CBIZ,https://ebez.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/6677,69,SANAPALA MOUNICA,AWL-44801,job_1
+Westfield Insurance,https://fa-exdv-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/12053,68,SANAPALA MOUNICA,AWL-44801,job_85
+StandardAero,https://cva.fa.us1.oraclecloud.com/hcmUI/CandidateExperience/en/job/9610/?utm_medium=jobboard&utm_source=linkedin,68,SANAPALA MOUNICA,AWL-44801,job_87
+Southern Company,https://emje.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/22485,59,SANAPALA MOUNICA,AWL-44801,job_86
+Nabors Industries,https://fa-eyem-saasfaprod1.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/1001911,58,SANAPALA MOUNICA,AWL-44801,job_89
+Wesco,https://eklm.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/job/35872,62,MANOJKUMAR KOLLI,AWL-28684,job_10
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260987/?utm_medium=jobboard&utm_source=linkedin,53,SANAPALA MOUNICA,AWL-44801,job_82
+Bank of Hawaii,https://fa-enlf-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/3002871/?utm_medium=jobshare,38,SANAPALA MOUNICA,AWL-44801,job_91
+UN Women,https://estm.fa.em2.oraclecloud.com/hcmUI/CandidateExperience/en/job/37744/?utm_medium=jobshare,27,SANAPALA MOUNICA,AWL-44801,job_92
+Con Edison,https://ejcu.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1033/requisitions/preview/1000358,33,MANOJKUMAR KOLLI,AWL-28684,job_7
+Curia,https://hcug.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/2005015,83,Abhiram Kalathur,AWL-43946,job_77
+Legrand,https://iadugs.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/1695/?utm_medium=jobboard&utm_source=linkedin,30,MANOJKUMAR KOLLI,AWL-28684,job_102
+Howmet Aerospace,https://fa-exty-saasfaprod1.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/120249,81,Abhiram Kalathur,AWL-43946,job_78
+Honeywell,https://ibqbjb.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/159782,80,Abhiram Kalathur,AWL-43946,job_75
+Legrand,https://iadugs.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/1769,79,Abhiram Kalathur,AWL-43946,job_76
+Oracle,https://eeho.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/349383,70,Venkata Prasanth Reddy Bontha,AWL-28177,job_27
+Nokia,https://fa-evmr-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/41762,63,Venkata Prasanth Reddy Bontha,AWL-28177,job_103
+Datavail,https://eifn.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/job/1993/?utm_medium=jobshare,63,NITHIN Reddy RAVULA,AWL-32688,job_72
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/10008932?utm_source=linkedin&utm_medium=jobboard,54,NITHIN Reddy RAVULA,AWL-32688,job_41
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/10008932?utm_source=linkedin&utm_medium=jobboard,47,NITHIN Reddy RAVULA,AWL-32688,job_41
+Coherent Corp.,https://hcwp.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/2015532,75,Abhiram Kalathur,AWL-43946,job_79
+Hexaware Technologies,https://fa-etqo-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/700632,54,Venkata Prasanth Reddy Bontha,AWL-28177,job_104
+Blue Cross Blue Shield of Michigan,https://ejko.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_3/requisitions/preview/15064,78,Sowmya Nalla,AWL-39777,job_105
+Ascension,https://jobs-oraclecloud.ascension.org/en/job/18029,52,Venkata Prasanth Reddy Bontha,AWL-28177,job_44
+Blue Shield of California,https://ecge.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1003/requisitions/preview/20262396,76,Sowmya Nalla,AWL-39777,job_106
+Oracle,https://eeho.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/348512,49,Venkata Prasanth Reddy Bontha,AWL-28177,job_107
+Ascension,https://jobs-oraclecloud.ascension.org/en/job/22769,76,Sowmya Nalla,AWL-39777,job_108
+Haywood Regional Medical Center,https://ibnjjb.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/361796,72,Sowmya Nalla,AWL-39777,job_109
+St. Peter's Health,https://fa-eqec-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_2/requisitions/preview/24158,72,Sowmya Nalla,AWL-39777,job_110
+Quest Diagnostics,https://hdox.fa.us6.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/72823,72,Sowmya Nalla,AWL-39777,job_111
+Ascension,https://jobs-oraclecloud.ascension.org/en/job/22769,79,Tejashwini Komanpally,AWL-39201,job_108
+Blue Cross Blue Shield of Michigan,https://ejko.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_3/requisitions/preview/15064,73,Tejashwini Komanpally,AWL-39201,job_105
+Quest Diagnostics,https://hdox.fa.us6.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/72823,67,Tejashwini Komanpally,AWL-39201,job_111
+Ascension,https://jobs-oraclecloud.ascension.org/en/job/24816,61,Sowmya Nalla,AWL-39777,job_112
+Envision Healthcare,https://eney.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/1873,59,Sowmya Nalla,AWL-39777,job_113
+University of South Florida,https://fa-ewkd-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/44685,54,Sowmya Nalla,AWL-39777,job_114
+Amneal Pharmaceuticals,https://hcfa.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/requisitions/preview/9157,54,Sowmya Nalla,AWL-39777,job_115
+WellSpan Health,https://fa-evzu-saasfaprod1.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/230731,52,Sowmya Nalla,AWL-39777,job_116
+Blue Shield of California,https://ecge.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1003/requisitions/preview/20262396,65,Tejashwini Komanpally,AWL-39201,job_106
+St. Peter's Health,https://fa-eqec-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_2/requisitions/preview/24158,62,Tejashwini Komanpally,AWL-39201,job_110
+Envision Healthcare,https://eney.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/1873,62,Tejashwini Komanpally,AWL-39201,job_113
+Haywood Regional Medical Center,https://ibnjjb.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/361796,60,Tejashwini Komanpally,AWL-39201,job_109
+WellSpan Health,https://fa-evzu-saasfaprod1.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/230731,53,Tejashwini Komanpally,AWL-39201,job_116
+Tri-State Generation & Transmission,https://fa-exbd-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/762,45,Venkata Prasanth Reddy Bontha,AWL-28177,job_51
+HealthPartners,https://fa-etnv-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/124289,45,Tejashwini Komanpally,AWL-39201,job_117
+University of South Florida,https://fa-ewkd-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/44685,42,Tejashwini Komanpally,AWL-39201,job_114
+Amneal Pharmaceuticals,https://hcfa.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/requisitions/preview/9157,42,Tejashwini Komanpally,AWL-39201,job_115
+CSX,https://fa-eowa-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/55012/?utm_medium=jobshare&src=SNS-10294,94,VINEETH NAALLA,AWL-32586,job_118
+Hilltop Holdings,https://ejlu.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/32096/?utm_medium=jobboard&utm_source=linkedin,93,VINEETH NAALLA,AWL-32586,job_119
+Akamai,https://fa-extu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/4343,89,VINEETH NAALLA,AWL-32586,job_120
+Coherent Corp.,https://hcwp.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/2015704,93,PARDEEPAN SUBRAMANIAM,AWL-31380,job_42
+CSX,https://fa-eowa-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_/requisitions/preview/55012,86,VINEETH NAALLA,AWL-32586,job_121
+The Depository Trust & Clearing Corporation (DTCC),https://ebxr.fa.us2.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/214675?utm_source=linkedin&utm_medium=jobboard,86,VINEETH NAALLA,AWL-32586,job_122
+Wingstop Restaurants Inc.,https://iaxmqy.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/1111?utm_source=linkedin&utm_medium=jobboard,84,PARDEEPAN SUBRAMANIAM,AWL-31380,job_84
+CBIZ,https://ebez.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/6677,79,PARDEEPAN SUBRAMANIAM,AWL-31380,job_1
+Bank of Hawaii,https://fa-enlf-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/3002871/?utm_medium=jobshare,75,PARDEEPAN SUBRAMANIAM,AWL-31380,job_91
+Westfield Insurance,https://fa-exdv-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/12053,74,PARDEEPAN SUBRAMANIAM,AWL-31380,job_85
+Southern Company,https://emje.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/22485,73,PARDEEPAN SUBRAMANIAM,AWL-31380,job_86
+Ascension,https://jobs-oraclecloud.ascension.org/en/job/19468,72,PARDEEPAN SUBRAMANIAM,AWL-31380,job_53
+StandardAero,https://cva.fa.us1.oraclecloud.com/hcmUI/CandidateExperience/en/job/9610/?utm_medium=jobboard&utm_source=linkedin,67,PARDEEPAN SUBRAMANIAM,AWL-31380,job_87
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10009052,80,Vamshi Challagundla,AWL-6451,job_56
+Ascension,https://jobs-oraclecloud.ascension.org/en/job/19468,97,Vishwas  Boddu,AWL-23632,job_53
+UC Health,https://eswt.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/job/24851/?utm_medium=jobboard&utm_source=linkedin,91,Vishwas  Boddu,AWL-23632,job_123
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260235/?utm_medium=jobboard&utm_source=linkedin,77,VINEETH NAALLA,AWL-32586,job_124
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/1947/?utm_medium=jobboard&utm_source=linkedin,70,VINEETH NAALLA,AWL-32586,job_125
+WSP,https://emit.fa.ca3.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_2001/requisitions/preview/98692,47,VINEETH NAALLA,AWL-32586,job_126
+Blue Cross Blue Shield of Michigan,https://ejko.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/15064/?utm_medium=jobshare&src=SNS-102,81,Vishwas  Boddu,AWL-23632,job_127
+Fortinet,https://edel.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_xx/requisitions/preview/24852,73,Vamshi Challagundla,AWL-6451,job_59
+Southern Company,https://emje.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/22524,65,Vamshi Challagundla,AWL-6451,job_57
+MidAmerican Energy,https://fa-essf-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10005990,65,Vamshi Challagundla,AWL-6451,job_29
+UCSF Health,https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/10852/?utm_medium=jobboard&utm_source=linkedin,62,PARDEEPAN SUBRAMANIAM,AWL-31380,job_88
+UN Women,https://estm.fa.em2.oraclecloud.com/hcmUI/CandidateExperience/en/job/37744/?utm_medium=jobshare,58,PARDEEPAN SUBRAMANIAM,AWL-31380,job_92
+Nabors Industries,https://fa-eyem-saasfaprod1.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/1001911,49,PARDEEPAN SUBRAMANIAM,AWL-31380,job_89
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260987/?utm_medium=jobboard&utm_source=linkedin,47,PARDEEPAN SUBRAMANIAM,AWL-31380,job_82
+Haywood Regional Medical Center,https://ibnjjb.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/361796,68,Vishwas  Boddu,AWL-23632,job_109
+Blue Cross Blue Shield of Michigan,https://ejko.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_3/requisitions/preview/15064,64,Vishwas  Boddu,AWL-23632,job_105
+Community Health Systems,https://fa-evxo-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/169777?utm_source=linkedin&utm_medium=jobboard,63,Vishwas  Boddu,AWL-23632,job_128
+Fortinet,https://edel.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_xx/requisitions/preview/24851,52,Vamshi Challagundla,AWL-6451,job_58
+Vertiv,https://egup.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/20283846/?utm_medium=jobboard&utm_source=linkedin,85,Lakshmi Mohan,AWL-7020,job_129
+EPTA GROUP,https://fa-eukp-saasfaprod1.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/2619,84,Lakshmi Mohan,AWL-7020,job_130
+Emerson,https://hdjq.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/26012979?utm_medium=jobboard&utm_source=indeed,79,Lakshmi Mohan,AWL-7020,job_131
+Honeywell Technologies,https://ibqbjb.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/159782/?utm_medium=jobboard&utm_source=linkedin,72,Lakshmi Mohan,AWL-7020,job_132
+MidAmerican Energy,https://fa-essf-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10005990,74,Kalyan Kumar Thatikonda,AWL-29612,job_29
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10009052,73,Kalyan Kumar Thatikonda,AWL-29612,job_56
+Fortinet,https://edel.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_xx/requisitions/preview/24852,72,Kalyan Kumar Thatikonda,AWL-29612,job_59
+Fortinet,https://edel.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_xx/requisitions/preview/24851,68,Kalyan Kumar Thatikonda,AWL-29612,job_58
+ACCO Engineered Systems,https://ekkt.fa.us2.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/6967,66,Kalyan Kumar Thatikonda,AWL-29612,job_28
+Community Health Systems,https://fa-evxo-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/169392?utm_source=linkedin&utm_medium=jobboard,49,Vishwas  Boddu,AWL-23632,job_47
+NOV,https://egay.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/job/45053/?utm_medium=jobshare,70,Lakshmi Mohan,AWL-7020,job_133
+NOV,https://egay.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_4001/requisitions/preview/45053,69,Lakshmi Mohan,AWL-7020,job_134
+Honeywell,https://ibqbjb.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/159782,68,Lakshmi Mohan,AWL-7020,job_75
+MidAmerican Energy,https://fa-essf-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10005990,92,Uday Talasila,AWL-26230,job_29
+Howmet Aerospace,https://fa-exty-saasfaprod1.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/120249,53,Lakshmi Mohan,AWL-7020,job_78
+Fortinet,https://edel.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_xx/requisitions/preview/24852,81,Uday Talasila,AWL-26230,job_59
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10009052,65,Uday Talasila,AWL-26230,job_56
+Southern Company,https://emje.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/22524,65,Uday Talasila,AWL-26230,job_57
+Mauser Packaging Solutions,https://hdpn.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/6346,96,MANISHA MEDASANI,AWL-35049,job_135
+Chubb Benefits,https://fa-ewgu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_2001/job/37725/?utm_medium=jobshare&utm_source=External+Job+Share,92,MANISHA MEDASANI,AWL-35049,job_136
+Fortinet,https://edel.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_xx/requisitions/preview/24851,57,Uday Talasila,AWL-26230,job_58
+The Depository Trust & Clearing Corporation (DTCC),https://ebxr.fa.us2.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/213540?utm_source=linkedin&utm_medium=jobboard,94,Sandeep Kumar Reddy Sandhadi,AWL-31114,job_46
+"Williams-Sonoma, Inc.",https://ehac.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/20887,91,MANISHA MEDASANI,AWL-35049,job_137
+Wood,https://ehif.fa.em2.oraclecloud.com/hcmUI/CandidateExperience/en/job/33380/?utm_medium=jobshare,91,MANISHA MEDASANI,AWL-35049,job_138
+Cetera Financial Group,https://ebhu.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/requisitions/preview/6870,90,MANISHA MEDASANI,AWL-35049,job_139
+"Williams-Sonoma, Inc.",https://ehac.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/job/20887/?utm_medium=jobshare,88,MANISHA MEDASANI,AWL-35049,job_140
+Blue Cross Blue Shield of Michigan,https://ejko.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_3/requisitions/preview/15076,87,MANISHA MEDASANI,AWL-35049,job_141
+Sherwin-Williams,https://ejhp.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/job/2626239/?utm_medium=jobshare,85,MANISHA MEDASANI,AWL-35049,job_142
+Honeywell Aerospace,https://icfcjb.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/127345,82,Sandeep Kumar Reddy Sandhadi,AWL-31114,job_25
+Dollar General,https://ibxwjb.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/2805,81,Sandeep Kumar Reddy Sandhadi,AWL-31114,job_24
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10009052,90,SAI KIRAN KALLURI,AWL-34779,job_56
+Navy Federal Credit Union,https://fa-etbx-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/33296,80,Sandeep Kumar Reddy Sandhadi,AWL-31114,job_18
+Blue Cross Blue Shield of Michigan,https://ejko.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/15076/?utm_medium=jobshare&src=SNS-102,80,MANISHA MEDASANI,AWL-35049,job_143
+Community Health Systems,https://fa-evxo-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/169768?utm_source=linkedin&utm_medium=jobboard,80,MANISHA MEDASANI,AWL-35049,job_144
+Honeywell Aerospace,https://icfcjb.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/99125013,79,MANISHA MEDASANI,AWL-35049,job_145
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260714/?utm_medium=jobboard&utm_source=linkedin,75,MANISHA MEDASANI,AWL-35049,job_146
+Blue Cross Blue Shield of Michigan,https://ejko.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_3/requisitions/preview/15138,77,Sandeep Kumar Reddy Sandhadi,AWL-31114,job_147
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/10009068?utm_source=linkedin&utm_medium=jobboard,69,Sandeep Kumar Reddy Sandhadi,AWL-31114,job_70
+Navy Federal Credit Union,https://fa-etbx-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/33296,78,Abhigna T,AWL-33238,job_18
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10009068,73,Abhigna T,AWL-33238,job_26
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260225/?utm_medium=jobboard&utm_source=linkedin,71,Abhigna T,AWL-33238,job_21
+Oracle,https://eeho.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/349383,73,SAI KIRAN KALLURI,AWL-34779,job_27
+Fortinet,https://edel.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_xx/requisitions/preview/24851,71,SAI KIRAN KALLURI,AWL-34779,job_58
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10009052,86,vamshi gutha,AWL-31162,job_56
+MidAmerican Energy,https://fa-essf-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10005990,82,vamshi gutha,AWL-31162,job_29
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/1947/?utm_medium=jobboard&utm_source=linkedin,96,Sai Kiran,AWL-32042,job_125
+Dollar General,https://ibxwjb.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/2805,85,MONESH PULLA,AWL-43089,job_24
+AutoZone,https://egud.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/171278,65,MANISHA MEDASANI,AWL-35049,job_148
+Wood,https://ehif.fa.em2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/33380,60,MANISHA MEDASANI,AWL-35049,job_149
+Vertiv,https://egup.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/20282012,52,Sandeep Kumar Reddy Sandhadi,AWL-31114,job_71
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260225/?utm_medium=jobboard&utm_source=linkedin,75,MONESH PULLA,AWL-43089,job_21
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/261017/?utm_medium=jobboard&utm_source=linkedin,75,MONESH PULLA,AWL-43089,job_20
+Akamai,https://fa-extu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/4268,94,Sai Kiran,AWL-32042,job_150
+The Depository Trust & Clearing Corporation (DTCC),https://ebxr.fa.us2.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/214675?utm_source=linkedin&utm_medium=jobboard,92,Sai Kiran,AWL-32042,job_122
+CSX,https://fa-eowa-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_/requisitions/preview/55012,90,Sai Kiran,AWL-32042,job_121
+Akamai,https://fa-extu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/4343,86,Sai Kiran,AWL-32042,job_120
+MidAmerican Energy,https://fa-essf-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10005990,59,SAI KIRAN KALLURI,AWL-34779,job_29
+Southern Company,https://emje.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/22524,55,SAI KIRAN KALLURI,AWL-34779,job_57
+Oracle,https://eeho.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/349383,69,vamshi gutha,AWL-31162,job_27
+BNY,https://eofe.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_3001/requisitions/preview/79037,67,vamshi gutha,AWL-31162,job_151
+ACCO Engineered Systems,https://ekkt.fa.us2.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/6967,63,vamshi gutha,AWL-31162,job_28
+Dollar General,https://ibxwjb.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/2805,64,Abhigna T,AWL-33238,job_24
+Navy Federal Credit Union,https://fa-etbx-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/33296,68,MONESH PULLA,AWL-43089,job_18
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10009068,65,MONESH PULLA,AWL-43089,job_26
+Navy Federal Credit Union,https://fa-etbx-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/33296,91,Arjun Reddy Patil,AWL-36100,job_18
+The Depository Trust & Clearing Corporation (DTCC),https://ebxr.fa.us2.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/213540?utm_source=linkedin&utm_medium=jobboard,83,Arjun Reddy Patil,AWL-36100,job_46
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/261017/?utm_medium=jobboard&utm_source=linkedin,41,Abhigna T,AWL-33238,job_20
+Rockland Trust,https://eehb.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/3033/?utm_medium=jobboard&utm_source=linkedin,73,Srujan Maryala,AWL-25629,job_152
+"Williams-Sonoma, Inc.",https://ehac.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/job/20887/?utm_medium=jobshare,73,Srujan Maryala,AWL-25629,job_140
+Fortinet,https://edel.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_xx/requisitions/preview/24852,49,SAI KIRAN KALLURI,AWL-34779,job_59
+Fortinet,https://edel.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_xx/requisitions/preview/24852,43,vamshi gutha,AWL-31162,job_59
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260714/?utm_medium=jobboard&utm_source=linkedin,72,Srujan Maryala,AWL-25629,job_146
+Wood,https://ehif.fa.em2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/33380,71,Srujan Maryala,AWL-25629,job_149
+Blue Cross Blue Shield of Michigan,https://ejko.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_3/requisitions/preview/15076,70,Srujan Maryala,AWL-25629,job_141
+"Williams-Sonoma, Inc.",https://ehac.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/20887,68,Srujan Maryala,AWL-25629,job_137
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/1840/?utm_medium=jobboard&utm_source=linkedin,68,Srujan Maryala,AWL-25629,job_153
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260235/?utm_medium=jobboard&utm_source=linkedin,79,Sai Kiran,AWL-32042,job_124
+Hilltop Holdings,https://ejlu.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/32096/?utm_medium=jobboard&utm_source=linkedin,75,Sai Kiran,AWL-32042,job_119
+CSX,https://fa-eowa-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/55012/?utm_medium=jobshare&src=SNS-10294,71,Sai Kiran,AWL-32042,job_118
+Blue Cross Blue Shield of Michigan,https://ejko.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_3/requisitions/preview/15138,74,Arjun Reddy Patil,AWL-36100,job_147
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10009068,72,Arjun Reddy Patil,AWL-36100,job_26
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/10009068?utm_source=linkedin&utm_medium=jobboard,70,Arjun Reddy Patil,AWL-36100,job_70
+Ascension,https://jobs-oraclecloud.ascension.org/en/job/19468,95,Sharone Aneeta Busamalla,AWL-32852,job_53
+Community Health Systems,https://fa-evxo-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/169777?utm_source=linkedin&utm_medium=jobboard,78,Sharone Aneeta Busamalla,AWL-32852,job_128
+Bristlecone,https://iaagiz.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/23702/?utm_medium=jobshare,88,VENKATESH PALLATI,AWL-26956,job_154
+Akamai,https://fa-extu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/4268,86,VENKATESH PALLATI,AWL-26956,job_150
+The Depository Trust & Clearing Corporation (DTCC),https://ebxr.fa.us2.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/215140?utm_source=linkedin&utm_medium=jobboard,57,Srujan Maryala,AWL-25629,job_155
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260758/?utm_medium=jobboard&utm_source=linkedin,54,Srujan Maryala,AWL-25629,job_156
+Sherwin-Williams,https://ejhp.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/job/2626239/?utm_medium=jobshare,51,Srujan Maryala,AWL-25629,job_142
+American Express,https://egug.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/26015891/?utm_medium=jobboard&utm_source=LinkedIn,50,Srujan Maryala,AWL-25629,job_157
+WSP,https://emit.fa.ca3.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_2001/requisitions/preview/98692,52,Sai Kiran,AWL-32042,job_126
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260729/?utm_medium=jobboard&utm_source=linkedin,46,Sai Kiran,AWL-32042,job_158
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10009068,74,Pranav  Jeksani,AWL-29710,job_26
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260225/?utm_medium=jobboard&utm_source=linkedin,70,Pranav  Jeksani,AWL-29710,job_21
+Navy Federal Credit Union,https://fa-etbx-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/33296,67,Pranav  Jeksani,AWL-29710,job_18
+MidAmerican Energy,https://fa-essf-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10005990,79,VINEETH REDDY,AWL-35198,job_29
+Oracle,https://eeho.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/349383,79,VINEETH REDDY,AWL-35198,job_27
+Dollar General,https://ibxwjb.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/2805,67,Arjun Reddy Patil,AWL-36100,job_24
+BNY,https://eofe.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_3001/requisitions/preview/79037,91,Abdullah Zubair Mohd,AWL-45416,job_151
+Oracle,https://eeho.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/349383,89,Abdullah Zubair Mohd,AWL-45416,job_27
+UC Health,https://eswt.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/job/24851/?utm_medium=jobboard&utm_source=linkedin,64,Sharone Aneeta Busamalla,AWL-32852,job_123
+Community Health Systems,https://fa-evxo-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/169392?utm_source=linkedin&utm_medium=jobboard,62,Sharone Aneeta Busamalla,AWL-32852,job_47
+CSX,https://fa-eowa-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_/requisitions/preview/55012,73,PRASAD Male (M) BHANU,AWL-42671,job_121
+Akamai,https://fa-extu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/4268,73,PRASAD Male (M) BHANU,AWL-42671,job_150
+Bristlecone,https://iaagiz.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/23702/?utm_medium=jobshare,73,PRASAD Male (M) BHANU,AWL-42671,job_154
+Perficient,https://fa-etqd-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/2026002748,69,PRASAD Male (M) BHANU,AWL-42671,job_159
+ACCO Engineered Systems,https://ekkt.fa.us2.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/6967,86,Abdullah Zubair Mohd,AWL-45416,job_28
+Honeywell Aerospace,https://icfcjb.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/127345,52,Arjun Reddy Patil,AWL-36100,job_25
+Vertiv,https://egup.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/20282012,51,Arjun Reddy Patil,AWL-36100,job_71
+AutoZone,https://egud.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/171278,41,Srujan Maryala,AWL-25629,job_148
+Dollar General,https://ibxwjb.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/2805,65,Pranav  Jeksani,AWL-29710,job_24
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/261017/?utm_medium=jobboard&utm_source=linkedin,62,Pranav  Jeksani,AWL-29710,job_20
+Dallas County,https://fa-etvc-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/25001046/?utm_medium=jobshare,78,Abhilash Reddy Thota,AWL-25663,job_83
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/10008932?utm_source=linkedin&utm_medium=jobboard,67,Abhilash Reddy Thota,AWL-25663,job_41
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/10008932?utm_source=linkedin&utm_medium=jobboard,67,Abhilash Reddy Thota,AWL-25663,job_41
+ACCO Engineered Systems,https://ekkt.fa.us2.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/6967,67,VINEETH REDDY,AWL-35198,job_28
+Oracle,https://eeho.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/349383,91,Sai vardhan reddy mategam,AWL-45417,job_27
+ACCO Engineered Systems,https://ekkt.fa.us2.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/6967,87,Sai vardhan reddy mategam,AWL-45417,job_28
+MidAmerican Energy,https://fa-essf-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10005990,87,Sai vardhan reddy mategam,AWL-45417,job_29
+BNY,https://eofe.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_3001/requisitions/preview/79037,83,Sai vardhan reddy mategam,AWL-45417,job_151
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/10008932?utm_source=linkedin&utm_medium=jobboard,87,Ceryl Tejas Chukka,AWL-35179,job_41
+Blue Cross Blue Shield of Michigan,https://ejko.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/15064/?utm_medium=jobshare&src=SNS-102,46,Sharone Aneeta Busamalla,AWL-32852,job_127
+Haywood Regional Medical Center,https://ibnjjb.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/361796,38,Sharone Aneeta Busamalla,AWL-32852,job_109
+CSX,https://fa-eowa-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/55012/?utm_medium=jobshare&src=SNS-10294,60,PRASAD Male (M) BHANU,AWL-42671,job_118
+WellSpan Health,https://fa-evzu-saasfaprod1.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/230731,55,PRASAD Male (M) BHANU,AWL-42671,job_116
+CSX,https://fa-eowa-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_/requisitions/preview/55012,70,VENKATESH PALLATI,AWL-26956,job_121
+WellSpan Health,https://fa-evzu-saasfaprod1.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/230731,56,VENKATESH PALLATI,AWL-26956,job_116
+BNY,https://eofe.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/75768/?utm_medium=jobshare&src=JB-10200,48,VENKATESH PALLATI,AWL-26956,job_160
+Datavail,https://eifn.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/job/1993/?utm_medium=jobshare,49,Abhilash Reddy Thota,AWL-25663,job_72
+Datavail,https://eifn.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/job/1993/?utm_medium=jobshare,72,Ceryl Tejas Chukka,AWL-35179,job_72
+Vertiv,https://egup.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/20283846/?utm_medium=jobboard&utm_source=linkedin,84,Nikhil Reddy Ramasagaram,AWL-32094,job_129
+Honeywell,https://ibqbjb.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/159782,81,Nikhil Reddy Ramasagaram,AWL-32094,job_75
+Emerson,https://hdjq.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/26012979?utm_medium=jobboard&utm_source=indeed,81,Nikhil Reddy Ramasagaram,AWL-32094,job_131
+Honeywell Technologies,https://ibqbjb.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/159782/?utm_medium=jobboard&utm_source=linkedin,79,Nikhil Reddy Ramasagaram,AWL-32094,job_132
+EPTA GROUP,https://fa-eukp-saasfaprod1.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/2619,72,Nikhil Reddy Ramasagaram,AWL-32094,job_130
+Sundt Construction,https://eewl.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/job/11744/?utm_medium=jobshare&source=LinkedIn,82,PRATYUSHA RAMADUGU,AWL-38650,job_161
+MidAmerican Energy,https://fa-essf-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10005990,69,Abdullah Zubair Mohd,AWL-45416,job_29
+Coherent Corp.,https://hcwp.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/2015641/?utm_medium=jobshare,74,PRATYUSHA RAMADUGU,AWL-38650,job_162
+ADI Global Distribution,https://ehtl.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/job/19806/?utm_medium=jobboard&utm_source=linkedin,72,PRATYUSHA RAMADUGU,AWL-38650,job_163
+Digital Realty,https://hdep.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/job/8546/apply/email?utm_source=linkedin&utm_medium=jobboard,71,PRATYUSHA RAMADUGU,AWL-38650,job_164
+Curia,https://hcug.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/2004698/?utm_medium=jobshare&Source=LinkedIn_Jobs,70,PRATYUSHA RAMADUGU,AWL-38650,job_165
+Dallas County,https://fa-etvc-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/25001046/?utm_medium=jobshare,68,Ceryl Tejas Chukka,AWL-35179,job_83
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/10008932?utm_source=linkedin&utm_medium=jobboard,68,Ceryl Tejas Chukka,AWL-35179,job_41
+NOV,https://egay.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_4001/requisitions/preview/45053,63,Nikhil Reddy Ramasagaram,AWL-32094,job_134
+NOV,https://egay.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/job/45053/?utm_medium=jobshare,57,Nikhil Reddy Ramasagaram,AWL-32094,job_133
+Howmet Aerospace,https://fa-exty-saasfaprod1.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/120249,54,Nikhil Reddy Ramasagaram,AWL-32094,job_78
+onsemi,https://hctz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/2506238/?utm_medium=jobshare&src=JB-BB-10101,64,PRATYUSHA RAMADUGU,AWL-38650,job_166
+Texas Children's Hospital,https://eohh.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/428582/?utm_medium=jobshare,51,PRATYUSHA RAMADUGU,AWL-38650,job_167
+Powell,https://ekcf.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/job/7902/?utm_medium=liwrap,47,PRATYUSHA RAMADUGU,AWL-38650,job_168
+Community Health Systems,https://fa-evxo-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/169768?utm_source=linkedin&utm_medium=jobboard,96,ABHITEJ NAGABHAIRAVA,AWL-44789,job_144
+Honeywell Aerospace,https://icfcjb.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/99125013,95,ABHITEJ NAGABHAIRAVA,AWL-44789,job_145
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/261046/?utm_medium=jobboard&utm_source=linkedin,94,Harish Tanniru,AWL-584,job_100
+Blue Cross Blue Shield of Michigan,https://ejko.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_3/requisitions/preview/15076,94,ABHITEJ NAGABHAIRAVA,AWL-44789,job_141
+Blue Cross Blue Shield of Michigan,https://ejko.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/15076/?utm_medium=jobshare&src=SNS-102,94,ABHITEJ NAGABHAIRAVA,AWL-44789,job_143
+AutoZone,https://egud.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/171278,91,ABHITEJ NAGABHAIRAVA,AWL-44789,job_148
+The Depository Trust & Clearing Corporation (DTCC),https://ebxr.fa.us2.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/214675?utm_source=linkedin&utm_medium=jobboard,92,Vadiraja Korlahalli,AWL-30415,job_122
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260729/?utm_medium=jobboard&utm_source=linkedin,88,Vadiraja Korlahalli,AWL-30415,job_158
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/1947/?utm_medium=jobboard&utm_source=linkedin,82,Vadiraja Korlahalli,AWL-30415,job_125
+Honeywell Aerospace,https://icfcjb.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/99125013,92,AKHIL UDAY DEVAYANI,AWL-2452,job_145
+AutoZone,https://egud.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/171278,90,AKHIL UDAY DEVAYANI,AWL-2452,job_148
+Sherwin-Williams,https://ejhp.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/job/2626239/?utm_medium=jobshare,89,AKHIL UDAY DEVAYANI,AWL-2452,job_142
+Wood,https://ehif.fa.em2.oraclecloud.com/hcmUI/CandidateExperience/en/job/33380/?utm_medium=jobshare,89,AKHIL UDAY DEVAYANI,AWL-2452,job_138
+CSX,https://fa-eowa-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_/requisitions/preview/55012,95,Kalyankumar Konduru,AWL-37066,job_121
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/10008932?utm_source=linkedin&utm_medium=jobboard,86,Venkatesh Bhukya,AWL-43950,job_41
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/10008932?utm_source=linkedin&utm_medium=jobboard,86,Venkatesh Bhukya,AWL-43950,job_41
+Oracle,https://eeho.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/349383,92,SAITARUNREDDY PAPPU,AWL-26538,job_27
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/10008932?utm_source=linkedin&utm_medium=jobboard,89,ADITHYA CHOWDARY  MADALA,AWL-36027,job_41
+Bristlecone,https://iaagiz.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/23702/?utm_medium=jobshare,87,Kalyankumar Konduru,AWL-37066,job_154
+WellSpan Health,https://fa-evzu-saasfaprod1.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/230731,83,Kalyankumar Konduru,AWL-37066,job_116
+CSX,https://fa-eowa-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/55012/?utm_medium=jobshare&src=SNS-10294,82,Kalyankumar Konduru,AWL-37066,job_118
+Datavail,https://eifn.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/job/1993/?utm_medium=jobshare,77,Venkatesh Bhukya,AWL-43950,job_72
+MidAmerican Energy,https://fa-essf-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10005990,83,SAITARUNREDDY PAPPU,AWL-26538,job_29
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10009052,80,SAITARUNREDDY PAPPU,AWL-26538,job_56
+Wood,https://ehif.fa.em2.oraclecloud.com/hcmUI/CandidateExperience/en/job/33380/?utm_medium=jobshare,90,ABHITEJ NAGABHAIRAVA,AWL-44789,job_138
+Sherwin-Williams,https://ejhp.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/job/2626239/?utm_medium=jobshare,89,ABHITEJ NAGABHAIRAVA,AWL-44789,job_142
+Mauser Packaging Solutions,https://hdpn.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/6346,86,ABHITEJ NAGABHAIRAVA,AWL-44789,job_135
+Chubb Benefits,https://fa-ewgu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_2001/job/37725/?utm_medium=jobshare&utm_source=External+Job+Share,86,ABHITEJ NAGABHAIRAVA,AWL-44789,job_136
+Wood,https://ehif.fa.em2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/33380,84,ABHITEJ NAGABHAIRAVA,AWL-44789,job_149
+"Williams-Sonoma, Inc.",https://ehac.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/job/20887/?utm_medium=jobshare,81,ABHITEJ NAGABHAIRAVA,AWL-44789,job_140
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260928/?utm_medium=jobboard&utm_source=linkedin,77,Harish Tanniru,AWL-584,job_169
+"Williams-Sonoma, Inc.",https://ehac.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/20887,87,AKHIL UDAY DEVAYANI,AWL-2452,job_137
+Wood,https://ehif.fa.em2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/33380,87,AKHIL UDAY DEVAYANI,AWL-2452,job_149
+Chubb Benefits,https://fa-ewgu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_2001/job/37725/?utm_medium=jobshare&utm_source=External+Job+Share,87,AKHIL UDAY DEVAYANI,AWL-2452,job_136
+Blue Cross Blue Shield of Michigan,https://ejko.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_3/requisitions/preview/15076,85,AKHIL UDAY DEVAYANI,AWL-2452,job_141
+"Williams-Sonoma, Inc.",https://ehac.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/job/20887/?utm_medium=jobshare,84,AKHIL UDAY DEVAYANI,AWL-2452,job_140
+Mauser Packaging Solutions,https://hdpn.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/6346,79,AKHIL UDAY DEVAYANI,AWL-2452,job_135
+Hilltop Holdings,https://ejlu.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/32096/?utm_medium=jobboard&utm_source=linkedin,79,Vadiraja Korlahalli,AWL-30415,job_119
+CSX,https://fa-eowa-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_/requisitions/preview/55012,76,Vadiraja Korlahalli,AWL-30415,job_121
+CSX,https://fa-eowa-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/55012/?utm_medium=jobshare&src=SNS-10294,74,Vadiraja Korlahalli,AWL-30415,job_118
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260235/?utm_medium=jobboard&utm_source=linkedin,72,Vadiraja Korlahalli,AWL-30415,job_124
+Akamai,https://fa-extu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/4268,69,Vadiraja Korlahalli,AWL-30415,job_150
+Akamai Technologies,https://fa-extu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/4268/?utm_medium=jobboard&utm_source=linkedin,67,Vadiraja Korlahalli,AWL-30415,job_170
+Oracle,https://eeho.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/349383,82,Sudheer Kumar Reddy Batthina,AWL-7247,job_27
+MidAmerican Energy,https://fa-essf-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10005990,79,Sudheer Kumar Reddy Batthina,AWL-7247,job_29
+BNY,https://eofe.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_3001/requisitions/preview/79037,78,Sudheer Kumar Reddy Batthina,AWL-7247,job_151
+"Legrand, North & Central America",https://iadugs.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/jobs/preview/1395/?keyword=1395&mode=location,57,Jayaprakash,AWL-25648,job_171
+Datavail,https://eifn.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/job/1993/?utm_medium=jobshare,77,ADITHYA CHOWDARY  MADALA,AWL-36027,job_72
+Fortinet,https://edel.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_xx/requisitions/preview/24852,75,SAITARUNREDDY PAPPU,AWL-26538,job_59
+BNY,https://eofe.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_3001/requisitions/preview/79037,75,SAITARUNREDDY PAPPU,AWL-26538,job_151
+Datavail,https://eifn.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/job/1993/?utm_medium=jobshare,68,Venkatesh Bhukya,AWL-43950,job_72
+Dallas County,https://fa-etvc-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/25001046/?utm_medium=jobshare,67,Venkatesh Bhukya,AWL-43950,job_83
+"Williams-Sonoma, Inc.",https://ehac.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/20887,72,ABHITEJ NAGABHAIRAVA,AWL-44789,job_137
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/261021/?utm_medium=jobboard&utm_source=linkedin,69,Harish Tanniru,AWL-584,job_98
+BNY,https://eofe.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_3001/requisitions/preview/81104,64,Harish Tanniru,AWL-584,job_172
+Hexaware Technologies,https://fa-etqo-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/700632,64,Harish Tanniru,AWL-584,job_104
+Zachry Group,https://fa-evfm-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/16275/?utm_medium=jobshare,64,Harish Tanniru,AWL-584,job_99
+Cetera Financial Group,https://ebhu.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/requisitions/preview/6870,75,AKHIL UDAY DEVAYANI,AWL-2452,job_139
+Blue Cross Blue Shield of Michigan,https://ejko.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/15076/?utm_medium=jobshare&src=SNS-102,73,AKHIL UDAY DEVAYANI,AWL-2452,job_143
+Community Health Systems,https://fa-evxo-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/169768?utm_source=linkedin&utm_medium=jobboard,70,AKHIL UDAY DEVAYANI,AWL-2452,job_144
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260714/?utm_medium=jobboard&utm_source=linkedin,62,AKHIL UDAY DEVAYANI,AWL-2452,job_146
+WSP,https://emit.fa.ca3.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_2001/requisitions/preview/98692,47,Vadiraja Korlahalli,AWL-30415,job_126
+Perficient,https://fa-etqd-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/2026002748,45,Vadiraja Korlahalli,AWL-30415,job_159
+Fortinet,https://edel.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_xx/requisitions/preview/24852,74,Sudheer Kumar Reddy Batthina,AWL-7247,job_59
+Akamai,https://fa-extu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/4268,84,Suraj kumar CH,AWL-36028,job_150
+Bristlecone,https://iaagiz.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/23702/?utm_medium=jobshare,78,Suraj kumar CH,AWL-36028,job_154
+CSX,https://fa-eowa-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_/requisitions/preview/55012,76,Suraj kumar CH,AWL-36028,job_121
+Akamai Technologies,https://fa-extu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/2649/?utm_medium=jobboard&utm_source=linkedin,58,Harish Tanniru,AWL-584,job_173
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260836/?utm_medium=jobboard&utm_source=linkedin,57,Harish Tanniru,AWL-584,job_101
+BNY,https://eofe.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/81104/?utm_medium=jobshare&src=JB-10200,48,Harish Tanniru,AWL-584,job_174
+BNY,https://eofe.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/75768/?utm_medium=jobshare&src=JB-10200,67,Kalyankumar Konduru,AWL-37066,job_160
+Perficient,https://fa-etqd-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/2026002748,58,Kalyankumar Konduru,AWL-37066,job_159
+Akamai,https://fa-extu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/4268,53,Kalyankumar Konduru,AWL-37066,job_150
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/10008932?utm_source=linkedin&utm_medium=jobboard,73,ADITHYA CHOWDARY  MADALA,AWL-36027,job_41
+Dallas County,https://fa-etvc-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/25001046/?utm_medium=jobshare,61,ADITHYA CHOWDARY  MADALA,AWL-36027,job_83
+ACCO Engineered Systems,https://ekkt.fa.us2.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/6967,52,SAITARUNREDDY PAPPU,AWL-26538,job_28
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260714/?utm_medium=jobboard&utm_source=linkedin,63,ABHITEJ NAGABHAIRAVA,AWL-44789,job_146
+Cetera Financial Group,https://ebhu.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/requisitions/preview/6870,62,ABHITEJ NAGABHAIRAVA,AWL-44789,job_139
+ACCO Engineered Systems,https://ekkt.fa.us2.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/6967,62,Sudheer Kumar Reddy Batthina,AWL-7247,job_28
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10009052,59,Sudheer Kumar Reddy Batthina,AWL-7247,job_56
+Perficient,https://fa-etqd-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/2026002748,63,Suraj kumar CH,AWL-36028,job_159
+WellSpan Health,https://fa-evzu-saasfaprod1.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/230731,63,Suraj kumar CH,AWL-36028,job_116
+CSX,https://fa-eowa-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/55012/?utm_medium=jobshare&src=SNS-10294,62,Suraj kumar CH,AWL-36028,job_118
+BNY,https://eofe.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/75768/?utm_medium=jobshare&src=JB-10200,61,Suraj kumar CH,AWL-36028,job_160
+Fortinet,https://edel.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_xx/requisitions/preview/24852,78,Nikhila Yadav Lankela,AWL-26828,job_59
+Oracle,https://eeho.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/349383,76,Nikhila Yadav Lankela,AWL-26828,job_27
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10009052,71,Nikhila Yadav Lankela,AWL-26828,job_56
+MidAmerican Energy,https://fa-essf-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10005990,69,Nikhila Yadav Lankela,AWL-26828,job_29
+PEMCO,https://ejkz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/611/?utm_medium=jobboard&utm_source=linkedin,90,Aastritha V,AWL-27855,job_19
+Honeywell Aerospace,https://icfcjb.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/127345,91,Haritha K,AWL-42673,job_25
+Dollar General,https://ibxwjb.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/2805,84,Aastritha V,AWL-27855,job_24
+BNY,https://eofe.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_3001/requisitions/preview/79037,65,Nikhila Yadav Lankela,AWL-26828,job_151
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/261046/?utm_medium=jobboard&utm_source=linkedin,88,Akash Sudini,AWL-31640,job_100
+Zachry Group,https://fa-evfm-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/16275/?utm_medium=jobshare,82,Akash Sudini,AWL-31640,job_99
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10009068,81,Haritha K,AWL-42673,job_26
+Navy Federal Credit Union,https://fa-etbx-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/33296,77,Haritha K,AWL-42673,job_18
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/261021/?utm_medium=jobboard&utm_source=linkedin,73,Akash Sudini,AWL-31640,job_98
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/261017/?utm_medium=jobboard&utm_source=linkedin,75,Aastritha V,AWL-27855,job_20
+Navy Federal Credit Union,https://fa-etbx-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/33296,74,Aastritha V,AWL-27855,job_18
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260225/?utm_medium=jobboard&utm_source=linkedin,68,Aastritha V,AWL-27855,job_21
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260225/?utm_medium=jobboard&utm_source=linkedin,64,Akash Sudini,AWL-31640,job_21
+Hexaware Technologies,https://fa-etqo-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/700632,58,Akash Sudini,AWL-31640,job_104
+Dollar General,https://ibxwjb.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/2805,73,Haritha K,AWL-42673,job_24
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260225/?utm_medium=jobboard&utm_source=linkedin,72,Haritha K,AWL-42673,job_21
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/261017/?utm_medium=jobboard&utm_source=linkedin,72,Haritha K,AWL-42673,job_20
+PEMCO,https://ejkz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/611/?utm_medium=jobboard&utm_source=linkedin,67,Haritha K,AWL-42673,job_19
+Honeywell Aerospace,https://icfcjb.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/127345,56,Aastritha V,AWL-27855,job_25
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10009068,56,Aastritha V,AWL-27855,job_26
+MidAmerican Energy,https://fa-essf-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10005990,90,Deva Sen Naroju,AWL-30979,job_29
+Dollar General,https://ibxwjb.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/2805,95,Chinthalapudi Venkat Lakshmi,AWL-36019,job_24
+AutoZone,https://egud.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/171278,95,Sravan Reddy Sama,AWL-41698,job_148
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10009068,94,Chinthalapudi Venkat Lakshmi,AWL-36019,job_26
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260836/?utm_medium=jobboard&utm_source=linkedin,53,Akash Sudini,AWL-31640,job_101
+BNY,https://eofe.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/81104/?utm_medium=jobshare&src=JB-10200,52,Akash Sudini,AWL-31640,job_174
+Honeywell Aerospace,https://icfcjb.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/99125013,94,Sravan Reddy Sama,AWL-41698,job_145
+Wood,https://ehif.fa.em2.oraclecloud.com/hcmUI/CandidateExperience/en/job/33380/?utm_medium=jobshare,94,Sravan Reddy Sama,AWL-41698,job_138
+Sherwin-Williams,https://ejhp.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/job/2626239/?utm_medium=jobshare,92,Sravan Reddy Sama,AWL-41698,job_142
+Community Health Systems,https://fa-evxo-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/169768?utm_source=linkedin&utm_medium=jobboard,92,Sravan Reddy Sama,AWL-41698,job_144
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/261017/?utm_medium=jobboard&utm_source=linkedin,92,Chinthalapudi Venkat Lakshmi,AWL-36019,job_20
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260225/?utm_medium=jobboard&utm_source=linkedin,91,Chinthalapudi Venkat Lakshmi,AWL-36019,job_21
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/10008932?utm_source=linkedin&utm_medium=jobboard,80,VIKHIL BASWARAJU,AWL-43949,job_41
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/10008932?utm_source=linkedin&utm_medium=jobboard,80,VIKHIL BASWARAJU,AWL-43949,job_41
+Datavail,https://eifn.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/job/1993/?utm_medium=jobshare,79,VIKHIL BASWARAJU,AWL-43949,job_72
+Dallas County,https://fa-etvc-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/25001046/?utm_medium=jobshare,75,VIKHIL BASWARAJU,AWL-43949,job_83
+Honeywell Aerospace,https://icfcjb.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/127345,81,Chinthalapudi Venkat Lakshmi,AWL-36019,job_25
+Datavail,https://eifn.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/job/1993/?utm_medium=jobshare,70,VIKHIL BASWARAJU,AWL-43949,job_72
+Chubb Benefits,https://fa-ewgu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_2001/job/37725/?utm_medium=jobshare&utm_source=External+Job+Share,90,Sravan Reddy Sama,AWL-41698,job_136
+Blue Cross Blue Shield of Michigan,https://ejko.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_3/requisitions/preview/15076,86,Sravan Reddy Sama,AWL-41698,job_141
+Cetera Financial Group,https://ebhu.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/requisitions/preview/6870,85,Sravan Reddy Sama,AWL-41698,job_139
+"Williams-Sonoma, Inc.",https://ehac.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/job/20887/?utm_medium=jobshare,82,Sravan Reddy Sama,AWL-41698,job_140
+Mauser Packaging Solutions,https://hdpn.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/6346,77,Sravan Reddy Sama,AWL-41698,job_135
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260714/?utm_medium=jobboard&utm_source=linkedin,77,Sravan Reddy Sama,AWL-41698,job_146
+TForce Freight,https://efjm.fa.ca2.oraclecloud.com/hcmUI/CandidateExperience/en/job/6831/?utm_medium=jobboard&utm_source=linkedin,80,praneeth nalla,AWL-25574,job_175
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260225/?utm_medium=jobboard&utm_source=linkedin,85,ANJANA RAJENDRA PRASAD,AWL-29927,job_21
+Navy Federal Credit Union,https://fa-etbx-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/33296,78,ANJANA RAJENDRA PRASAD,AWL-29927,job_18
+Dollar General,https://ibxwjb.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/2805,86,ANJANA RAJENDRA PRASAD,AWL-29927,job_24
+Oracle,https://eeho.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/349383,67,Deva Sen Naroju,AWL-30979,job_27
+BNY,https://eofe.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_3001/requisitions/preview/79037,63,Deva Sen Naroju,AWL-30979,job_151
+PEMCO,https://ejkz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/611/?utm_medium=jobboard&utm_source=linkedin,67,Chinthalapudi Venkat Lakshmi,AWL-36019,job_19
+ACCO Engineered Systems,https://ekkt.fa.us2.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/6967,47,Deva Sen Naroju,AWL-30979,job_28
+Blue Cross Blue Shield of Michigan,https://ejko.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/15076/?utm_medium=jobshare&src=SNS-102,72,Sravan Reddy Sama,AWL-41698,job_143
+"Williams-Sonoma, Inc.",https://ehac.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/20887,66,Sravan Reddy Sama,AWL-41698,job_137
+Wood,https://ehif.fa.em2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/33380,66,Sravan Reddy Sama,AWL-41698,job_149
+AutoZone,https://egud.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/171278,69,praneeth nalla,AWL-25574,job_148
+Coherent Corp.,https://hcwp.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/2015704,95,Punith Reddy Dappili,AWL-35076,job_42
+Wood,https://ehif.fa.em2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/33380,97,Niyathi Martha,AWL-46684,job_149
+Blue Cross Blue Shield of Michigan,https://ejko.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/15076/?utm_medium=jobshare&src=SNS-102,96,Niyathi Martha,AWL-46684,job_143
+Blue Cross Blue Shield of Michigan,https://ejko.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_3/requisitions/preview/15076,94,Niyathi Martha,AWL-46684,job_141
+Chubb Benefits,https://fa-ewgu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_2001/job/37725/?utm_medium=jobshare&utm_source=External+Job+Share,94,Niyathi Martha,AWL-46684,job_136
+AutoZone,https://egud.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/171278,97,Niyathi Martha,AWL-46684,job_148
+Community Health Systems,https://fa-evxo-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/169768?utm_source=linkedin&utm_medium=jobboard,97,Niyathi Martha,AWL-46684,job_144
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10009068,66,ANJANA RAJENDRA PRASAD,AWL-29927,job_26
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/261017/?utm_medium=jobboard&utm_source=linkedin,64,ANJANA RAJENDRA PRASAD,AWL-29927,job_20
+Dollar General,https://ibxwjb.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/2805,95,Jasper D⭐⭐,AWL-31243,job_24
+CBIZ,https://ebez.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/6677,82,Punith Reddy Dappili,AWL-35076,job_1
+Wingstop Restaurants Inc.,https://iaxmqy.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/1111?utm_source=linkedin&utm_medium=jobboard,81,Punith Reddy Dappili,AWL-35076,job_84
+Westfield Insurance,https://fa-exdv-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/12053,80,Punith Reddy Dappili,AWL-35076,job_85
+StandardAero,https://cva.fa.us1.oraclecloud.com/hcmUI/CandidateExperience/en/job/9610/?utm_medium=jobboard&utm_source=linkedin,80,Punith Reddy Dappili,AWL-35076,job_87
+Navy Federal Credit Union,https://fa-etbx-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/33296,57,Chinthalapudi Venkat Lakshmi,AWL-36019,job_18
+StandardAero,https://cva.fa.us1.oraclecloud.com/hcmUI/CandidateExperience/en/job/9610/?utm_medium=jobboard&utm_source=linkedin,88,Pavankumar valloju,AWL-32840,job_87
+Mauser Packaging Solutions,https://hdpn.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/6346,64,praneeth nalla,AWL-25574,job_135
+"Williams-Sonoma, Inc.",https://ehac.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/20887,59,praneeth nalla,AWL-25574,job_137
+Cetera Financial Group,https://ebhu.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/requisitions/preview/6870,59,praneeth nalla,AWL-25574,job_139
+University of Tennessee,https://fa-ewlq-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10611,56,praneeth nalla,AWL-25574,job_176
+University of Tennessee Health Science Center,https://fa-ewlq-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10611,54,praneeth nalla,AWL-25574,job_176
+PEMCO,https://ejkz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/611/?utm_medium=jobboard&utm_source=linkedin,81,Jasper D⭐⭐,AWL-31243,job_19
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260987/?utm_medium=jobboard&utm_source=linkedin,73,Punith Reddy Dappili,AWL-35076,job_82
+Ascension,https://jobs-oraclecloud.ascension.org/en/job/19468,70,Punith Reddy Dappili,AWL-35076,job_53
+"Williams-Sonoma, Inc.",https://ehac.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/20887,92,Niyathi Martha,AWL-46684,job_137
+"Williams-Sonoma, Inc.",https://ehac.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/job/20887/?utm_medium=jobshare,91,Niyathi Martha,AWL-46684,job_140
+Wood,https://ehif.fa.em2.oraclecloud.com/hcmUI/CandidateExperience/en/job/33380/?utm_medium=jobshare,90,Niyathi Martha,AWL-46684,job_138
+Sherwin-Williams,https://ejhp.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/job/2626239/?utm_medium=jobshare,89,Niyathi Martha,AWL-46684,job_142
+Wingstop Restaurants Inc.,https://iaxmqy.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/1111?utm_source=linkedin&utm_medium=jobboard,86,Pavankumar valloju,AWL-32840,job_84
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260987/?utm_medium=jobboard&utm_source=linkedin,83,Pavankumar valloju,AWL-32840,job_82
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260225/?utm_medium=jobboard&utm_source=linkedin,91,Parthavanaidu Naidu Jyotha,AWL-32523,job_21
+Navy Federal Credit Union,https://fa-etbx-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/33296,84,Parthavanaidu Naidu Jyotha,AWL-32523,job_18
+TForce Freight,https://efjm.fa.ca2.oraclecloud.com/hcmUI/CandidateExperience/en/job/6831/?utm_medium=jobboard&utm_source=linkedin,69,SANDHYA RANI,AWL-32557,job_175
+Howmet Aerospace,https://fa-exty-saasfaprod1.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/120223,43,praneeth nalla,AWL-25574,job_177
+Honeywell Aerospace,https://icfcjb.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/127345,78,Jasper D⭐⭐,AWL-31243,job_25
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/261017/?utm_medium=jobboard&utm_source=linkedin,71,Jasper D⭐⭐,AWL-31243,job_20
+Navy Federal Credit Union,https://fa-etbx-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/33296,70,Jasper D⭐⭐,AWL-31243,job_18
+Southern Company,https://emje.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/22485,69,Punith Reddy Dappili,AWL-35076,job_86
+Majesco,https://fa-emad-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/5507/?utm_medium=jobshare,69,Punith Reddy Dappili,AWL-35076,job_90
+Nabors Industries,https://fa-eyem-saasfaprod1.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/1001911,67,Punith Reddy Dappili,AWL-35076,job_89
+UN Women,https://estm.fa.em2.oraclecloud.com/hcmUI/CandidateExperience/en/job/37744/?utm_medium=jobshare,67,Punith Reddy Dappili,AWL-35076,job_92
+Texas Children's Hospital,https://eohh.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/427956/?utm_medium=jobshare,61,Punith Reddy Dappili,AWL-35076,job_60
+Bank of Hawaii,https://fa-enlf-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/3002871/?utm_medium=jobshare,60,Punith Reddy Dappili,AWL-35076,job_91
+Mauser Packaging Solutions,https://hdpn.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/6346,86,Niyathi Martha,AWL-46684,job_135
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260714/?utm_medium=jobboard&utm_source=linkedin,86,Niyathi Martha,AWL-46684,job_146
+Cetera Financial Group,https://ebhu.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/requisitions/preview/6870,80,Niyathi Martha,AWL-46684,job_139
+Southern Company,https://emje.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/22485,77,Pavankumar valloju,AWL-32840,job_86
+Navy Federal Credit Union,https://fa-etbx-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/33203,76,Pavankumar valloju,AWL-32840,job_2
+Nabors Industries,https://fa-eyem-saasfaprod1.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/1001911,76,Pavankumar valloju,AWL-32840,job_89
+Westfield Insurance,https://fa-exdv-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/12053,74,Pavankumar valloju,AWL-32840,job_85
+Bank of Hawaii,https://fa-enlf-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/3002871/?utm_medium=jobshare,73,Pavankumar valloju,AWL-32840,job_91
+Howmet Aerospace,https://fa-exty-saasfaprod1.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/120223,63,SANDHYA RANI,AWL-32557,job_177
+Cetera Financial Group,https://ebhu.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/requisitions/preview/6870,55,SANDHYA RANI,AWL-32557,job_139
+Mauser Packaging Solutions,https://hdpn.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/6346,55,SANDHYA RANI,AWL-32557,job_135
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10009068,61,Jasper D⭐⭐,AWL-31243,job_26
+Navy Federal Credit Union,https://fa-etbx-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/33203,59,Punith Reddy Dappili,AWL-35076,job_2
+Honeywell Aerospace,https://icfcjb.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/99125013,72,Niyathi Martha,AWL-46684,job_145
+Majesco,https://fa-emad-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/5507/?utm_medium=jobshare,69,Pavankumar valloju,AWL-32840,job_90
+CBIZ,https://ebez.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/6677,57,Pavankumar valloju,AWL-32840,job_1
+Texas Children's Hospital,https://eohh.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/427956/?utm_medium=jobshare,56,Pavankumar valloju,AWL-32840,job_60
+AutoZone,https://egud.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/171278,32,SANDHYA RANI,AWL-32557,job_148
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/261017/?utm_medium=jobboard&utm_source=linkedin,73,Parthavanaidu Naidu Jyotha,AWL-32523,job_20
+Dollar General,https://ibxwjb.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/2805,70,Parthavanaidu Naidu Jyotha,AWL-32523,job_24
+PEMCO,https://ejkz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/611/?utm_medium=jobboard&utm_source=linkedin,67,Parthavanaidu Naidu Jyotha,AWL-32523,job_19
+Honeywell Aerospace,https://icfcjb.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/127345,61,Parthavanaidu Naidu Jyotha,AWL-32523,job_25
+Southern Company,https://emje.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/22546,94,VENKATESWARI KALVA,AWL-32097,job_178
+Dallas County,https://fa-etvc-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/25001046/?utm_medium=jobshare,92,VENKATESWARI KALVA,AWL-32097,job_83
+BNY,https://eofe.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_3001/requisitions/preview/81915,83,Somasi Sai Kumar,AWL-33095,job_65
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/10008932?utm_source=linkedin&utm_medium=jobboard,83,VENKATESWARI KALVA,AWL-32097,job_41
+Datavail,https://eifn.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/job/1993/?utm_medium=jobshare,83,VENKATESWARI KALVA,AWL-32097,job_72
+MidAmerican Energy,https://fa-essf-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10005990,70,Somasi Sai Kumar,AWL-33095,job_29
+Oracle,https://eeho.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/349383,69,Somasi Sai Kumar,AWL-33095,job_27
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/261046/?utm_medium=jobboard&utm_source=linkedin,91,Sai Bhuvan,AWL-42461,job_100
+Tri-State Generation & Transmission,https://fa-exbd-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/762,50,VENKATESWARI KALVA,AWL-32097,job_51
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260225/?utm_medium=jobboard&utm_source=linkedin,80,Sai Bhuvan,AWL-42461,job_21
+Zachry Group,https://fa-evfm-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/16275/?utm_medium=jobshare,78,Sai Bhuvan,AWL-42461,job_99
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260225/?utm_medium=jobboard&utm_source=linkedin,86,Shiva kumar,AWL-32458,job_21
+PEMCO,https://ejkz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/611/?utm_medium=jobboard&utm_source=linkedin,86,Shiva kumar,AWL-32458,job_19
+Honeywell Aerospace,https://icfcjb.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/127345,84,Shiva kumar,AWL-32458,job_25
+Dollar General,https://ibxwjb.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/2805,81,Shiva kumar,AWL-32458,job_24
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10009068,80,Shiva kumar,AWL-32458,job_26
+Coherent Corp.,https://hcwp.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/2015704,96,Sainath,AWL-31780,job_42
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260987/?utm_medium=jobboard&utm_source=linkedin,89,Sainath,AWL-31780,job_82
+ACCO Engineered Systems,https://ekkt.fa.us2.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/6967,60,Somasi Sai Kumar,AWL-33095,job_28
+Southern Company,https://emje.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/22485,85,Sainath,AWL-31780,job_86
+StandardAero,https://cva.fa.us1.oraclecloud.com/hcmUI/CandidateExperience/en/job/9610/?utm_medium=jobboard&utm_source=linkedin,85,Sainath,AWL-31780,job_87
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/261017/?utm_medium=jobboard&utm_source=linkedin,80,Shiva kumar,AWL-32458,job_20
+Navy Federal Credit Union,https://fa-etbx-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/33296,78,Shiva kumar,AWL-32458,job_18
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/261021/?utm_medium=jobboard&utm_source=linkedin,76,Sai Bhuvan,AWL-42461,job_98
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10009068,80,Bhargava Phaneendra Kumar Suryadevara,AWL-35033,job_26
+Dollar General,https://ibxwjb.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/2805,78,Bhargava Phaneendra Kumar Suryadevara,AWL-35033,job_24
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260836/?utm_medium=jobboard&utm_source=linkedin,70,Sai Bhuvan,AWL-42461,job_101
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260928/?utm_medium=jobboard&utm_source=linkedin,68,Sai Bhuvan,AWL-42461,job_169
+CBIZ,https://ebez.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/6677,77,Sainath,AWL-31780,job_1
+Wingstop Restaurants Inc.,https://iaxmqy.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/1111?utm_source=linkedin&utm_medium=jobboard,77,Sainath,AWL-31780,job_84
+Westfield Insurance,https://fa-exdv-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/12053,76,Sainath,AWL-31780,job_85
+UN Women,https://estm.fa.em2.oraclecloud.com/hcmUI/CandidateExperience/en/job/37744/?utm_medium=jobshare,75,Sainath,AWL-31780,job_92
+Bank of Hawaii,https://fa-enlf-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/3002871/?utm_medium=jobshare,75,Sainath,AWL-31780,job_91
+Navy Federal Credit Union,https://fa-etbx-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/33296,86,Bharath Kumar,AWL-4593,job_18
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10009068,81,Bharath Kumar,AWL-4593,job_26
+Navy Federal Credit Union,https://fa-etbx-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/33296,85,Sarada Gopu,AWL-32063,job_18
+Honeywell Aerospace,https://icfcjb.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/127345,80,Sarada Gopu,AWL-32063,job_25
+BNY,https://eofe.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/81104/?utm_medium=jobshare&src=JB-10200,46,Sai Bhuvan,AWL-42461,job_174
+Hexaware Technologies,https://fa-etqo-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/700632,45,Sai Bhuvan,AWL-42461,job_104
+BNY,https://eofe.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_3001/requisitions/preview/81104,37,Sai Bhuvan,AWL-42461,job_172
+ONE Gas,https://ibedqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/10466/?utm_medium=jobboard&utm_source=linkedin,31,Sai Bhuvan,AWL-42461,job_179
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/261046/?utm_medium=jobboard&utm_source=linkedin,93,Srinija Puvvula,AWL-39218,job_100
+Ascension,https://jobs-oraclecloud.ascension.org/en/job/19468,69,Sainath,AWL-31780,job_53
+Dollar General,https://ibxwjb.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/2805,99,Sankeerth Pasula,AWL-24852,job_24
+Nabors Industries,https://fa-eyem-saasfaprod1.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/1001911,66,Sainath,AWL-31780,job_89
+TForce Freight,https://efjm.fa.ca2.oraclecloud.com/hcmUI/CandidateExperience/en/job/6831/?utm_medium=jobboard&utm_source=linkedin,86,Pravalika Ammu,AWL-41710,job_175
+datAvail,https://eifn.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_2001/requisitions/preview/1993,90,Vishal Bitla,AWL-31121,job_180
+Datavail,https://eifn.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/job/1993/?utm_medium=jobshare,90,Vishal Bitla,AWL-31121,job_72
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260225/?utm_medium=jobboard&utm_source=linkedin,69,Bhargava Phaneendra Kumar Suryadevara,AWL-35033,job_21
+Navy Federal Credit Union,https://fa-etbx-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/33296,64,Bhargava Phaneendra Kumar Suryadevara,AWL-35033,job_18
+PEMCO,https://ejkz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/611/?utm_medium=jobboard&utm_source=linkedin,60,Bhargava Phaneendra Kumar Suryadevara,AWL-35033,job_19
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/261017/?utm_medium=jobboard&utm_source=linkedin,58,Bhargava Phaneendra Kumar Suryadevara,AWL-35033,job_20
+Honeywell Aerospace,https://icfcjb.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/127345,73,Bharath Kumar,AWL-4593,job_25
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/261021/?utm_medium=jobboard&utm_source=linkedin,83,Srinija Puvvula,AWL-39218,job_98
+Navy Federal Credit Union,https://fa-etbx-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/33203,63,Sainath,AWL-31780,job_2
+Texas Children's Hospital,https://eohh.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/427956/?utm_medium=jobshare,37,Sainath,AWL-31780,job_60
+Majesco,https://fa-emad-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/5507/?utm_medium=jobshare,34,Sainath,AWL-31780,job_90
+Navy Federal Credit Union,https://fa-etbx-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/33296,94,Sankeerth Pasula,AWL-24852,job_18
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/261017/?utm_medium=jobboard&utm_source=linkedin,90,Sankeerth Pasula,AWL-24852,job_20
+Honeywell Aerospace,https://icfcjb.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/127345,85,Sankeerth Pasula,AWL-24852,job_25
+PEMCO,https://ejkz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/611/?utm_medium=jobboard&utm_source=linkedin,72,Sarada Gopu,AWL-32063,job_19
+Dallas County,https://fa-etvc-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/25001046/?utm_medium=jobshare,85,Vishal Bitla,AWL-31121,job_83
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/10008932?utm_source=linkedin&utm_medium=jobboard,83,Vishal Bitla,AWL-31121,job_41
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260225/?utm_medium=jobboard&utm_source=linkedin,68,Bharath Kumar,AWL-4593,job_21
+Dollar General,https://ibxwjb.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/2805,65,Bharath Kumar,AWL-4593,job_24
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/261017/?utm_medium=jobboard&utm_source=linkedin,59,Bharath Kumar,AWL-4593,job_20
+PEMCO,https://ejkz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/611/?utm_medium=jobboard&utm_source=linkedin,35,Bharath Kumar,AWL-4593,job_19
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/261073/?utm_medium=jobboard&utm_source=linkedin,80,Sankeerth Pasula,AWL-24852,job_74
+Blue Cross Blue Shield of Michigan,https://ejko.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_3/requisitions/preview/15138,78,Sankeerth Pasula,AWL-24852,job_147
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260928/?utm_medium=jobboard&utm_source=linkedin,82,Srinija Puvvula,AWL-39218,job_169
+AutoZone,https://egud.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/171278,75,Pravalika Ammu,AWL-41710,job_148
+University of Tennessee,https://fa-ewlq-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10611,72,Pravalika Ammu,AWL-41710,job_176
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10009068,69,Sarada Gopu,AWL-32063,job_26
+Dollar General,https://ibxwjb.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/2805,68,Sarada Gopu,AWL-32063,job_24
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/261017/?utm_medium=jobboard&utm_source=linkedin,64,Sarada Gopu,AWL-32063,job_20
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260225/?utm_medium=jobboard&utm_source=linkedin,56,Sarada Gopu,AWL-32063,job_21
+BNY,https://eofe.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_3001/requisitions/preview/79037,82,Prashanth,AWL-36165,job_151
+ACCO Engineered Systems,https://ekkt.fa.us2.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/6967,81,Prashanth,AWL-36165,job_28
+Howmet Aerospace,https://fa-exty-saasfaprod1.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/120223,70,Pravalika Ammu,AWL-41710,job_177
+University of Tennessee Health Science Center,https://fa-ewlq-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10611,69,Pravalika Ammu,AWL-41710,job_176
+Cetera Financial Group,https://ebhu.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/requisitions/preview/6870,62,Pravalika Ammu,AWL-41710,job_139
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/10008932?utm_source=linkedin&utm_medium=jobboard,75,Vishal Bitla,AWL-31121,job_41
+Datavail,https://eifn.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/job/1993/?utm_medium=jobshare,69,Vishal Bitla,AWL-31121,job_72
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10009068,69,Sankeerth Pasula,AWL-24852,job_26
+BNY,https://eofe.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/81104/?utm_medium=jobshare&src=JB-10200,69,Srinija Puvvula,AWL-39218,job_174
+ONE Gas,https://ibedqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/10466/?utm_medium=jobboard&utm_source=linkedin,66,Srinija Puvvula,AWL-39218,job_179
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260836/?utm_medium=jobboard&utm_source=linkedin,65,Srinija Puvvula,AWL-39218,job_101
+Akamai Technologies,https://fa-extu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/2649/?utm_medium=jobboard&utm_source=linkedin,64,Srinija Puvvula,AWL-39218,job_173
+Dollar General,https://ibxwjb.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/2805,92,Sai Sunai Madhamshetty,AWL-1568,job_24
+Honeywell Aerospace,https://icfcjb.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/127345,92,Sai Sunai Madhamshetty,AWL-1568,job_25
+Hexaware Technologies,https://fa-etqo-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/700632,57,Srinija Puvvula,AWL-39218,job_104
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260225/?utm_medium=jobboard&utm_source=linkedin,57,Srinija Puvvula,AWL-39218,job_21
+BNY,https://eofe.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_3001/requisitions/preview/81104,56,Srinija Puvvula,AWL-39218,job_172
+Oracle,https://eeho.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/349383,77,Prashanth,AWL-36165,job_27
+"Williams-Sonoma, Inc.",https://ehac.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/20887,44,Pravalika Ammu,AWL-41710,job_137
+Navy Federal Credit Union,https://fa-etbx-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/33296,87,Sai Sunai Madhamshetty,AWL-1568,job_18
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260225/?utm_medium=jobboard&utm_source=linkedin,85,Sai Sunai Madhamshetty,AWL-1568,job_21
+Zachry Group,https://fa-evfm-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/16275/?utm_medium=jobshare,49,Srinija Puvvula,AWL-39218,job_99
+Tri-State Generation & Transmission,https://fa-exbd-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/762,33,Vishal Bitla,AWL-31121,job_51
+Envision Healthcare,https://eney.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/1873,52,Sankeerth Pasula,AWL-24852,job_113
+Vertiv,https://egup.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/20282012,46,Sankeerth Pasula,AWL-24852,job_71
+MidAmerican Energy,https://fa-essf-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10005990,66,Prashanth,AWL-36165,job_29
+Oracle,https://eeho.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/349383,93,AKSHAY JOSHI,AWL-29518,job_27
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10009068,69,Sai Sunai Madhamshetty,AWL-1568,job_26
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/261017/?utm_medium=jobboard&utm_source=linkedin,66,Sai Sunai Madhamshetty,AWL-1568,job_20
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10009052,75,AKSHAY JOSHI,AWL-29518,job_56
+MidAmerican Energy,https://fa-essf-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10005990,71,AKSHAY JOSHI,AWL-29518,job_29
+PEMCO,https://ejkz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/611/?utm_medium=jobboard&utm_source=linkedin,38,Sai Sunai Madhamshetty,AWL-1568,job_19
+BNY,https://eofe.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_3001/requisitions/preview/79037,69,AKSHAY JOSHI,AWL-29518,job_151
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260225/?utm_medium=jobboard&utm_source=linkedin,92,STEFFY VARGHESE,AWL-31813,job_21
+Dallas County,https://fa-etvc-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/25001046/?utm_medium=jobshare,79,Rajkumar Bharath,AWL-45422,job_83
+datAvail,https://eifn.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_2001/requisitions/preview/1993,75,Rajkumar Bharath,AWL-45422,job_180
+Navy Federal Credit Union,https://fa-etbx-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/33296,87,Neeraj Borra,AWL-44770,job_18
+Honeywell Aerospace,https://icfcjb.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/127345,81,STEFFY VARGHESE,AWL-31813,job_25
+Oracle,https://eeho.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/349383,94,NIKHIL PALLI,AWL-39618,job_27
+ACCO Engineered Systems,https://ekkt.fa.us2.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/6967,46,AKSHAY JOSHI,AWL-29518,job_28
+Datavail,https://eifn.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/job/1993/?utm_medium=jobshare,71,Rajkumar Bharath,AWL-45422,job_72
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/10008932?utm_source=linkedin&utm_medium=jobboard,66,Rajkumar Bharath,AWL-45422,job_41
+Datavail,https://eifn.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/job/1993/?utm_medium=jobshare,64,Rajkumar Bharath,AWL-45422,job_72
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/10008932?utm_source=linkedin&utm_medium=jobboard,63,Rajkumar Bharath,AWL-45422,job_41
+Navy Federal Credit Union,https://fa-etbx-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/33296,79,STEFFY VARGHESE,AWL-31813,job_18
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/261017/?utm_medium=jobboard&utm_source=linkedin,76,STEFFY VARGHESE,AWL-31813,job_20
+MidAmerican Energy,https://fa-essf-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10005990,88,JAHNAVI GANGARAPU,AWL-31474,job_29
+Dollar General,https://ibxwjb.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/2805,81,Neeraj Borra,AWL-44770,job_24
+Fortinet,https://edel.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_xx/requisitions/preview/24852,40,AKSHAY JOSHI,AWL-29518,job_59
+Honeywell Aerospace,https://icfcjb.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/127345,80,Neeraj Borra,AWL-44770,job_25
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/261017/?utm_medium=jobboard&utm_source=linkedin,80,Neeraj Borra,AWL-44770,job_20
+PEMCO,https://ejkz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/611/?utm_medium=jobboard&utm_source=linkedin,77,Neeraj Borra,AWL-44770,job_19
+Oracle,https://eeho.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/349383,86,JAHNAVI GANGARAPU,AWL-31474,job_27
+ACCO Engineered Systems,https://ekkt.fa.us2.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/6967,83,JAHNAVI GANGARAPU,AWL-31474,job_28
+ACCO Engineered Systems,https://ekkt.fa.us2.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/6967,69,NIKHIL PALLI,AWL-39618,job_28
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/261017/?utm_medium=jobboard&utm_source=linkedin,92,VAMSI REDDY MANNURU SRINIVAS,AWL-42043,job_20
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10009068,90,VAMSI REDDY MANNURU SRINIVAS,AWL-42043,job_26
+Tri-State Generation & Transmission,https://fa-exbd-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/762,41,Rajkumar Bharath,AWL-45422,job_51
+Navy Federal Credit Union,https://fa-etbx-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/33296,94,Gopi Nath Kota,AWL-31880,job_18
+ACCO Engineered Systems,https://ekkt.fa.us2.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/6967,92,Venkata P,AWL-41703,job_28
+Dollar General,https://ibxwjb.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/2805,92,Gopi Nath Kota,AWL-31880,job_24
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/261017/?utm_medium=jobboard&utm_source=linkedin,88,Gopi Nath Kota,AWL-31880,job_20
+Navy Federal Credit Union,https://fa-etbx-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/33296,96,Sridhar Vadla,AWL-3762,job_18
+Dollar General,https://ibxwjb.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/2805,94,Sridhar Vadla,AWL-3762,job_24
+Dollar General,https://ibxwjb.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/2805,64,STEFFY VARGHESE,AWL-31813,job_24
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10009068,57,STEFFY VARGHESE,AWL-31813,job_26
+PEMCO,https://ejkz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/611/?utm_medium=jobboard&utm_source=linkedin,51,STEFFY VARGHESE,AWL-31813,job_19
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10009068,70,Neeraj Borra,AWL-44770,job_26
+Navy Federal Credit Union,https://fa-etbx-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/33296,82,VAMSI REDDY MANNURU SRINIVAS,AWL-42043,job_18
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260225/?utm_medium=jobboard&utm_source=linkedin,79,VAMSI REDDY MANNURU SRINIVAS,AWL-42043,job_21
+BNY,https://eofe.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_3001/requisitions/preview/81915,66,NIKHIL PALLI,AWL-39618,job_65
+Dollar General,https://ibxwjb.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/2805,88,Deekshitha Gunde,AWL-31424,job_24
+Navy Federal Credit Union,https://fa-etbx-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/33296,82,Deekshitha Gunde,AWL-31424,job_18
+MidAmerican Energy,https://fa-essf-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10005990,80,Venkata P,AWL-41703,job_29
+BNY,https://eofe.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_3001/requisitions/preview/79037,78,Venkata P,AWL-41703,job_151
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/261017/?utm_medium=jobboard&utm_source=linkedin,85,Sridhar Vadla,AWL-3762,job_20
+Honeywell Aerospace,https://icfcjb.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/127345,82,Gopi Nath Kota,AWL-31880,job_25
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/261073/?utm_medium=jobboard&utm_source=linkedin,81,Gopi Nath Kota,AWL-31880,job_74
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10009052,59,JAHNAVI GANGARAPU,AWL-31474,job_56
+Fortinet,https://edel.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_xx/requisitions/preview/24852,59,JAHNAVI GANGARAPU,AWL-31474,job_59
+PEMCO,https://ejkz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/611/?utm_medium=jobboard&utm_source=linkedin,72,VAMSI REDDY MANNURU SRINIVAS,AWL-42043,job_19
+Honeywell Aerospace,https://icfcjb.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/127345,56,VAMSI REDDY MANNURU SRINIVAS,AWL-42043,job_25
+Dollar General,https://ibxwjb.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/2805,55,VAMSI REDDY MANNURU SRINIVAS,AWL-42043,job_24
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10009068,79,Deekshitha Gunde,AWL-31424,job_26
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/261017/?utm_medium=jobboard&utm_source=linkedin,76,Deekshitha Gunde,AWL-31424,job_20
+Oracle,https://eeho.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/349383,69,Venkata P,AWL-41703,job_27
+Honeywell Aerospace,https://icfcjb.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/127345,78,Sridhar Vadla,AWL-3762,job_25
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/261073/?utm_medium=jobboard&utm_source=linkedin,74,Sridhar Vadla,AWL-3762,job_74
+Blue Cross Blue Shield of Michigan,https://ejko.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_3/requisitions/preview/15138,71,Sridhar Vadla,AWL-3762,job_147
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10009068,73,Gopi Nath Kota,AWL-31880,job_26
+Envision Healthcare,https://eney.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/1873,65,Gopi Nath Kota,AWL-31880,job_113
+Blue Cross Blue Shield of Michigan,https://ejko.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_3/requisitions/preview/15138,63,Gopi Nath Kota,AWL-31880,job_147
+PEMCO,https://ejkz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/611/?utm_medium=jobboard&utm_source=linkedin,71,Deekshitha Gunde,AWL-31424,job_19
+Honeywell Aerospace,https://icfcjb.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/127345,68,Deekshitha Gunde,AWL-31424,job_25
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260225/?utm_medium=jobboard&utm_source=linkedin,51,Deekshitha Gunde,AWL-31424,job_21
+Envision Healthcare,https://eney.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/1873,61,Sridhar Vadla,AWL-3762,job_113
+Vertiv,https://egup.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/20282012,52,Sridhar Vadla,AWL-3762,job_71
+Vertiv,https://egup.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/20283846/?utm_medium=jobboard&utm_source=linkedin,92,MARUJODU Mahesh,AWL-25553,job_129
+Vertiv,https://egup.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/20282012,47,Gopi Nath Kota,AWL-31880,job_71
+Howmet Aerospace,https://fa-exty-saasfaprod1.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/120249,82,MARUJODU Mahesh,AWL-25553,job_78
+WSP,https://emit.fa.ca3.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_2001/requisitions/preview/98692,81,MARUJODU Mahesh,AWL-25553,job_126
+Dollar General,https://ibxwjb.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/2805,94,Rahul Prasad,AWL-30424,job_24
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10009068,87,Rahul Prasad,AWL-30424,job_26
+Navy Federal Credit Union,https://fa-etbx-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/33296,86,Rahul Prasad,AWL-30424,job_18
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/261017/?utm_medium=jobboard&utm_source=linkedin,86,Rahul Prasad,AWL-30424,job_20
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10009068,38,Sridhar Vadla,AWL-3762,job_26
+Honeywell Aerospace,https://icfcjb.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/127345,74,Rahul Prasad,AWL-30424,job_25
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/261073/?utm_medium=jobboard&utm_source=linkedin,73,Rahul Prasad,AWL-30424,job_74
+NOV,https://egay.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/job/45053/?utm_medium=jobshare,79,MARUJODU Mahesh,AWL-25553,job_133
+EPTA GROUP,https://fa-eukp-saasfaprod1.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/2619,78,MARUJODU Mahesh,AWL-25553,job_130
+Cherokee Federal,https://ibtcjb.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_xx/requisitions/preview/44216,77,MARUJODU Mahesh,AWL-25553,job_181
+Emerson,https://hdjq.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/26012979?utm_medium=jobboard&utm_source=indeed,77,MARUJODU Mahesh,AWL-25553,job_131
+Navy Federal Credit Union,https://fa-etbx-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/33296,85,Jayaprakash Eluri,AWL-3615,job_18
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10009068,98,Alekhya Kattamuri,AWL-26023,job_26
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260225/?utm_medium=jobboard&utm_source=linkedin,87,Alekhya Kattamuri,AWL-26023,job_21
+NOV,https://egay.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_4001/requisitions/preview/45053,72,MARUJODU Mahesh,AWL-25553,job_134
+Blue Cross Blue Shield of Michigan,https://ejko.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_3/requisitions/preview/15138,64,Rahul Prasad,AWL-30424,job_147
+Navy Federal Credit Union,https://fa-etbx-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/33296,83,Lakshman Hemanth Malladhi,AWL-36883,job_18
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260225/?utm_medium=jobboard&utm_source=linkedin,81,Lakshman Hemanth Malladhi,AWL-36883,job_21
+WSP,https://emit.fa.ca3.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_2001/requisitions/preview/98648,65,MARUJODU Mahesh,AWL-25553,job_182
+Dollar General,https://ibxwjb.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/2805,91,RANJITH KOTAMRAJU,AWL-35252,job_24
+Dollar General,https://ibxwjb.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/2805,75,Jayaprakash Eluri,AWL-3615,job_24
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260225/?utm_medium=jobboard&utm_source=linkedin,74,Jayaprakash Eluri,AWL-3615,job_21
+Honeywell Aerospace,https://icfcjb.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/127345,86,Alekhya Kattamuri,AWL-26023,job_25
+Navy Federal Credit Union,https://fa-etbx-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/33296,83,Alekhya Kattamuri,AWL-26023,job_18
+Honeywell Technologies,https://ibqbjb.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/159782/?utm_medium=jobboard&utm_source=linkedin,63,MARUJODU Mahesh,AWL-25553,job_132
+Honeywell Aerospace,https://icfcjb.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/127345,90,RANJITH KOTAMRAJU,AWL-35252,job_25
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260225/?utm_medium=jobboard&utm_source=linkedin,89,RANJITH KOTAMRAJU,AWL-35252,job_21
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10009068,83,RANJITH KOTAMRAJU,AWL-35252,job_26
+Navy Federal Credit Union,https://fa-etbx-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/33296,82,RANJITH KOTAMRAJU,AWL-35252,job_18
+Vertiv,https://egup.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/20282012,49,Rahul Prasad,AWL-30424,job_71
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/261017/?utm_medium=jobboard&utm_source=linkedin,73,Lakshman Hemanth Malladhi,AWL-36883,job_20
+Honeywell Aerospace,https://icfcjb.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/127345,67,Jayaprakash Eluri,AWL-3615,job_25
+PEMCO,https://ejkz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/611/?utm_medium=jobboard&utm_source=linkedin,67,Jayaprakash Eluri,AWL-3615,job_19
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/261017/?utm_medium=jobboard&utm_source=linkedin,67,Jayaprakash Eluri,AWL-3615,job_20
+Dollar General,https://ibxwjb.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/2805,75,Alekhya Kattamuri,AWL-26023,job_24
+PEMCO,https://ejkz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/611/?utm_medium=jobboard&utm_source=linkedin,67,Alekhya Kattamuri,AWL-26023,job_19
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/261017/?utm_medium=jobboard&utm_source=linkedin,67,Alekhya Kattamuri,AWL-26023,job_20
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10009068,70,Lakshman Hemanth Malladhi,AWL-36883,job_26
+Honeywell Aerospace,https://icfcjb.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/127345,67,Lakshman Hemanth Malladhi,AWL-36883,job_25
+PEMCO,https://ejkz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/611/?utm_medium=jobboard&utm_source=linkedin,58,Lakshman Hemanth Malladhi,AWL-36883,job_19
+Dollar General,https://ibxwjb.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/2805,57,Lakshman Hemanth Malladhi,AWL-36883,job_24
+PEMCO,https://ejkz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/611/?utm_medium=jobboard&utm_source=linkedin,69,RANJITH KOTAMRAJU,AWL-35252,job_19
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/261017/?utm_medium=jobboard&utm_source=linkedin,64,RANJITH KOTAMRAJU,AWL-35252,job_20
+Honeywell Aerospace,https://icfcjb.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/127345,77,Shashidher Mylarapu,AWL-44161,job_25
+Dollar General,https://ibxwjb.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/2805,75,Shashidher Mylarapu,AWL-44161,job_24
+Vanderbilt University,https://ecsr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10009068,73,Shashidher Mylarapu,AWL-44161,job_26
+Navy Federal Credit Union,https://fa-etbx-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/33296,72,Shashidher Mylarapu,AWL-44161,job_18
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/261017/?utm_medium=jobboard&utm_source=linkedin,72,Shashidher Mylarapu,AWL-44161,job_20
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260225/?utm_medium=jobboard&utm_source=linkedin,66,Shashidher Mylarapu,AWL-44161,job_21
+PEMCO,https://ejkz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/611/?utm_medium=jobboard&utm_source=linkedin,59,Shashidher Mylarapu,AWL-44161,job_19
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/261017/?utm_medium=jobboard&utm_source=linkedin,96,Anoop Garige,AWL-26832,job_20
+Blue Shield of California,https://ecge.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/20262196/?utm_medium=jobboard&utm_source=linkedin,86,Anoop Garige,AWL-26832,job_23
+Nabors Industries,https://fa-eyem-saasfaprod1.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/1001911,78,Aakanksha Rukmanna Rangdal,AWL-26974,job_89
+Oracle,https://eeho.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/349100/?utm_medium=jobboard&utm_source=LinkedIn,80,Anoop Garige,AWL-26832,job_22
+PEMCO,https://ejkz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/611/?utm_medium=jobboard&utm_source=linkedin,74,Anoop Garige,AWL-26832,job_19
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260225/?utm_medium=jobboard&utm_source=linkedin,70,Anoop Garige,AWL-26832,job_21
+UCSF Health,https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/10852/?utm_medium=jobboard&utm_source=linkedin,70,Aakanksha Rukmanna Rangdal,AWL-26974,job_88
+Westfield Insurance,https://fa-exdv-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/12053,69,Aakanksha Rukmanna Rangdal,AWL-26974,job_85
+Coherent Corp.,https://hcwp.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/2015704,66,Aakanksha Rukmanna Rangdal,AWL-26974,job_42
+Bank of Hawaii,https://fa-enlf-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/3002871/?utm_medium=jobshare,66,Aakanksha Rukmanna Rangdal,AWL-26974,job_91
+UN Women,https://estm.fa.em2.oraclecloud.com/hcmUI/CandidateExperience/en/job/37744/?utm_medium=jobshare,65,Aakanksha Rukmanna Rangdal,AWL-26974,job_92
+Ascension,https://jobs-oraclecloud.ascension.org/en/job/19468,63,Aakanksha Rukmanna Rangdal,AWL-26974,job_53
+Navy Federal Credit Union,https://fa-etbx-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/33203,63,Aakanksha Rukmanna Rangdal,AWL-26974,job_2
+Majesco,https://fa-emad-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/5507/?utm_medium=jobshare,63,Aakanksha Rukmanna Rangdal,AWL-26974,job_90
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260987/?utm_medium=jobboard&utm_source=linkedin,63,Aakanksha Rukmanna Rangdal,AWL-26974,job_82
+CBIZ,https://ebez.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/6677,62,Aakanksha Rukmanna Rangdal,AWL-26974,job_1
+Hoffman Construction Company,https://efsp.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/requisitions/preview/1606,79,Gayathri Devi Kotapati,AWL-44741,job_35
+Southern Company,https://emje.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/22538,77,Gayathri Devi Kotapati,AWL-44741,job_34
+StandardAero,https://cva.fa.us1.oraclecloud.com/hcmUI/CandidateExperience/en/job/9610/?utm_medium=jobboard&utm_source=linkedin,58,Aakanksha Rukmanna Rangdal,AWL-26974,job_87
+Wingstop Restaurants Inc.,https://iaxmqy.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/1111?utm_source=linkedin&utm_medium=jobboard,50,Aakanksha Rukmanna Rangdal,AWL-26974,job_84
+Oracle,https://eeho.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/349383,79,Harsha Vardhan Reddy Masannagari,AWL-46046,job_27
+ADI Global Distribution,https://ehtl.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_2/requisitions/preview/19821,69,Gayathri Devi Kotapati,AWL-44741,job_39
+Southern Company,https://emje.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/22485,46,Aakanksha Rukmanna Rangdal,AWL-26974,job_86
+ACCO Engineered Systems,https://ekkt.fa.us2.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/6967,72,Harsha Vardhan Reddy Masannagari,AWL-46046,job_28
+Stellarus,https://ecge.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/20261878/?utm_medium=jobboard&utm_source=linkedin,94,Srinivasa Nikhil Mallempati,AWL-42670,job_183
+MidAmerican Energy,https://fa-essf-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10005990,57,Harsha Vardhan Reddy Masannagari,AWL-46046,job_29
+ACCO Engineered Systems,https://ekkt.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/6967/?utm_medium=jobshare,84,Srinivasa Nikhil Mallempati,AWL-42670,job_184
+Majesco,https://fa-emad-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/5507/?utm_medium=jobshare,85,Ganjigunta Narendar,AWL-32241,job_90
+UN Women,https://estm.fa.em2.oraclecloud.com/hcmUI/CandidateExperience/en/job/37744/?utm_medium=jobshare,84,Ganjigunta Narendar,AWL-32241,job_92
+GM Financial,https://fa-exvu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/260987/?utm_medium=jobboard&utm_source=linkedin,82,Ganjigunta Narendar,AWL-32241,job_82
+Southern Company,https://emje.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/requisitions/preview/22485,81,Ganjigunta Narendar,AWL-32241,job_86
+StandardAero,https://cva.fa.us1.oraclecloud.com/hcmUI/CandidateExperience/en/job/9610/?utm_medium=jobboard&utm_source=linkedin,81,Ganjigunta Narendar,AWL-32241,job_87
+Wingstop Restaurants Inc.,https://iaxmqy.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/1111?utm_source=linkedin&utm_medium=jobboard,81,Ganjigunta Narendar,AWL-32241,job_84
+Westfield Insurance,https://fa-exdv-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/12053,78,Ganjigunta Narendar,AWL-32241,job_85
+ACCO Engineered Systems,https://ekkt.fa.us2.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/6967,75,Srinivasa Nikhil Mallempati,AWL-42670,job_28
+The Citco Group Limited,https://fa-euxc-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/19021/?utm_medium=jobboard&utm_source=linkedin,73,Srinivasa Nikhil Mallempati,AWL-42670,job_185
+Nabors Industries,https://fa-eyem-saasfaprod1.fa.ocs.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/1001911,72,Ganjigunta Narendar,AWL-32241,job_89
+Texas Children's Hospital,https://eohh.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/427956/?utm_medium=jobshare,71,Ganjigunta Narendar,AWL-32241,job_60
+NOV,https://egay.fa.us6.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_4001/requisitions/preview/43889,95,Sai Charan Rottla,AWL-4724,job_186
+AutoZone,https://egud.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/172799,94,Sai Charan Rottla,AWL-4724,job_11
+Safeway,https://eofd.fa.us6.oraclecloud.com:443/hcmUI/CandidateExperience/en/job/788291,92,Sai Charan Rottla,AWL-4724,job_16
+Oracle,https://eeho.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/349461/?utm_medium=jobboard&utm_source=LinkedIn,64,Srinivasa Nikhil Mallempati,AWL-42670,job_187
+Hilton,https://efet.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/job/212953/?utm_medium=jobboard&utm_source=linkedin,61,Srinivasa Nikhil Mallempati,AWL-42670,job_188
+Bank of Hawaii,https://fa-enlf-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/job/3002871/?utm_medium=jobshare,67,Ganjigunta Narendar,AWL-32241,job_91
+Texas Children's Hospital,https://eohh.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_xx/requisitions/preview/427956,47,Ganjigunta Narendar,AWL-32241,job_189
+University of Tennessee,https://fa-ewlq-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10625,79,Sai Bhuvan,AWL-42461,job_190
+University of Tennessee Health Science Center,https://fa-ewlq-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10625,72,Sai Bhuvan,AWL-42461,job_190
+McDermott,https://edsv.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/26005244,94,Lakshmi Mohan,AWL-7020,job_191
+University of Tennessee Health Science Center,https://fa-ewlq-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10625,90,Saiteja Benkannagari,AWL-4039,job_190
+University of Tennessee,https://fa-ewlq-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10625,90,Saiteja Benkannagari,AWL-4039,job_190
+Texas Children's Hospital,https://eohh.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_xx/requisitions/preview/427956,54,Pavankumar valloju,AWL-32840,job_189
+Texas Children's Hospital,https://eohh.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_xx/requisitions/preview/427956,37,Aakanksha Rukmanna Rangdal,AWL-26974,job_189
+Texas Children's Hospital,https://eohh.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_xx/requisitions/preview/427956,56,Sainath,AWL-31780,job_189
+University of Tennessee,https://fa-ewlq-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10625,72,Akash Sudini,AWL-31640,job_190
+Texas Instruments,https://edbz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/job/25017680,43,Ananya Chittineni,AWL-39197,job_192
+University of Tennessee Health Science Center,https://fa-ewlq-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10625,71,Akash Sudini,AWL-31640,job_190
+Texas Instruments,https://edbz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/job/25017680,39,RAJASEKHAR REDDY KOTHAPALLI,AWL-32876,job_192
+Texas Children's Hospital,https://eohh.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_xx/requisitions/preview/427956,54,Punith Reddy Dappili,AWL-35076,job_189
+Texas Instruments,https://edbz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/job/25017680,40,DORA BABU CHINTALA,AWL-32516,job_192
+Texas Instruments,https://edbz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/job/25017680,39,Karthik P,AWL-27613,job_192
+Texas Instruments,https://edbz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/job/25017680,41,Kalyan Kumar Thatikonda,AWL-29612,job_192
+Texas Instruments,https://edbz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/job/25017680,30,SAI KIRAN KALLURI,AWL-34779,job_192
+Texas Instruments,https://edbz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/job/25017680,68,Uday Talasila,AWL-26230,job_192
+Inova Health System,https://elar.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/691846,69,Tejashwini Komanpally,AWL-39201,job_193
+Texas Instruments,https://edbz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/job/25017680,42,Somasi Sai Kumar,AWL-33095,job_192
+Texas Children's Hospital,https://eohh.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_xx/requisitions/preview/427956,56,Tejashwini Komanpally,AWL-39201,job_189
+University of Tennessee,https://fa-ewlq-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10624,36,Tejashwini Komanpally,AWL-39201,job_194
+University of Tennessee Health Science Center,https://fa-ewlq-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10624,36,Tejashwini Komanpally,AWL-39201,job_194
+Texas Instruments,https://edbz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/job/25017680,45,JAHNAVI GANGARAPU,AWL-31474,job_192
+Texas Instruments,https://edbz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/job/25017680,46,Vamshi Challagundla,AWL-6451,job_192
+Texas Instruments,https://edbz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/job/25017680,42,NIKHIL PALLI,AWL-39618,job_192
+Texas Instruments,https://edbz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/job/25017680,46,VAMSHI TEJESH NALABOLU,AWL-32982,job_192
+Texas Instruments,https://edbz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/job/25017680,42,Sudheer Kumar Reddy Batthina,AWL-7247,job_192
+Texas Children's Hospital,https://eohh.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_xx/requisitions/preview/428345,57,RINKU KASALA,AWL-4220,job_195
+Texas Instruments,https://edbz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/job/25017680,41,Abdullah Zubair Mohd,AWL-45416,job_192
+Texas Instruments,https://edbz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/job/25017680,25,Basava Chandrika Dokku,AWL-32904,job_192
+Texas Instruments,https://edbz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/job/25017680,40,Nikhila Yadav Lankela,AWL-26828,job_192
+Texas Instruments,https://edbz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/job/25017680,54,Sai vardhan reddy mategam,AWL-45417,job_192
+University of Tennessee Health Science Center,https://fa-ewlq-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10624,26,Sowmya Nalla,AWL-39777,job_194
+University of Tennessee,https://fa-ewlq-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/10624,26,Sowmya Nalla,AWL-39777,job_194
+Inova Health System,https://elar.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/691846,73,Sowmya Nalla,AWL-39777,job_193
+Ascension,https://jobs-oraclecloud.ascension.org/en/job/16264,67,Sowmya Nalla,AWL-39777,job_196
+Texas Children's Hospital,https://eohh.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_xx/requisitions/preview/427956,65,Sowmya Nalla,AWL-39777,job_189
+Texas Instruments,https://edbz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/job/25017680,43,VINEETH REDDY,AWL-35198,job_192
+Texas Instruments,https://edbz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/job/25017680,46,vamshi gutha,AWL-31162,job_192
+Texas Instruments,https://edbz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/job/25017680,43,Deva Sen Naroju,AWL-30979,job_192
+Texas Instruments,https://edbz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/job/25017680,36,AKSHAY JOSHI,AWL-29518,job_192
+Texas Instruments,https://edbz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/job/25017680,59,Venkata P,AWL-41703,job_192
+Texas Instruments,https://edbz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/job/25017680,41,Prashanth,AWL-36165,job_192
+Texas Instruments,https://edbz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/job/25017680,38,SAITARUNREDDY PAPPU,AWL-26538,job_192
+Texas Instruments,https://edbz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/job/25017680,35,Siva Lakshmaiah Ankipalli,AWL-43306,job_192
+Ascension,https://jobs-oraclecloud.ascension.org/en/job/16264,59,Tejashwini Komanpally,AWL-39201,job_196
+McDermott,https://edsv.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/26005244,93,Nikhil Reddy Ramasagaram,AWL-32094,job_191

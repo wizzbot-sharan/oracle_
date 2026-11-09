@@ -248,3 +248,173 @@ test('Phase 4 checkbox filling successfully handles ID-less checkbox by targetin
   assert.equal(customButtonClicked, true, 'Expected custom button to be clicked for ID-less checkbox');
   assert.equal(checkboxChecked, true, 'Expected checkbox state to become true');
 });
+
+test('Phase 4 fillApplication verifies pre-filled locked input without stalling or timeout', async () => {
+  const adapter = new OracleRecruitingAdapter({
+    actionGap: { min: 0, max: 0 },
+    postNextWait: { min: 0, max: 0 },
+    humanDelay: { min: 0, max: 0 }
+  });
+
+  const mockEmailInput = {
+    count: async () => 1,
+    isVisible: async () => true,
+    first: () => mockEmailInput,
+    inputValue: async () => 'test@example.com',
+    innerText: async () => 'test@example.com',
+    scrollIntoViewIfNeeded: async () => {},
+    evaluate: async (fn) => fn({
+      readOnly: true,
+      disabled: false,
+      getAttribute: (attr) => attr === 'readonly' ? 'readonly' : null,
+      classList: { contains: (cls) => cls.includes('communication-channel__email-row--locked') },
+      closest: () => true
+    })
+  };
+
+  const submitBtn = {
+    count: async () => 1,
+    isVisible: async () => true,
+    first: () => submitBtn,
+    evaluate: async () => {},
+    scrollIntoViewIfNeeded: async () => {}
+  };
+
+  const mockPage = {
+    waitForLoadState: async () => {},
+    url: () => 'https://oracle.cloud/apply/step1',
+    locator: (selector) => {
+      if (selector.includes('email')) return mockEmailInput;
+      if (selector.includes('apply-flow-section')) return { count: async () => 0 };
+      if (selector.includes('apply-flow-pagination') || selector.includes('pagination__button')) return submitBtn;
+      return { count: async () => 0, isVisible: async () => false, first: () => ({ count: async () => 0, isVisible: async () => false }) };
+    },
+    getByRole: (role, opts) => {
+      if (role === 'button' && opts?.name?.test?.('submit')) return submitBtn;
+      return { count: async () => 0, isVisible: async () => false, first: () => ({ count: async () => 0, isVisible: async () => false }) };
+    },
+    getByLabel: (label) => {
+      if (label === 'Email') return mockEmailInput;
+      return { count: async () => 0, isVisible: async () => false, first: () => ({ count: async () => 0, isVisible: async () => false }) };
+    },
+    mouse: { wheel: async () => {} }
+  };
+
+  const results = await adapter.fillApplication({
+    session: { page: mockPage },
+    template: {
+      fields: [
+        { id: 'email', label: 'Email', type: 'email', sourceName: 'email' }
+      ]
+    },
+    values: {
+      email: { value: 'test@example.com' }
+    },
+    context: { jobId: 'job-email-test', userId: 'user-email-test' }
+  });
+
+  assert.equal(results.length, 1);
+  assert.equal(results[0].fieldId, 'email');
+  assert.equal(results[0].status, 'verified');
+});
+
+test('Phase 4 fillApplication fills disability radio button even when sourceId points to hidden label', async () => {
+  const adapter = new OracleRecruitingAdapter({
+    actionGap: { min: 0, max: 0 },
+    postNextWait: { min: 0, max: 0 },
+    humanDelay: { min: 0, max: 0 }
+  });
+
+  let radioOptionClicked = false;
+
+  const mockHiddenLabel = {
+    count: async () => 1,
+    isVisible: async () => false, // visually hidden label in Oracle DOM
+    first: () => mockHiddenLabel
+  };
+
+  const mockOptionRadio = {
+    getAttribute: async (attr) => attr === 'id' ? 'US-STANDARD-ORA_DISABILITY_STATUS-STANDARD-11-ORA_PER_NO_US' : null,
+    click: async () => {}
+  };
+
+  const mockVisibleOptionLabel = {
+    count: async () => 1,
+    isVisible: async () => true,
+    first: () => mockVisibleOptionLabel,
+    click: async () => { radioOptionClicked = true; }
+  };
+
+  const mockRadioGroup = {
+    count: async () => 1,
+    isVisible: async () => true,
+    first: () => mockRadioGroup,
+    scrollIntoViewIfNeeded: async () => {},
+    getByRole: (role) => {
+      if (role === 'radio') return mockOptionRadio;
+      return mockOptionRadio;
+    },
+    locator: (selector) => {
+      if (selector.includes('input[type="radio"]:checked')) return { count: async () => 0 };
+      return mockVisibleOptionLabel;
+    }
+  };
+
+  const submitBtn = {
+    count: async () => 1,
+    isVisible: async () => true,
+    first: () => submitBtn,
+    evaluate: async () => {},
+    scrollIntoViewIfNeeded: async () => {}
+  };
+
+  const mockPage = {
+    waitForLoadState: async () => {},
+    url: () => 'https://oracle.cloud/apply/step4',
+    locator: (selector) => {
+      if (selector.includes('US-STANDARD-ORA_DISABILITY_STATUS-STANDARD-11-label')) return mockHiddenLabel;
+      if (selector.includes('US-STANDARD-ORA_DISABILITY_STATUS-STANDARD-11-ORA_PER_NO_US')) return mockVisibleOptionLabel;
+      if (selector.includes('radiogroup')) return mockRadioGroup;
+      if (selector.includes('apply-flow-section')) return { count: async () => 0 };
+      if (selector.includes('apply-flow-pagination')) return submitBtn;
+      return { count: async () => 0, isVisible: async () => false, first: () => ({ count: async () => 0, isVisible: async () => false }) };
+    },
+    getByRole: (role) => {
+      if (role === 'radiogroup') return mockRadioGroup;
+      if (role === 'button') return submitBtn;
+      return { count: async () => 0, isVisible: async () => false, first: () => ({ count: async () => 0, isVisible: async () => false }) };
+    },
+    getByLabel: () => ({ count: async () => 0, isVisible: async () => false, first: () => ({ count: async () => 0, isVisible: async () => false }) }),
+    mouse: { wheel: async () => {} }
+  };
+
+  const results = await adapter.fillApplication({
+    session: { page: mockPage },
+    template: {
+      fields: [
+        {
+          id: 'do_you_have_a_disability',
+          sourceId: 'US-STANDARD-ORA_DISABILITY_STATUS-STANDARD-11-label',
+          type: 'radio',
+          label: 'Do you have a disability?',
+          options: [
+            'Yes, I have a disability, or have had one in the past',
+            'No, I do not have a disability and have not had one in the past',
+            'I do not want to answer'
+          ]
+        }
+      ]
+    },
+    values: {
+      do_you_have_a_disability: {
+        value: 'No, I do not have a disability and have not had one in the past'
+      }
+    },
+    context: { jobId: 'job-disability-test', userId: 'user-disability-test' }
+  });
+
+  assert.equal(results.length, 1);
+  assert.equal(results[0].fieldId, 'do_you_have_a_disability');
+  assert.equal(results[0].status, 'verified');
+  assert.equal(radioOptionClicked, true, 'Expected visible option label to be clicked');
+});
