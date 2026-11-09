@@ -1,5 +1,6 @@
 import { config } from './config.js';
 import { JsonStore } from './storage/json-store.js';
+import { SupabaseStore } from './storage/supabase-store.js';
 import { RunLog } from './storage/run-log.js';
 import { KeyedLock } from './shared/locks.js';
 import { ZohoMailReader } from './adapters/mail/zoho-mail-reader.js';
@@ -12,7 +13,14 @@ import { ScanQueueRunner } from './phases/scan-queue.js';
 import { SubmissionQueueRunner } from './phases/submission-queue.js';
 import { resumeService } from './services/resume-service.js';
 
-const store = new JsonStore(config.dataDir);
+const isSupabaseConfigured = Boolean(
+  process.env.SUPABASE_URL && (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_KEY)
+);
+
+const store = isSupabaseConfigured
+  ? new SupabaseStore()
+  : new JsonStore(config.dataDir);
+
 const runLog = new RunLog(store);
 const otpLock = new KeyedLock();
 const sessions = new SessionRegistry();

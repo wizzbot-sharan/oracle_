@@ -34,10 +34,17 @@ export class Phase3AnswerResolution {
   }
 
   /**
-   * Loads and indexes historical records from data/question_bank.csv.
+   * Loads and indexes historical records from Supabase question_bank table or data/question_bank.csv.
    */
   async loadQuestionBank() {
     try {
+      if (typeof this.store?.loadQuestionBank === 'function' && this.store?.isAvailable?.()) {
+        const storeResult = await this.store.loadQuestionBank();
+        if (storeResult && (storeResult.globalHistory?.length > 0 || storeResult.clientHistoryMap?.size > 0)) {
+          return storeResult;
+        }
+      }
+
       if (!fs.existsSync(this.questionBankCsvPath)) {
         return { clientHistoryMap: new Map(), globalHistory: [] };
       }
@@ -313,7 +320,7 @@ export class Phase3AnswerResolution {
 
     invariant(updatedApplication, 'APPLICATION_NOT_FOUND', `Application ${applicationId} not found`);
 
-    // 2. Upsert confirmed answers into data/question_bank.csv (in-place modification, no duplicates)
+    // 2. Upsert confirmed answers into Supabase question_bank table or data/question_bank.csv
     try {
       const templates = await this.store.read('form-templates', {});
       const template = templates[updatedApplication.jobKey] || templates[updatedApplication.jobId];
@@ -323,28 +330,45 @@ export class Phase3AnswerResolution {
       const timestamp = nowIso();
       const candidateId = updatedApplication.userId || updatedApplication.applywizzId || '';
 
+      const recordsToUpsert = [];
+      for (const [fieldId, value] of Object.entries(updates)) {
+        if (value === null || value === undefined || value === '') continue;
+
+        const field = fieldMap.get(fieldId);
+        const questionLabel = field?.label || fieldId;
+        const fieldType = field?.type || field?.role || 'text';
+        const strValue = Array.isArray(value) ? JSON.stringify(value) : String(value);
+
+        recordsToUpsert.push({
+          applywizz_id: candidateId,
+          question_label: questionLabel,
+          field_type: fieldType,
+          value: strValue,
+          source: 'manual',
+          confidence: 1.0
+        });
+      }
+
+      if (recordsToUpsert.length > 0 && typeof this.store?.upsertQuestionBank === 'function' && this.store?.isAvailable?.()) {
+        await this.store.upsertQuestionBank(recordsToUpsert);
+        console.error(`[Phase 3] Question Bank synchronized to Supabase: ${recordsToUpsert.length} records`);
+      }
+
       if (fs.existsSync(this.questionBankCsvPath)) {
         const rawCsv = await fs.promises.readFile(this.questionBankCsvPath, 'utf8');
         const existingRecords = parseCsv(rawCsv);
         let updatedCount = 0;
         let insertedCount = 0;
 
-        for (const [fieldId, value] of Object.entries(updates)) {
-          if (value === null || value === undefined || value === '') continue;
-
-          const field = fieldMap.get(fieldId);
-          const questionLabel = field?.label || fieldId;
-          const fieldType = field?.type || field?.role || 'text';
-          const strValue = Array.isArray(value) ? JSON.stringify(value) : String(value);
-
+        for (const rec of recordsToUpsert) {
           // Find existing record for this candidate and question
           const match = existingRecords.find(r =>
-            r.applywizz_id === candidateId &&
-            r.question_label?.trim().toLowerCase() === questionLabel.trim().toLowerCase()
+            r.applywizz_id === rec.applywizz_id &&
+            r.question_label?.trim().toLowerCase() === rec.question_label.trim().toLowerCase()
           );
 
           if (match) {
-            match.value = strValue;
+            match.value = rec.value;
             match.source = 'manual';
             match.confidence = '1.0';
             match.updated_at = timestamp;
@@ -352,10 +376,10 @@ export class Phase3AnswerResolution {
           } else {
             existingRecords.push({
               id: randomUUID(),
-              applywizz_id: candidateId,
-              question_label: questionLabel,
-              field_type: fieldType,
-              value: strValue,
+              applywizz_id: rec.applywizz_id,
+              question_label: rec.question_label,
+              field_type: rec.field_type,
+              value: rec.value,
               source: 'manual',
               confidence: '1.0',
               created_at: timestamp,
@@ -370,7 +394,7 @@ export class Phase3AnswerResolution {
         console.error(`[Phase 3] Question Bank synchronized: ${updatedCount} updated in-place, ${insertedCount} newly inserted`);
       }
     } catch (err) {
-      console.error('[Phase 3] Warning: Failed to upsert answers to question_bank.csv:', err.message);
+      console.error('[Phase 3] Warning: Failed to upsert answers to question_bank:', err.message);
     }
 
     // 3. Update legacy question-bank store for backward compatibility
