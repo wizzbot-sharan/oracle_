@@ -139,6 +139,7 @@ export class Phase3AnswerResolution {
 
     let resolvedCount = 0;
     let needsInputCount = 0;
+    const candidateResumeCache = new Map();
 
     for (const assignment of toProcess) {
       const template = templates[assignment.jobKey] || templates[assignment.jobId];
@@ -147,10 +148,34 @@ export class Phase3AnswerResolution {
       const client = clients[applywizzId];
       const clientHistory = clientHistoryMap.get(applywizzId) || [];
 
+      // Extract raw resume text from Supabase resumes bucket or profile
+      let resumeText = candidateResumeCache.get(applywizzId);
+      if (resumeText === undefined) {
+        resumeText = '';
+        if (this.store?.client?.storage && applywizzId) {
+          try {
+            const { data: fileData, error: dlErr } = await this.store.client.storage
+              .from('resumes')
+              .download(`${applywizzId}.pdf`);
+            if (!dlErr && fileData) {
+              const arrayBuf = await fileData.arrayBuffer();
+              const pdfParseModule = await import('pdf-parse');
+              const pdfParse = pdfParseModule.default || pdfParseModule;
+              const parsed = await pdfParse(Buffer.from(arrayBuf));
+              resumeText = parsed.text || '';
+            }
+          } catch {}
+        }
+        if (!resumeText) {
+          resumeText = client?.additional_information?.experience || client?.additional_information?.role || client?.additional_information?.skills || '';
+        }
+        candidateResumeCache.set(applywizzId, resumeText);
+      }
+
       const applicationId = stableId('app', `${applywizzId}|${assignment.jobKey || assignment.jobId}`);
       const current = byId.get(applicationId);
 
-      const values = await this.resolveValues(template, client, clientHistory, globalHistory, current?.values ?? {});
+      const values = await this.resolveValues(template, client, clientHistory, globalHistory, current?.values ?? {}, resumeText);
       const unresolvedList = this.unresolved(template, values);
 
       // Status rule: Only required visible fields block status.
@@ -225,9 +250,9 @@ export class Phase3AnswerResolution {
   /**
    * Resolves values for all fields in a template using the cascading resolution engine.
    */
-  async resolveValues(template, client, clientHistory = [], globalHistory = [], existingValues = {}) {
+  async resolveValues(template, client, clientHistory = [], globalHistory = [], existingValues = {}, customResumeText = null) {
     const values = {};
-    const resumeText = client?.additional_information?.experience || client?.additional_information?.role || '';
+    const resumeText = customResumeText || client?.additional_information?.experience || client?.additional_information?.role || '';
 
     for (const field of flattenTemplateFields(template)) {
       if (field.repeatableGroupId) continue;

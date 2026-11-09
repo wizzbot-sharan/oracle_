@@ -106,4 +106,49 @@ textarea { min-height: 96px; resize: vertical; }
 .receipt-banner strong { color: #143e0e; display: block; margin-bottom: 4px; font-size: 14px; }
 .receipt-path { font-family: monospace; font-size: 11px; background: rgba(0,0,0,.05); padding: 2px 6px; border-radius: 4px; word-break: break-all; }
 
+/* Top Production Navbar */
+.top-navbar { display: flex; justify-content: space-between; align-items: center; background: #102c27; color: white; padding: 12px 24px; border-radius: 14px; margin-bottom: 22px; box-shadow: 0 4px 16px rgba(16,44,39,.18); }
+.top-navbar-title { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 15px; letter-spacing: .02em; }
+.top-navbar-actions { display: flex; align-items: center; gap: 10px; }
+.nav-btn { background: rgba(255,255,255,.12); color: white; border: 1px solid rgba(255,255,255,.2); border-radius: 8px; padding: 7px 13px; font-size: 12px; font-weight: 700; cursor: pointer; transition: background .15s ease, border-color .15s ease; }
+.nav-btn:hover:not(:disabled) { background: rgba(255,255,255,.22); border-color: rgba(255,255,255,.4); }
+.nav-btn.primary { background: #d9f061; color: #173129; border-color: #d9f061; font-weight: 800; }
+.nav-btn.primary:hover:not(:disabled) { background: #e5f782; }
+
+/* Scanner Queue Live Activity Panel */
+.scanner-live-panel { background: #fffaf0; border: 1px solid #ffd899; border-radius: 14px; padding: 16px 20px; margin-bottom: 22px; box-shadow: 0 4px 16px rgba(255,193,7,.08); }
+.scanner-panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.scanner-panel-title { font-size: 13px; font-weight: 800; color: #8a5800; text-transform: uppercase; letter-spacing: .06em; display: flex; align-items: center; gap: 8px; }
+.scanner-panel-controls { display: flex; align-items: center; gap: 10px; }
+.scanner-slots-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.scanner-slot { border: 1px solid #fedb9b; border-radius: 10px; padding: 12px 14px; background: white; display: flex; flex-direction: column; gap: 6px; }
+.scanner-slot.active { border-color: #f59e0b; background: #fffdfa; box-shadow: 0 0 0 1px rgba(245,158,11,.3); }
+.scanner-slot.cooldown { border-color: #a7f3d0; background: #f0fdf4; }
+.scanner-slot-job { font-weight: 800; font-size: 13px; color: #173f37; }
+.scanner-slot-step { font-size: 11px; color: #78350f; font-weight: 600; }
+
+/* Modal Backdrop & Dialog */
+.modal-backdrop { position: fixed; inset: 0; background: rgba(16,44,39,.55); backdrop-filter: blur(2px); z-index: 1000; display: grid; place-items: center; padding: 20px; }
+.modal-dialog { background: white; border-radius: 16px; width: 100%; max-width: 480px; padding: 26px; box-shadow: 0 16px 48px rgba(16,44,39,.25); border: 1px solid #dce2dd; }
+.modal-dialog h2 { margin: 0 0 8px; font-size: 20px; color: #173f37; }
+.modal-dialog p { margin: 0 0 18px; font-size: 13px; color: #5f6f69; }
+.modal-options { display: grid; gap: 12px; margin-bottom: 22px; }
+.modal-option { border: 1px solid #d4ded8; border-radius: 10px; padding: 12px 14px; cursor: pointer; background: #fafbfa; display: grid; gap: 8px; }
+.modal-option.selected { border-color: #173f37; background: #f5f9f7; }
+.modal-option-radio { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 13px; color: #17211f; }
+.modal-option-radio input { width: auto; margin: 0; }
+.modal-range-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 4px; }
+.modal-range-inputs input { padding: 7px 10px; font-size: 12px; }
+.modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; }
+
+/* Action Toast / Notification Banner */
+.action-toast { background: #e6f4ea; border: 1px solid #ceead6; color: #137333; padding: 10px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
+.action-toast.warning { background: #fef7e0; border-color: #feefc3; color: #b06000; }
+.action-toast.error { background: #fce8e6; border-color: #fad2cf; color: #c5221f; }
+.toast-close { background: transparent; border: 0; color: inherit; font-size: 16px; cursor: pointer; padding: 0 4px; }
+
+/* Inline Small Action Buttons */
+.btn-inline { padding: 4px 10px; font-size: 11px; border-radius: 6px; font-weight: 700; }
+
+
 

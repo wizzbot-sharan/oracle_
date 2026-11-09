@@ -67,7 +67,8 @@ export async function syncClients({
   outputFile = path.resolve('data/clients.json'),
   batchSize = BATCH_SIZE,
   batchDelayMs = BATCH_DELAY_MS,
-  fetchFn = fetchWithRetry
+  fetchFn = fetchWithRetry,
+  store = null
 } = {}) {
   console.log('=== Applywizz Client Fetcher & Synchronizer ===\n');
 
@@ -80,7 +81,9 @@ export async function syncClients({
     throw new Error(errorMsg);
   }
 
-  await fs.mkdir(path.dirname(outputFile), { recursive: true });
+  try {
+    await fs.mkdir(path.dirname(outputFile), { recursive: true });
+  } catch {}
 
   console.log(`[Step 1] Fetching active clients list from: ${activeClientsUrl}`);
   const activeData = await fetchFn(activeClientsUrl);
@@ -88,14 +91,21 @@ export async function syncClients({
   const totalReported = activeData?.count || applywizzIds.length;
   console.log(`✓ Received ${applywizzIds.length} active client IDs (Total reported: ${totalReported})\n`);
 
-  // Load existing clients if file exists
+  // Load existing clients if file exists or from store
   let clients = {};
-  try {
-    const existingContent = await fs.readFile(outputFile, 'utf8');
-    clients = JSON.parse(existingContent);
-    console.log(`ℹ Found existing ${outputFile} with ${Object.keys(clients).length} recorded clients.`);
-  } catch {
-    clients = {};
+  if (store?.isAvailable?.()) {
+    try {
+      clients = await store.read('clients', {});
+      console.log(`ℹ Found ${Object.keys(clients).length} recorded clients in Supabase.`);
+    } catch {}
+  } else {
+    try {
+      const existingContent = await fs.readFile(outputFile, 'utf8');
+      clients = JSON.parse(existingContent);
+      console.log(`ℹ Found existing ${outputFile} with ${Object.keys(clients).length} recorded clients.`);
+    } catch {
+      clients = {};
+    }
   }
 
   // Prune inactive clients not in the active list
@@ -155,7 +165,16 @@ export async function syncClients({
     );
 
     // Save incrementally after every batch
-    await fs.writeFile(outputFile, JSON.stringify(clients, null, 2), 'utf8');
+    if (store?.isAvailable?.()) {
+      try {
+        await store.write('clients', clients);
+      } catch (err) {
+        console.warn(`[ClientSync] Supabase write warning: ${err.message}`);
+      }
+    }
+    try {
+      await fs.writeFile(outputFile, JSON.stringify(clients, null, 2), 'utf8');
+    } catch {}
 
     // Wait 2 seconds before the next batch if more remain
     if (batchIndex < totalBatches - 1) {

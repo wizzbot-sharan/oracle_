@@ -486,6 +486,288 @@ function FilterBar({ clients = [], assignments = [], selectedClientId, selectedJ
   );
 }
 
+function TopNavbar({ onSyncJobs, onSyncClients, onOpenScan, onOpenResolve, onRefresh, busy }) {
+  return (
+    <div className="top-navbar">
+      <div className="top-navbar-title">
+        <span className="brand-mark" style={{ width: '28px', height: '28px', fontSize: '13px' }}>AW</span>
+        <span>Oracle Production Console</span>
+      </div>
+      <div className="top-navbar-actions">
+        <button className="nav-btn" disabled={Boolean(busy)} onClick={onSyncJobs}>
+          Sync Jobs
+        </button>
+        <button className="nav-btn" disabled={Boolean(busy)} onClick={onSyncClients}>
+          Sync Clients
+        </button>
+        <button className="nav-btn primary" disabled={Boolean(busy)} onClick={onOpenScan}>
+          Scan...
+        </button>
+        <button className="nav-btn primary" disabled={Boolean(busy)} onClick={onOpenResolve}>
+          Resolve...
+        </button>
+        <button className="nav-btn" disabled={Boolean(busy)} onClick={onRefresh} title="Refresh Dashboard">
+          ↻ Refresh
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function ScannerLivePanel({ status, onCancel }) {
+  if (!status || (!status.isScanning && (!status.slots || status.slots.every(s => s.status === 'idle')))) {
+    return null;
+  }
+  const { slots = [], summary = {}, isScanning } = status;
+
+  return (
+    <div className="scanner-live-panel">
+      <div className="scanner-panel-header">
+        <div className="scanner-panel-title">
+          <span>{isScanning ? '🔄 Active 3-Worker Scanner Queue' : 'Scanner Queue Idle'}</span>
+          {summary.total > 0 && (
+            <span className="queue-pill has-pending">
+              Completed: <strong>{summary.completed || 0}</strong> / {summary.total || 0} | Skipped: {summary.skipped || 0} | Failed: {summary.failed || 0}
+            </span>
+          )}
+        </div>
+        <div className="scanner-panel-controls">
+          {isScanning && (
+            <button className="danger btn-inline" onClick={onCancel}>
+              ⏹ Cancel Queue
+            </button>
+          )}
+        </div>
+      </div>
+      <div className="scanner-slots-grid">
+        {slots.map(slot => (
+          <div key={slot.slotId} className={`scanner-slot ${slot.status !== 'idle' ? 'active' : ''} ${slot.status === 'cooldown' ? 'cooldown' : ''}`}>
+            <div className="slot-top">
+              <span>Worker {slot.slotId}</span>
+              <span className={`slot-badge ${slot.status}`}>
+                {slot.status}
+              </span>
+            </div>
+            {slot.jobKey ? (
+              <>
+                <div className="scanner-slot-job">{slot.jobKey}</div>
+                <div className="scanner-slot-step">{slot.step || 'Processing...'}</div>
+                <div className="slot-details"><span>{slot.email}</span></div>
+              </>
+            ) : (
+              <div className="slot-details" style={{ color: '#909e98' }}>Slot Idle</div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ScanModal({ isOpen, onClose, onLaunch, isScanning }) {
+  const [mode, setMode] = useState('all');
+  const [rangeFrom, setRangeFrom] = useState('');
+  const [rangeTo, setRangeTo] = useState('');
+  const [jobKeys, setJobKeys] = useState('');
+
+  if (!isOpen) return null;
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (isScanning) return;
+    const options = {};
+    if (mode === 'range') {
+      if (rangeFrom && rangeTo) {
+        options.range = `${rangeFrom}-${rangeTo}`;
+      } else if (rangeFrom) {
+        options.range = `${rangeFrom}`;
+      }
+    } else if (mode === 'jobs') {
+      options.jobs = jobKeys.split(',').map(s => s.trim()).filter(Boolean);
+    }
+    onLaunch(options);
+    onClose();
+  };
+
+  return (
+    <div className="modal-backdrop" onClick={onClose}>
+      <div className="modal-dialog" onClick={e => e.stopPropagation()}>
+        <h2>Launch Scanner Queue</h2>
+        <p>Extract Oracle application form schemas using 3 headless workers and 3 dummy emails.</p>
+
+        {isScanning && (
+          <div className="action-toast warning">
+            A scan queue is currently active. Wait for it to finish or cancel it from the panel.
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit}>
+          <div className="modal-options">
+            <label className={`modal-option ${mode === 'all' ? 'selected' : ''}`}>
+              <div className="modal-option-radio">
+                <input type="radio" name="scanMode" checked={mode === 'all'} onChange={() => setMode('all')} />
+                All Pending Jobs (Unscanned)
+              </div>
+            </label>
+
+            <label className={`modal-option ${mode === 'range' ? 'selected' : ''}`}>
+              <div className="modal-option-radio">
+                <input type="radio" name="scanMode" checked={mode === 'range'} onChange={() => setMode('range')} />
+                Target Numeric Range (e.g. 210-235)
+              </div>
+              {mode === 'range' && (
+                <div className="modal-range-inputs">
+                  <input
+                    type="text"
+                    placeholder="From (e.g. 210)"
+                    value={rangeFrom}
+                    onChange={e => setRangeFrom(e.target.value)}
+                    required
+                  />
+                  <input
+                    type="text"
+                    placeholder="To (e.g. 235)"
+                    value={rangeTo}
+                    onChange={e => setRangeTo(e.target.value)}
+                    required
+                  />
+                </div>
+              )}
+            </label>
+
+            <label className={`modal-option ${mode === 'jobs' ? 'selected' : ''}`}>
+              <div className="modal-option-radio">
+                <input type="radio" name="scanMode" checked={mode === 'jobs'} onChange={() => setMode('jobs')} />
+                Specific Job Keys (Comma-separated)
+              </div>
+              {mode === 'jobs' && (
+                <input
+                  type="text"
+                  placeholder="e.g. job_211, job_215, job_234"
+                  value={jobKeys}
+                  onChange={e => setJobKeys(e.target.value)}
+                  style={{ marginTop: '6px' }}
+                  required
+                />
+              )}
+            </label>
+          </div>
+
+          <div className="modal-actions">
+            <button type="button" className="secondary" onClick={onClose}>
+              Cancel
+            </button>
+            <button type="submit" disabled={isScanning} className="primary">
+              Launch Scanner
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+function ResolveModal({ isOpen, onClose, onLaunch, clients = [] }) {
+  const [mode, setMode] = useState('all');
+  const [rangeFrom, setRangeFrom] = useState('');
+  const [rangeTo, setRangeTo] = useState('');
+  const [selectedClient, setSelectedClient] = useState('');
+
+  if (!isOpen) return null;
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const options = {};
+    if (mode === 'range') {
+      if (rangeFrom && rangeTo) {
+        options.range = `${rangeFrom}-${rangeTo}`;
+      } else if (rangeFrom) {
+        options.range = `${rangeFrom}`;
+      }
+    } else if (mode === 'client') {
+      options.client = selectedClient;
+    }
+    onLaunch(options);
+    onClose();
+  };
+
+  return (
+    <div className="modal-backdrop" onClick={onClose}>
+      <div className="modal-dialog" onClick={e => e.stopPropagation()}>
+        <h2>Resolve Applications (Phase 3)</h2>
+        <p>Match candidate profiles, historical question bank, and resume text against scanned form templates.</p>
+
+        <form onSubmit={handleSubmit}>
+          <div className="modal-options">
+            <label className={`modal-option ${mode === 'all' ? 'selected' : ''}`}>
+              <div className="modal-option-radio">
+                <input type="radio" name="resolveMode" checked={mode === 'all'} onChange={() => setMode('all')} />
+                All Scanned Applications
+              </div>
+            </label>
+
+            <label className={`modal-option ${mode === 'range' ? 'selected' : ''}`}>
+              <div className="modal-option-radio">
+                <input type="radio" name="resolveMode" checked={mode === 'range'} onChange={() => setMode('range')} />
+                By Job Key Range (e.g. 210-235)
+              </div>
+              {mode === 'range' && (
+                <div className="modal-range-inputs">
+                  <input
+                    type="text"
+                    placeholder="From (e.g. 210)"
+                    value={rangeFrom}
+                    onChange={e => setRangeFrom(e.target.value)}
+                    required
+                  />
+                  <input
+                    type="text"
+                    placeholder="To (e.g. 235)"
+                    value={rangeTo}
+                    onChange={e => setRangeTo(e.target.value)}
+                    required
+                  />
+                </div>
+              )}
+            </label>
+
+            <label className={`modal-option ${mode === 'client' ? 'selected' : ''}`}>
+              <div className="modal-option-radio">
+                <input type="radio" name="resolveMode" checked={mode === 'client'} onChange={() => setMode('client')} />
+                By Specific Candidate
+              </div>
+              {mode === 'client' && (
+                <select
+                  value={selectedClient}
+                  onChange={e => setSelectedClient(e.target.value)}
+                  style={{ marginTop: '6px' }}
+                  required
+                >
+                  <option value="">Select Candidate...</option>
+                  {clients.map(c => (
+                    <option key={c.applywizzId} value={c.applywizzId}>
+                      {c.clientName} ({c.applywizzId})
+                    </option>
+                  ))}
+                </select>
+              )}
+            </label>
+          </div>
+
+          <div className="modal-actions">
+            <button type="button" className="secondary" onClick={onClose}>
+              Cancel
+            </button>
+            <button type="submit" className="primary">
+              Run Resolution
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 export function App() {
   const [data, setData] = useState(null);
   const [selectedId, setSelectedId] = useState(null);
@@ -495,6 +777,10 @@ export function App() {
   const [error, setError] = useState('');
   const [confirmation, setConfirmation] = useState('');
   const [submissionStatus, setSubmissionStatus] = useState(null);
+  const [scannerStatus, setScannerStatus] = useState(null);
+  const [showScanModal, setShowScanModal] = useState(false);
+  const [showResolveModal, setShowResolveModal] = useState(false);
+  const [notification, setNotification] = useState(null);
 
   const refresh = async () => {
     const next = await api('/api/dashboard');
@@ -507,12 +793,18 @@ export function App() {
   }, []);
 
   useEffect(() => {
-    const interval = setInterval(async () => {
+    const fetchStatuses = async () => {
       try {
-        const status = await api('/api/submission/status');
-        setSubmissionStatus(status);
+        const [subStatus, scStatus] = await Promise.all([
+          api('/api/submission/status').catch(() => null),
+          api('/api/scan/status').catch(() => null)
+        ]);
+        if (subStatus) setSubmissionStatus(subStatus);
+        if (scStatus) setScannerStatus(scStatus);
       } catch {}
-    }, 2500);
+    };
+    fetchStatuses();
+    const interval = setInterval(fetchStatuses, 2500);
     return () => clearInterval(interval);
   }, []);
 
@@ -577,6 +869,72 @@ export function App() {
     }
   };
 
+  const handleSyncJobs = async () => {
+    run('Syncing Jobs...', async () => {
+      const res = await api('/api/jobs/sync', { method: 'POST' });
+      setNotification({
+        type: 'success',
+        message: `Jobs synced! ${res.newJobsCreated || 0} new unique jobs registered (Total: ${res.totalUniqueJobs || 0}).`
+      });
+    });
+  };
+
+  const handleSyncClients = async () => {
+    run('Starting client sync...', async () => {
+      await api('/api/clients/sync', { method: 'POST' });
+      setNotification({
+        type: 'success',
+        message: 'Client sync started in background. Profiles and resumes are caching to Supabase.'
+      });
+    });
+  };
+
+  const handleLaunchScan = async (options) => {
+    try {
+      await api('/api/scan/queue', {
+        method: 'POST',
+        body: JSON.stringify(options)
+      });
+      setNotification({
+        type: 'success',
+        message: 'Scanner queue started! Watch live progress in the activity panel.'
+      });
+      const scStatus = await api('/api/scan/status').catch(() => null);
+      if (scStatus) setScannerStatus(scStatus);
+    } catch (err) {
+      setNotification({
+        type: 'warning',
+        message: err.message
+      });
+    }
+  };
+
+  const handleCancelScan = async () => {
+    try {
+      await api('/api/scan/cancel', { method: 'POST' });
+      setNotification({
+        type: 'warning',
+        message: 'Cancel signal sent. Workers will halt after the current step.'
+      });
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const handleLaunchResolve = async (options) => {
+    run('Resolving applications...', async () => {
+      const res = await api('/api/resolve', {
+        method: 'POST',
+        body: JSON.stringify(options)
+      });
+      const rate = res?.batchSummary?.resolutionRate || res?.globalSummary?.globalResolutionRate || '';
+      setNotification({
+        type: 'success',
+        message: `Resolution complete! Resolved rate: ${rate}.`
+      });
+    });
+  };
+
   if (!data) return <main className="loading">Loading workflow…</main>;
 
   const selected = data.applications.find(item => item.applicationId === selectedId);
@@ -614,6 +972,29 @@ export function App() {
       </aside>
 
       <main>
+        {/* Top Production Navbar */}
+        <TopNavbar
+          onSyncJobs={handleSyncJobs}
+          onSyncClients={handleSyncClients}
+          onOpenScan={() => setShowScanModal(true)}
+          onOpenResolve={() => setShowResolveModal(true)}
+          onRefresh={refresh}
+          busy={busy}
+        />
+
+        {notification && (
+          <div className={`action-toast ${notification.type}`}>
+            <span>{notification.message}</span>
+            <button className="toast-close" onClick={() => setNotification(null)}>×</button>
+          </div>
+        )}
+
+        {/* Live Scanner Queue Panel */}
+        <ScannerLivePanel
+          status={scannerStatus}
+          onCancel={handleCancelScan}
+        />
+
         {/* Executive Metrics Overview Strip */}
         <ExecutiveMetrics metrics={data.metrics} />
 
@@ -639,7 +1020,17 @@ export function App() {
                 : 'Select an application'}
             </h1>
           </div>
-          <div className="status">{busy || selected?.status || 'No selection'}</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            {selected && (
+              <button
+                className="secondary btn-inline"
+                onClick={() => handleLaunchResolve({ client: selected.userId || selected.applywizzId })}
+              >
+                ⚡ Resolve Candidate
+              </button>
+            )}
+            <div className="status">{busy || selected?.status || 'No selection'}</div>
+          </div>
         </header>
 
         {error && <div className="error">{error}</div>}
@@ -649,7 +1040,7 @@ export function App() {
             <h2>Application Not Yet Generated</h2>
             <p>
               An application instance for this candidate and job has not been generated yet. Run{' '}
-              <code>npm run resolve:answers</code> to generate pre-computed application records.
+              <code>npm run resolve:answers</code> or click <strong>Resolve...</strong> in the top navbar.
             </p>
           </div>
         )}
@@ -660,6 +1051,13 @@ export function App() {
             <p>
               The form for requisition <strong>{selected.jobKey || selected.jobId}</strong> has not been scanned yet. Run the scanner queue to extract form fields.
             </p>
+            <button
+              className="primary btn-inline"
+              style={{ marginTop: '12px' }}
+              onClick={() => handleLaunchScan({ jobs: [selected.jobKey || selected.jobId] })}
+            >
+              ⚡ Scan Requisition {selected.jobKey || selected.jobId}
+            </button>
           </div>
         )}
 
@@ -796,6 +1194,20 @@ export function App() {
             </>
           );
         })()}
+
+        <ScanModal
+          isOpen={showScanModal}
+          onClose={() => setShowScanModal(false)}
+          onLaunch={handleLaunchScan}
+          isScanning={scannerStatus?.isScanning}
+        />
+
+        <ResolveModal
+          isOpen={showResolveModal}
+          onClose={() => setShowResolveModal(false)}
+          onLaunch={handleLaunchResolve}
+          clients={data.clients || []}
+        />
       </main>
     </div>
   );

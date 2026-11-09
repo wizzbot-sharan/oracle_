@@ -160,6 +160,90 @@ export class Phase1IngestAuth {
   }
 
 
+  async syncJobsFromOracleJobs() {
+    if (typeof this.store?.isAvailable === 'function' && this.store.isAvailable()) {
+      const [jobsRes, oracleJobsRes] = await Promise.all([
+        this.store.client.from('jobs').select('*'),
+        this.store.client.from('oracle_jobs').select('*')
+      ]);
+
+      if (jobsRes.error) throw jobsRes.error;
+      if (oracleJobsRes.error) throw oracleJobsRes.error;
+
+      const existingJobs = jobsRes.data || [];
+      const oracleJobs = oracleJobsRes.data || [];
+
+      const urlToKey = new Map();
+      let maxIndex = 0;
+
+      for (const j of existingJobs) {
+        if (j.job_key && j.job_url) {
+          urlToKey.set(j.job_url, j.job_key);
+          const match = j.job_key.match(/^job_(\d+)$/);
+          if (match) {
+            maxIndex = Math.max(maxIndex, parseInt(match[1], 10));
+          }
+        }
+      }
+
+      const newJobsToInsert = [];
+      const oracleUpdates = [];
+
+      for (const row of oracleJobs) {
+        const rawUrl = row.job_url;
+        if (!rawUrl) continue;
+
+        let jobKey = urlToKey.get(rawUrl);
+        if (!jobKey) {
+          maxIndex += 1;
+          jobKey = `job_${maxIndex}`;
+          urlToKey.set(rawUrl, jobKey);
+
+          let tenantHost = 'unknown';
+          try {
+            const parsed = parseOracleJobUrl(rawUrl);
+            tenantHost = parsed.tenantHost || 'unknown';
+          } catch {}
+
+          newJobsToInsert.push({
+            job_key: jobKey,
+            job_url: rawUrl,
+            tenant_host: tenantHost,
+            tenant_key: '',
+            metadata: {}
+          });
+        }
+
+        if (row.job_key !== jobKey) {
+          oracleUpdates.push({
+            id: row.id,
+            job_key: jobKey
+          });
+        }
+      }
+
+      if (newJobsToInsert.length > 0) {
+        const { error } = await this.store.client.from('jobs').upsert(newJobsToInsert, { onConflict: 'job_key' });
+        if (error) throw error;
+      }
+
+      if (oracleUpdates.length > 0) {
+        for (const update of oracleUpdates) {
+          await this.store.client.from('oracle_jobs').update({ job_key: update.job_key }).eq('id', update.id);
+        }
+      }
+
+      console.log(`[Phase 1 Sync] Synced ${oracleJobs.length} assignments. ${newJobsToInsert.length} new unique jobs created (up to job_${maxIndex}).`);
+      return {
+        totalAssignments: oracleJobs.length,
+        newJobsCreated: newJobsToInsert.length,
+        totalUniqueJobs: urlToKey.size
+      };
+    }
+
+    return await this.ingestCsv();
+  }
+
   async authenticate({ applicationId, job, email, companyDomains = [] }) {
     const lockKey = `${email.toLowerCase()}|${job.tenantHost}`;
     return this.otpLock.run(lockKey, async () => {

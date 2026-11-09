@@ -103,7 +103,16 @@ export class OracleRecruitingAdapter {
       '--disable-blink-features=AutomationControlled',
       '--no-sandbox',
       '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+      '--headless=new',
+      '--disable-gpu',
+      '--disable-software-rasterizer',
+      '--mute-audio',
+      '--no-first-run',
       '--disable-infobars',
+      '--disable-background-networking',
+      '--disable-background-timer-throttling',
+      '--disable-breakpad',
       '--window-size=1440,1000'
     ];
 

@@ -1,9 +1,11 @@
 import express from 'express';
 import fs from 'node:fs';
+import path from 'node:path';
 import { config } from './config.js';
 import { workflow } from './workflow.js';
 import { seedReconData } from './seed.js';
 import { parseOracleJobUrl } from './shared/url.js';
+import { syncClients } from '../scripts/fetch_clients.mjs';
 
 export async function computeDashboardMetrics({ jobs, applications, templates, clientsPath }) {
   let clientsData = {};
@@ -100,7 +102,70 @@ export async function computeDashboardMetrics({ jobs, applications, templates, c
 const app = express();
 app.use(express.json({ limit: '2mb' }));
 
+// Static file hosting for production Vite React dashboard build
+const distDir = path.resolve(config.rootDir, 'web/dist');
+if (fs.existsSync(distDir)) {
+  app.use(express.static(distDir));
+}
+
 app.get('/api/health', (_request, response) => response.json({ ok: true }));
+
+// Sync exact jobs from oracle_jobs to jobs in Supabase
+app.post('/api/jobs/sync', async (_request, response, next) => {
+  try {
+    const result = await workflow.phase1.syncJobsFromOracleJobs();
+    response.json({ success: true, ...result });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Sync candidate profiles & resumes from external API
+let isClientSyncing = false;
+app.post('/api/clients/sync', async (_request, response) => {
+  if (isClientSyncing) {
+    return response.status(409).json({ error: 'Client synchronization already in progress' });
+  }
+  isClientSyncing = true;
+  response.status(202).json({ success: true, message: 'Client synchronization started in background' });
+
+  syncClients({ store: workflow.store })
+    .catch(err => console.error('[ClientSync Error]:', err.message))
+    .finally(() => { isClientSyncing = false; });
+});
+
+// Launch scoped scanner queue in background
+app.post('/api/scan/queue', async (request, response) => {
+  if (workflow.scanQueue.isScanning) {
+    return response.status(409).json({ error: 'Scan queue is already in progress' });
+  }
+  const options = request.body || {};
+  response.status(202).json({ success: true, message: 'Scanner queue started in background', options });
+
+  workflow.scanQueue.runQueue(options)
+    .then(async () => {
+      // Auto-resolve applications for newly scanned templates
+      await workflow.phase3.createOrResolveApplications().catch(() => {});
+    })
+    .catch(err => console.error('[Scanner Queue Error]:', err.message));
+});
+
+// Real-time worker slots & scanner queue status
+app.get('/api/scan/status', async (_request, response) => {
+  const workerStatus = workflow.scanQueue.getWorkerStatus();
+  const scanStatus = await workflow.store.read('scan-status', {});
+  response.json({
+    ...workerStatus,
+    summary: scanStatus.summary || {},
+    updatedAt: scanStatus.updatedAt
+  });
+});
+
+// Cancel active scanner queue
+app.post('/api/scan/cancel', (_request, response) => {
+  const cancelled = workflow.scanQueue.cancelQueue();
+  response.json({ success: cancelled, message: cancelled ? 'Cancel signal sent to workers' : 'No active queue to cancel' });
+});
 
 app.get('/api/dashboard', async (_request, response) => {
   const [jobs, applications, templates, runs] = await Promise.all([
@@ -209,7 +274,14 @@ app.post('/api/jobs/:jobId/scan', async (request, response) => {
   }
 });
 
-app.post('/api/resolve', async (_request, response) => response.json(await workflow.phase3.createOrResolveApplications()));
+app.post('/api/resolve', async (request, response, next) => {
+  try {
+    const options = request.body || {};
+    response.json(await workflow.phase3.createOrResolveApplications(options));
+  } catch (err) {
+    next(err);
+  }
+});
 
 app.put('/api/applications/:applicationId/answers', async (request, response) => {
   response.json(await workflow.phase3.saveAnswers(request.params.applicationId, request.body.updates ?? {}));
@@ -227,6 +299,16 @@ app.post('/api/applications/:applicationId/submit', async (request, response) =>
   response.json(await workflow.submissionQueue.submitApplication(request.params.applicationId, request.body.confirmation));
 });
 
+// SPA fallback for React Dashboard routes
+app.use((request, response, next) => {
+  if (request.method !== 'GET' || request.path.startsWith('/api')) return next();
+  const indexHtml = path.resolve(distDir, 'index.html');
+  if (fs.existsSync(indexHtml)) {
+    return response.sendFile(indexHtml);
+  }
+  next();
+});
+
 app.use((error, _request, response, _next) => {
   console.error(error.code ?? error.name, error.message);
   response.status(error.code ? 400 : 500).json({
@@ -242,7 +324,7 @@ const isMainModule = process.argv[1] && fileURLToPath(import.meta.url) === proce
 if (isMainModule) {
   if (config.submission?.submitDir) fs.mkdirSync(config.submission.submitDir, { recursive: true });
   if (config.submission?.resumeDir) fs.mkdirSync(config.submission.resumeDir, { recursive: true });
-  app.listen(config.port, () => {
-    console.log(`Oracle application workflow listening on http://localhost:${config.port}`);
+  app.listen(config.port, '0.0.0.0', () => {
+    console.log(`Oracle application workflow listening on http://0.0.0.0:${config.port}`);
   });
 }
