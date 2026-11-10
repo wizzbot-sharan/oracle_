@@ -17,7 +17,7 @@ CREATE INDEX IF NOT EXISTS idx_ca_email ON career_associates(email);
 -- 2. CA to Client Mappings Table
 CREATE TABLE IF NOT EXISTS ca_client_mappings (
   id BIGSERIAL PRIMARY KEY,
-  ca_id UUID NOT NULL REFERENCES career_associates(id) ON DELETE CASCADE,
+  ca_id UUID NOT NULL,
   applywizz_id VARCHAR(64) NOT NULL,
   client_email VARCHAR(255),
   full_name VARCHAR(255),
@@ -26,6 +26,13 @@ CREATE TABLE IF NOT EXISTS ca_client_mappings (
   updated_at TIMESTAMPTZ DEFAULT NOW(),
   CONSTRAINT uq_ca_client UNIQUE (ca_id, applywizz_id)
 );
+
+-- Drop restrictive foreign key constraints if created in earlier runs
+ALTER TABLE ca_client_mappings 
+DROP CONSTRAINT IF EXISTS ca_client_mappings_applywizz_id_fkey;
+
+ALTER TABLE ca_client_mappings 
+DROP CONSTRAINT IF EXISTS ca_client_mappings_ca_id_fkey;
 
 CREATE INDEX IF NOT EXISTS idx_ca_mapping_ca ON ca_client_mappings(ca_id);
 CREATE INDEX IF NOT EXISTS idx_ca_mapping_client ON ca_client_mappings(applywizz_id);

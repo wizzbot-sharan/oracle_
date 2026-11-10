@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/playwright:v1.49.0-noble
+FROM mcr.microsoft.com/playwright:v1.64.1-noble
 
 WORKDIR /app
 
@@ -7,6 +7,9 @@ COPY package*.json ./
 
 # Install dependencies
 RUN npm ci
+
+# Ensure matching browser binaries and dependencies are installed
+RUN npx playwright install chromium --with-deps
 
 # Copy application source
 COPY . .
