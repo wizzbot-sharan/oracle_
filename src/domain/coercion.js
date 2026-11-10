@@ -21,6 +21,8 @@ function tokenize(text) {
  * - 80: Substring containment (either candidate in option, or option in candidate)
  * - 60 * ratio: Token overlap (word-level similarity)
  */
+const STOP_WORDS = new Set(['s', 'of', 'and', 'or', 'in', 'the', 'a', 'an', 'to', 'for', 'by', 'at', 'with', 'degree', 'level', 'i', 'am']);
+
 export function scoreOptionMatch(candidateItem, targetOption) {
   const c = String(candidateItem ?? '').trim().toLowerCase();
   const o = String(targetOption ?? '').trim().toLowerCase();
@@ -33,12 +35,34 @@ export function scoreOptionMatch(candidateItem, targetOption) {
     return 80;
   }
 
-  // Token overlap match
   const cTokens = tokenize(c);
   const oTokens = tokenize(o);
   if (!cTokens.length || !oTokens.length) return 0;
 
+  // Negative/Polarity guard: "not" or "no" must match polarity
+  const cHasNot = cTokens.includes('not') || cTokens.includes('no');
+  const oHasNot = oTokens.includes('not') || oTokens.includes('no');
+  if (cHasNot !== oHasNot) {
+    return 0;
+  }
+
+  const cFiltered = cTokens.filter(t => !STOP_WORDS.has(t));
   const oSet = new Set(oTokens);
+
+  if (cFiltered.length > 0) {
+    let matched = 0;
+    for (const t of cFiltered) {
+      if (oSet.has(t) || oTokens.some(ot => ot.startsWith(t) || t.startsWith(ot))) {
+        matched++;
+      }
+    }
+    const recall = matched / cFiltered.length;
+    if (recall === 1) return 80;
+    if (recall >= 0.6) return 65;
+    if (recall >= 0.4) return 50;
+  }
+
+  // Token overlap fallback
   let overlapCount = 0;
   for (const token of cTokens) {
     if (oSet.has(token)) overlapCount++;
@@ -98,6 +122,7 @@ export function coerceToBoolean(value) {
     const trimmed = value.trim().toLowerCase();
     if (/^(true|yes|y|1|agree|accept|confirmed|on)$/i.test(trimmed)) return true;
     if (/^(false|no|n|0|disagree|decline|off|none)$/i.test(trimmed)) return false;
+    if (/\b(not|no|none|never|neither|n\/a|not applicable|not a protected)\b/i.test(trimmed)) return false;
   }
 
   return Boolean(value);
@@ -204,6 +229,12 @@ export function coerceToString(value, availableOptions = []) {
   if (value === null || value === undefined) return '';
 
   if (typeof value === 'boolean') {
+    if (availableOptions.length > 0) {
+      const truthy = availableOptions.find(opt => /^(yes|agree|true)$/i.test(String(opt).trim()));
+      const falsy = availableOptions.find(opt => /^(no|disagree|false)$/i.test(String(opt).trim()));
+      if (value && truthy) return truthy;
+      if (!value && falsy) return falsy;
+    }
     return value ? 'Yes' : 'No';
   }
 
@@ -216,7 +247,15 @@ export function coerceToString(value, availableOptions = []) {
     return String(value[0]);
   }
 
-  return String(value);
+  const str = String(value).trim();
+  if (availableOptions.length > 0) {
+    const exactCaseInsensitive = availableOptions.find(opt => String(opt).trim().toLowerCase() === str.toLowerCase());
+    if (exactCaseInsensitive) return exactCaseInsensitive;
+    const match = findBestOptionMatch([str], availableOptions, 50);
+    if (match) return match;
+  }
+
+  return str;
 }
 
 /**
@@ -240,6 +279,19 @@ export function coerceValueForField(value, field, liveOptions = []) {
 
   if (type === 'combobox' || type === 'text' || type === 'textarea' || type === 'tel') {
     return coerceToString(value, options);
+  }
+
+  if (type === 'number') {
+    if (typeof value === 'number') return value;
+    const matchK = String(value).match(/(\d+)\s*k\b/i);
+    if (matchK) return Number(matchK[1]) * 1000;
+    const matchNum = String(value).match(/(\d[\d,.]*)/);
+    if (matchNum) return Number(matchNum[1].replace(/,/g, ''));
+    return value;
+  }
+
+  if (type === 'repeatable-group') {
+    return Array.isArray(value) ? value : (value ? [value] : []);
   }
 
   return value;

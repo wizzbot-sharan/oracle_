@@ -25,15 +25,49 @@ function Field({ field, value, onChange, answers, fieldAudit }) {
     field: field.triggerFieldId,
     [field.conditionType === 'includes' ? 'includes' : 'equals']: field.triggerValue
   } : null);
-  if (!visibleWhen(effectiveCondition, answers)) return null;
+
+  const isConditionMet = visibleWhen(effectiveCondition, answers);
+
+  if (!isConditionMet && effectiveCondition) {
+    const triggerVal = answers ? answers[effectiveCondition.field] : null;
+    return (
+      <div className="field-group conditional-dormant" style={{ opacity: 0.65, background: '#f8fafc', padding: '10px 14px', borderRadius: '6px', margin: '8px 0', border: '1px dashed #cbd5e1' }}>
+        <div className="field-header" style={{ marginBottom: '6px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span className="field-label" style={{ color: '#475569', fontSize: '13px', fontWeight: 500 }}>
+            <span className="conditional-marker" style={{ color: '#94a3b8' }}>↳ </span>
+            {field.label}
+          </span>
+          <span className="badge badge-dormant" style={{ background: '#e2e8f0', color: '#475569', fontSize: '11px', padding: '2px 8px', borderRadius: '12px' }}>
+            Not Applicable (Trigger: {triggerVal ? String(triggerVal) : 'No'})
+          </span>
+        </div>
+        <input
+          type="text"
+          value={value || 'Not Applicable'}
+          disabled
+          style={{ background: '#f1f5f9', color: '#94a3b8', cursor: 'not-allowed', width: '100%', border: '1px solid #e2e8f0', borderRadius: '4px', padding: '6px 8px', fontSize: '13px' }}
+        />
+      </div>
+    );
+  }
   const required = field.required ? <span className="required">*</span> : null;
 
-  const isResolved = fieldAudit && fieldAudit.value !== null && fieldAudit.value !== '' && (fieldAudit.confidence ?? 0) >= 0.80;
-  const sourceName = fieldAudit?.source ? fieldAudit.source.replace(/^tier\d+_/, '').replace(/_/g, ' ') : '';
-  const confidencePercent = fieldAudit?.confidence ? `${Math.round(fieldAudit.confidence * 100)}%` : '';
-  const badgeText = isResolved
-    ? `Resolved${confidencePercent ? ` (${sourceName ? `${sourceName}, ` : ''}${confidencePercent})` : ''}`
-    : 'Unresolved';
+  const hasLocalValue = value !== null && value !== undefined && String(value).trim().length > 0;
+  const isPersistedResolved = Boolean(fieldAudit && fieldAudit.value !== null && fieldAudit.value !== '' && (fieldAudit.confidence ?? 0) >= 0.80);
+  const isPendingSave = !isPersistedResolved && hasLocalValue;
+
+  let badgeStatus = 'unresolved';
+  let badgeText = 'Unresolved';
+
+  if (isPersistedResolved) {
+    badgeStatus = 'resolved';
+    const sourceName = fieldAudit?.source ? fieldAudit.source.replace(/^tier\d+_/, '').replace(/_/g, ' ') : '';
+    const confidencePercent = fieldAudit?.confidence ? `${Math.round(fieldAudit.confidence * 100)}%` : '';
+    badgeText = `Resolved${confidencePercent ? ` (${sourceName ? `${sourceName}, ` : ''}${confidencePercent})` : ''}`;
+  } else if (isPendingSave) {
+    badgeStatus = 'pending';
+    badgeText = 'Selected (Pending Save)';
+  }
 
   const header = (
     <div className="field-header">
@@ -48,10 +82,10 @@ function Field({ field, value, onChange, answers, fieldAudit }) {
           </span>
         )}
         <span
-          className={`audit-badge ${isResolved ? 'resolved' : 'unresolved'}`}
-          title={isResolved ? `Source: ${fieldAudit?.source || 'N/A'}` : 'Requires operator input'}
+          className={`audit-badge ${badgeStatus}`}
+          title={isPersistedResolved ? `Source: ${fieldAudit?.source || 'N/A'}` : isPendingSave ? 'Saved locally; click Save Answers to persist' : 'Requires operator input'}
         >
-          <span className={`audit-dot ${isResolved ? 'green' : 'red'}`} />
+          <span className={`audit-dot ${badgeStatus === 'unresolved' ? 'red' : 'green'}`} />
           {badgeText}
         </span>
       </div>
@@ -191,11 +225,25 @@ function Field({ field, value, onChange, answers, fieldAudit }) {
   );
 }
 
-function RepeatableGroup({ field, value, onChange }) {
-  const rows = Array.isArray(value) ? value : [];
+function RepeatableGroup({ field, value, onChange, persistedGroupValue }) {
+  let parsedValue = value;
+  if (typeof value === 'string' && value.startsWith('[')) {
+    try { parsedValue = JSON.parse(value); } catch {}
+  }
+  const rows = Array.isArray(parsedValue) ? parsedValue : [];
   const childFields = field.children ?? field.fields ?? [];
   const setRow = (index, childId, childValue) =>
     onChange(rows.map((row, rowIndex) => (rowIndex === index ? { ...row, [childId]: childValue } : row)));
+
+  // Persisted backend rows
+  let persistedRows = [];
+  if (persistedGroupValue?.value) {
+    if (Array.isArray(persistedGroupValue.value)) {
+      persistedRows = persistedGroupValue.value;
+    } else if (typeof persistedGroupValue.value === 'string' && persistedGroupValue.value.startsWith('[')) {
+      try { persistedRows = JSON.parse(persistedGroupValue.value); } catch {}
+    }
+  }
 
   return (
     <fieldset className="repeatable">
@@ -214,15 +262,48 @@ function RepeatableGroup({ field, value, onChange }) {
               Remove
             </button>
           </div>
-          {childFields.map(child => (
-            <Field
-              key={child.id}
-              field={child}
-              value={row[child.id]}
-              answers={row}
-              onChange={(id, next) => setRow(index, id, next)}
-            />
-          ))}
+          {childFields.map(child => {
+            const childVal = row[child.id] ??
+              (/employer|company/i.test(child.id) || /employer|company/i.test(child.label) ? row.company : null) ??
+              (/job_title|title/i.test(child.id) || /job\s*title|title/i.test(child.label) ? row.title : null) ??
+              (/school|institution|establishment/i.test(child.id) || /school|university/i.test(child.label) ? row.institution : null) ??
+              (/degree|content_item_id/i.test(child.id) || /degree/i.test(child.label) ? row.degree : null) ??
+              (/major|field/i.test(child.id) || /major|study/i.test(child.label) ? row.fieldOfStudy : null) ??
+              (/skills?/i.test(child.id) || /skill/i.test(child.label) ? (row.skills || row.skill) : null) ??
+              (/years/i.test(child.id) ? (row.years_of_experience || row.years) : null) ??
+              (/language/i.test(child.id) || /language/i.test(child.label) ? (row.language || row.content_item_id) : null) ??
+              '';
+
+            const persistedRow = persistedRows[index] || null;
+            const persistedChildVal = persistedRow ? (
+              persistedRow[child.id] ??
+              (/employer|company/i.test(child.id) || /employer|company/i.test(child.label) ? persistedRow.company : null) ??
+              (/job_title|title/i.test(child.id) || /job\s*title|title/i.test(child.label) ? persistedRow.title : null) ??
+              (/school|institution|establishment/i.test(child.id) || /school|university/i.test(child.label) ? persistedRow.institution : null) ??
+              (/degree|content_item_id/i.test(child.id) || /degree/i.test(child.label) ? persistedRow.degree : null) ??
+              (/major|field/i.test(child.id) || /major|study/i.test(child.label) ? persistedRow.fieldOfStudy : null) ??
+              null
+            ) : null;
+
+            const isPersistedOnServer = Boolean(persistedChildVal !== null && persistedChildVal !== undefined && String(persistedChildVal).trim().length > 0);
+            const childAudit = isPersistedOnServer ? {
+              value: persistedChildVal,
+              confidence: persistedGroupValue?.confidence ?? 1.0,
+              source: persistedGroupValue?.source ?? 'dashboard',
+              reviewed: true
+            } : null;
+
+            return (
+              <Field
+                key={child.id}
+                field={child}
+                value={childVal}
+                answers={row}
+                fieldAudit={childAudit}
+                onChange={(id, next) => setRow(index, id, next)}
+              />
+            );
+          })}
         </div>
       ))}
       <button className="secondary" type="button" onClick={() => onChange([...rows, {}])}>
@@ -308,6 +389,7 @@ function TemplateForm({ template, application, onSaved }) {
                 label: group.label ?? group.id.replaceAll('_', ' ')
               }}
               value={answers[group.id]}
+              persistedGroupValue={application.values?.[group.id]}
               onChange={next => update(group.id, next)}
             />
           ))}
@@ -938,7 +1020,11 @@ export function App() {
   if (!data) return <main className="loading">Loading workflow…</main>;
 
   const selected = data.applications.find(item => item.applicationId === selectedId);
-  const template = selected ? (data.templates[selected.jobKey] || data.templates[selected.jobId]) : null;
+  const template = selected
+    ? (data.templates[selected.jobKey] ||
+       data.templates[selected.jobId] ||
+       Object.values(data.templates).find(t => t.jobId === selected.jobId || t.jobKey === selected.jobKey || t.id === selected.templateId))
+    : null;
 
   return (
     <div className="app-shell">

@@ -99,6 +99,25 @@ export class ScanQueueRunner {
     return interleaved;
   }
 
+  _selectEmailForWorkerAndTenant({ workerId, tenantHost, emails, tenantEmailIndex, activeEmails }) {
+    if (!emails || emails.length === 0) return 'scanner@applywizard.ai';
+    const visitCount = tenantEmailIndex.get(tenantHost) ?? 0;
+    tenantEmailIndex.set(tenantHost, visitCount + 1);
+
+    const baseIndex = (workerId + visitCount) % emails.length;
+    for (let i = 0; i < emails.length; i++) {
+      const candidate = emails[(baseIndex + i) % emails.length];
+      if (!activeEmails.has(candidate)) {
+        activeEmails.add(candidate);
+        return candidate;
+      }
+    }
+
+    const fallback = emails[baseIndex];
+    activeEmails.add(fallback);
+    return fallback;
+  }
+
   async runQueue(options = {}) {
     const jobsCsvPath = path.resolve(options.jobsCsvPath ?? this.config.jobsCleanCsvPath);
     const statusPath = path.resolve(options.statusPath ?? this.config.scanner?.statusPath ?? path.resolve(this.config.dataDir, 'scan-status.json'));
@@ -263,6 +282,7 @@ export class ScanQueueRunner {
 
     try {
       const activeTenants = new Set();
+      const activeEmails = new Set();
       const tenantCooldowns = new Map();
       const tenantEmailIndex = new Map();
       const jobAttemptCount = new Map();
@@ -304,12 +324,6 @@ export class ScanQueueRunner {
         return { job: null, waitMs: minWait };
       };
 
-      const getEmailForTenant = tenant => {
-        const idx = tenantEmailIndex.get(tenant) ?? 0;
-        tenantEmailIndex.set(tenant, idx + 1);
-        return emails[idx % emails.length];
-      };
-
       const workerLoop = async workerId => {
         const workerTag = `[Worker ${workerId + 1}]`;
         const slot = this.workerSlots[workerId];
@@ -338,7 +352,13 @@ export class ScanQueueRunner {
 
           const currentJob = eligible.job;
           const { job_key, job_url, tenantHost, parsedUrl } = currentJob;
-          const email = getEmailForTenant(tenantHost);
+          const email = this._selectEmailForWorkerAndTenant({
+            workerId,
+            tenantHost,
+            emails,
+            tenantEmailIndex,
+            activeEmails
+          });
 
           if (slot) {
             slot.status = 'authenticating';
@@ -467,15 +487,6 @@ export class ScanQueueRunner {
 
               console.log(`${workerTag} [${job_key}] ✓ Completed in ${(durationMs / 1000).toFixed(1)}s (${template.fields.length} fields, ${template.conditionalBranches.length} branches).`);
 
-              // Persist template directly to SupabaseStore or JSON
-              if (typeof this.store?.write === 'function') {
-                try {
-                  await this.store.write('form-templates', { [job_key]: template });
-                } catch (err) {
-                  console.warn(`[Scanner] Warning: Failed to persist template to Supabase: ${err.message}`);
-                }
-              }
-
               releaseTenant();
               scanStatus.jobs[job_key] = {
                 job_key,
@@ -501,30 +512,34 @@ export class ScanQueueRunner {
 
           // Execution with Retry-Once logic for transient errors
           try {
-            const outcome = await executeScanAttempt(1);
-            if (outcome?.handled || outcome?.completed) continue;
-          } catch (error) {
-            console.warn(`${workerTag} [${job_key}] ⚠ Attempt 1 failed: ${error.message}. Pausing before retry...`);
-            const retryWait = tenantCooldownBaseMs > 0 ? Math.min(tenantCooldownBaseMs, 5000) : 5;
-            await delay(retryWait);
-
             try {
-              const retryOutcome = await executeScanAttempt(2);
-              if (retryOutcome?.handled || retryOutcome?.completed) continue;
-            } catch (retryError) {
-              console.error(`${workerTag} [${job_key}] ✖ Failed attempt 2: ${retryError.message}`);
-              releaseTenant();
-              scanStatus.jobs[job_key] = {
-                job_key,
-                job_url,
-                status: 'failed',
-                error: retryError.message,
-                code: retryError.code ?? 'UNKNOWN',
-                workerId: workerId + 1,
-                failedAt: new Date().toISOString()
-              };
-              await updateStatusFile();
+              const outcome = await executeScanAttempt(1);
+              if (outcome?.handled || outcome?.completed) continue;
+            } catch (error) {
+              console.warn(`${workerTag} [${job_key}] ⚠ Attempt 1 failed: ${error.message}. Pausing before retry...`);
+              const retryWait = tenantCooldownBaseMs > 0 ? Math.min(tenantCooldownBaseMs, 5000) : 5;
+              await delay(retryWait);
+
+              try {
+                const retryOutcome = await executeScanAttempt(2);
+                if (retryOutcome?.handled || retryOutcome?.completed) continue;
+              } catch (retryError) {
+                console.error(`${workerTag} [${job_key}] ✖ Failed attempt 2: ${retryError.message}`);
+                releaseTenant();
+                scanStatus.jobs[job_key] = {
+                  job_key,
+                  job_url,
+                  status: 'failed',
+                  error: retryError.message,
+                  code: retryError.code ?? 'UNKNOWN',
+                  workerId: workerId + 1,
+                  failedAt: new Date().toISOString()
+                };
+                await updateStatusFile();
+              }
             }
+          } finally {
+            activeEmails.delete(email);
           }
         }
 

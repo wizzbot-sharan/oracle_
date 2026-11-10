@@ -658,5 +658,149 @@
       "valueType": "array",
       "updatedAt": "2026-11-06T07:27:10.530Z"
     }
+  },
+  "AWL-3762": {},
+  "AWL-36117": {
+    "do_you_have_an_unrestricted_right_to_work_in_the_uk": {
+      "value": "Yes",
+      "valueType": "string",
+      "updatedAt": "2026-11-10T10:23:02.412Z"
+    },
+    "are_you_currently_employed": {
+      "value": "Yes",
+      "valueType": "string",
+      "updatedAt": "2026-11-10T10:23:02.412Z"
+    },
+    "do_you_have_a_valid_uk_driving_licence_or_equivalent": {
+      "value": "Yes",
+      "valueType": "string",
+      "updatedAt": "2026-11-10T10:23:02.412Z"
+    },
+    "where_did_you_hear_about_this_vacancy": {
+      "value": "linkedin",
+      "valueType": "string",
+      "updatedAt": "2026-11-10T10:23:02.412Z"
+    },
+    "did_you_find_out_about_this_role_from_a_current_costain_employee_if_they_are_a_recruiter_or_talent_a": {
+      "value": "No",
+      "valueType": "string",
+      "updatedAt": "2026-11-10T10:23:02.412Z"
+    },
+    "are_you_currently_registered_on_to_a_uk_apprenticeship_including_if_you_are_on_a_break_in_learning_o": {
+      "value": "No",
+      "valueType": "string",
+      "updatedAt": "2026-11-10T10:23:02.412Z"
+    },
+    "gb_standard_ora_ethnicity_standard": {
+      "value": "Indian",
+      "valueType": "string",
+      "updatedAt": "2026-11-10T10:38:54.693Z"
+    },
+    "gb_standard_ora_marital_status_standard": {
+      "value": "single",
+      "valueType": "string",
+      "updatedAt": "2026-11-10T10:23:02.412Z"
+    },
+    "gb_standard_ora_religion_standard": {
+      "value": "other",
+      "valueType": "string",
+      "updatedAt": "2026-11-10T10:23:02.412Z"
+    },
+    "gb_ddf_ora_hrx_gb_candidate_age_band_per_information17": {
+      "value": "25-34",
+      "valueType": "string",
+      "updatedAt": "2026-11-10T10:23:02.412Z"
+    },
+    "gb_ddf_hrx_gbppr_fps_no_nire_wp_postc_per_information20": {
+      "value": "",
+      "valueType": "string",
+      "updatedAt": "2026-11-10T10:23:02.412Z"
+    },
+    "gb_dff_do_any_of_your_dependents_have_adisa_attribute2": {
+      "value": "No",
+      "valueType": "string",
+      "updatedAt": "2026-11-10T10:23:02.412Z"
+    },
+    "national_identifier": {
+      "value": [
+        {
+          "country_country": "united kingdom",
+          "national_id_type": "National Insurance Number",
+          "national_id": "AA123456A"
+        }
+      ],
+      "valueType": "array",
+      "updatedAt": "2026-11-10T10:23:02.412Z"
+    },
+    "gb_dff_are_you_trans_attribute2": {
+      "value": "no",
+      "valueType": "string",
+      "updatedAt": "2026-11-10T10:38:54.693Z"
+    },
+    "gb_dff_military_status_attribute1": {
+      "value": "none",
+      "valueType": "string",
+      "updatedAt": "2026-11-10T10:38:54.693Z"
+    },
+    "gb_dff_wsp_uk_refugee_status_attribute4": {
+      "value": "no",
+      "valueType": "string",
+      "updatedAt": "2026-11-10T10:38:54.693Z"
+    },
+    "gb_dff_wsp_uk_speak_english_attribute5": {
+      "value": "yes",
+      "valueType": "string",
+      "updatedAt": "2026-11-10T10:38:54.693Z"
+    },
+    "gb_dff_wsp_uk_employmentstatus_attribute6": {
+      "value": "employed full time",
+      "valueType": "string",
+      "updatedAt": "2026-11-10T10:38:54.693Z"
+    },
+    "gb_dff_wsp_uk_applyingfornorthernirelan_attribute7": {
+      "value": "yes",
+      "valueType": "string",
+      "updatedAt": "2026-11-10T10:38:54.693Z"
+    },
+    "gb_dff_gender_identity_attribute8": {
+      "value": "",
+      "valueType": "string",
+      "updatedAt": "2026-11-10T10:38:54.693Z"
+    },
+    "gb_dff_candidate_age_band_attribute9": {
+      "value": "21-30",
+      "valueType": "string",
+      "updatedAt": "2026-11-10T10:38:54.693Z"
+    },
+    "education": {
+      "value": [
+        {
+          "degree": "Master's Degree",
+          "institution": "University of Strathclyde",
+          "fieldOfStudy": "MSc in Advanced Mechanical Engineering",
+          "graduationYear": "2026",
+          "educational_establishment": "University of Strathclyde",
+          "school_name": "University of Strathclyde",
+          "content_item_id": "Masterâ€™s Degree",
+          "degree_name": "Masterâ€™s Degree",
+          "major": "MSc in Advanced Mechanical Engineering",
+          "gpa": "3.8",
+          "graduated": true,
+          "graduation_year": "2026"
+        }
+      ],
+      "valueType": "array",
+      "updatedAt": "2026-11-10T10:38:54.693Z"
+    },
+    "are_you_currently_studying_towards_any_employer_sponsored_or_apprenticeship_qualifications": {
+      "value": "No",
+      "valueType": "string",
+      "updatedAt": "2026-11-10T10:42:00.545Z"
+    },
+    "please_give_details_of_your_eligibility_to_work_eg_national_ancestry_skilled_dependant_visa_etc": {
+      "value": "all cool",
+      "valueType": "string",
+      "updatedAt": "2026-11-10T11:00:32.692Z"
+    }
   }
 }

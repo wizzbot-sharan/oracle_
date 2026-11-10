@@ -268,10 +268,13 @@ async function main() {
     let to;
     let client;
     let company;
+    let force = false;
     for (let i = 0; i < args.length; i++) {
       if (args[i] === '--limit' && args[i + 1]) {
         limit = Number(args[i + 1]);
         i++;
+      } else if (args[i] === '--force' || args[i] === '-f') {
+        force = true;
       } else if ((args[i] === '--job' || args[i] === '--jobs' || args[i] === '--jobKey' || args[i] === '-j') && args[i + 1]) {
         jobKey = jobKey ? `${jobKey},${args[i + 1]}` : args[i + 1];
         i++;
@@ -299,7 +302,8 @@ async function main() {
       from,
       to,
       client,
-      company
+      company,
+      force
     });
     return {
       scope: applications.batchSummary?.scope || 'All',

@@ -87,6 +87,45 @@ test('Stage 1 Taxonomy resolves personal, contact, work auth and legal fields fr
   });
   assert.equal(resGender.value, 'Female');
   assert.equal(resGender.confidence, 1.0);
+
+  // Test Gender-Aware Salutation/Title (Female candidate -> 'Ms.')
+  const resTitleFemale = await engine.resolveField({
+    field: { id: 'title', label: 'Title', type: 'combobox', options: ['Mr.', 'Mrs.', 'Ms.', 'Dr.'], sectionLabel: 'Contact Information', required: true },
+    client
+  });
+  assert.equal(resTitleFemale.value, 'Ms.');
+  assert.equal(resTitleFemale.confidence, 0.95);
+
+  // Test Gender-Aware Salutation/Title (Male candidate -> 'Mr.')
+  const maleClient = {
+    client: { full_name: 'John Doe' },
+    additional_information: { gender: 'Male' }
+  };
+  const resTitleMale = await engine.resolveField({
+    field: { id: 'title', label: 'Title', type: 'combobox', options: ['Mr.', 'Mrs.', 'Ms.', 'Dr.'], sectionLabel: 'Contact Information', required: true },
+    client: maleClient
+  });
+  assert.equal(resTitleMale.value, 'Mr.');
+  assert.equal(resTitleMale.confidence, 0.95);
+
+  // Test Address Fields in Address section: Country and Postal Code must NOT be overwritten by State
+  const resCountry = await engine.resolveField({
+    field: { id: 'country', label: 'Country *', type: 'combobox', sectionLabel: 'Address', required: true },
+    client
+  });
+  assert.equal(resCountry.value, 'United States', 'Country * must resolve to United States and not state');
+
+  const resPostal = await engine.resolveField({
+    field: { id: 'postal_code', label: 'Postal Code *', type: 'combobox', sectionLabel: 'Address', required: true },
+    client
+  });
+  assert.equal(resPostal.value, '78701', 'Postal Code * must resolve to 78701 and not state');
+
+  const resState = await engine.resolveField({
+    field: { id: 'region2', label: 'State *', type: 'combobox', sectionLabel: 'Address', required: true },
+    client
+  });
+  assert.equal(resState.value, 'TX', 'State * must resolve to TX');
 });
 
 test('Stage 2 Token-Sort resolves from Tier 2 Question Bank and respects Tier Caps and Isolation', async () => {

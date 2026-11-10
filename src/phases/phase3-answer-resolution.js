@@ -30,6 +30,7 @@ export class Phase3AnswerResolution {
       claudeService: new ClaudeService()
     });
     this.clientsPath = cfg?.clientsPath ?? path.resolve(process.cwd(), 'data/clients.json');
+    this.profilesPath = cfg?.profilesPath ?? path.resolve(process.cwd(), 'data/profiles.csv');
     this.questionBankCsvPath = cfg?.questionBankCsvPath ?? path.resolve(process.cwd(), 'data/question_bank.csv');
   }
 
@@ -55,6 +56,11 @@ export class Phase3AnswerResolution {
       const globalHistory = [];
 
       for (const record of records) {
+        // Purge/skip poisoned placeholder values
+        if (record.value && /^\s*professional\s*experience\s*$/i.test(record.value)) {
+          continue;
+        }
+
         const applywizzId = record.applywizz_id?.trim();
         const numConfidence = Number(record.confidence);
         const parsedRecord = {
@@ -87,26 +93,79 @@ export class Phase3AnswerResolution {
   }
 
   /**
-   * Loads candidate profiles from data/clients.json.
+   * Loads candidate profiles from data/clients.json and fuses data/profiles.csv if available.
    */
   async loadClients() {
+    let clients = {};
     try {
       if (fs.existsSync(this.clientsPath)) {
         const raw = await fs.promises.readFile(this.clientsPath, 'utf8');
-        return JSON.parse(raw);
+        clients = JSON.parse(raw);
+      } else {
+        clients = await this.store.read('clients', {});
       }
-      return await this.store.read('clients', {});
     } catch (err) {
       console.error('[Phase 3] Warning: Failed to load clients.json:', err.message);
-      return {};
     }
+
+    // Merge profiles.csv if available
+    try {
+      if (fs.existsSync(this.profilesPath)) {
+        const rawCsv = await fs.promises.readFile(this.profilesPath, 'utf8');
+        const profiles = parseCsv(rawCsv);
+        for (const p of profiles) {
+          const id = p.applywizz_id?.trim();
+          if (!id || !clients[id]) continue; // Skip: Only merge onto EXISTING CRM clients
+
+          let edArray = [];
+          if (p.education) {
+            try { edArray = JSON.parse(p.education); } catch {}
+          }
+          let expArray = [];
+          if (p.work_experience) {
+            try { expArray = JSON.parse(p.work_experience); } catch {}
+          }
+
+          const c = clients[id];
+          if (!c.client) c.client = {};
+          if (!c.additional_information) c.additional_information = {};
+
+          if (!c.client.full_name && p.client_name) c.client.full_name = p.client_name;
+          if (p.first_name) c.client.first_name = p.first_name;
+          if (p.last_name) c.client.last_name = p.last_name;
+          if (p.email) c.client.personal_email = p.email;
+          if (p.company_email) c.client.company_email = p.company_email;
+          if (p.phone) {
+            c.client.callable_phone = p.phone;
+            c.additional_information.primary_phone = p.phone;
+          }
+
+          c.additional_information.location = p.location || c.additional_information.location || '';
+          c.additional_information.country = p.country || c.additional_information.country || 'United States';
+          c.additional_information.country_code = p.country_code || c.additional_information.country_code || '1';
+          if (p.linkedin_url && p.linkedin_url !== 'N/A' && p.linkedin_url !== 'NULL') c.additional_information.linkedin_url = p.linkedin_url;
+          if (p.github_url && p.github_url !== 'N/A' && p.github_url !== 'NULL') c.additional_information.github_url = p.github_url;
+          if (p.website_url && p.website_url !== 'N/A' && p.website_url !== 'NULL') c.additional_information.website_url = p.website_url;
+          if (p.work_authorization) c.additional_information.work_authorization = p.work_authorization;
+          if (p.requires_sponsorship !== undefined) c.additional_information.requires_sponsorship = p.requires_sponsorship === 'TRUE' || p.requires_sponsorship === true;
+          if (edArray.length > 0) c.additional_information.education_records = edArray;
+          if (expArray.length > 0) c.additional_information.experience_records = expArray;
+          if (p.resume_text) c.additional_information.resume_text = p.resume_text;
+          if (p.resume_url) c.additional_information.resume_url = p.resume_url;
+        }
+      }
+    } catch (err) {
+      console.error('[Phase 3] Warning: Failed to load profiles.csv:', err.message);
+    }
+
+    return clients;
   }
 
   /**
    * Creates or resolves application instances across all assignments that have templates.
    */
   async createOrResolveApplications(options = {}) {
-    const { limit, jobUrl } = options;
+    const { limit, jobUrl, force = false } = options;
     const selector = parseJobSelector(options);
 
     const jobs = await this.store.read('jobs', { assignments: [], uniqueJobs: [] });
@@ -146,23 +205,30 @@ export class Phase3AnswerResolution {
 
       const applywizzId = assignment.applywizzId || assignment.userId;
       const client = clients[applywizzId];
+      
+      // Gatekeeper: Enforce clients.json presence
+      if (!client || !client.client || Object.keys(client.client).length === 0) {
+        console.log(`[Phase 3] Skipping Job ${assignment.jobKey || assignment.jobId} for ${applywizzId}: candidate not found or incomplete in clients.json`);
+        continue;
+      }
+
       const clientHistory = clientHistoryMap.get(applywizzId) || [];
 
-      // Extract raw resume text from Supabase resumes bucket or profile
+      // Extract raw resume text from profile (profiles.csv), Supabase storage, or profile summary
       let resumeText = candidateResumeCache.get(applywizzId);
       if (resumeText === undefined) {
-        resumeText = '';
-        if (this.store?.client?.storage && applywizzId) {
+        resumeText = client?.additional_information?.resume_text || '';
+        if (!resumeText && this.store?.client?.storage && applywizzId) {
           try {
             const { data: fileData, error: dlErr } = await this.store.client.storage
               .from('resumes')
               .download(`${applywizzId}.pdf`);
             if (!dlErr && fileData) {
               const arrayBuf = await fileData.arrayBuffer();
-              const pdfParseModule = await import('pdf-parse');
-              const pdfParse = pdfParseModule.default || pdfParseModule;
-              const parsed = await pdfParse(Buffer.from(arrayBuf));
-              resumeText = parsed.text || '';
+              const { PDFParse } = await import('pdf-parse');
+              const parser = new PDFParse(new Uint8Array(arrayBuf));
+              const res = await parser.getText();
+              resumeText = res.text || '';
             }
           } catch {}
         }
@@ -175,7 +241,7 @@ export class Phase3AnswerResolution {
       const applicationId = stableId('app', `${applywizzId}|${assignment.jobKey || assignment.jobId}`);
       const current = byId.get(applicationId);
 
-      const values = await this.resolveValues(template, client, clientHistory, globalHistory, current?.values ?? {}, resumeText);
+      const values = await this.resolveValues(template, client, clientHistory, globalHistory, current?.values ?? {}, resumeText, force);
       const unresolvedList = this.unresolved(template, values);
 
       // Status rule: Only required visible fields block status.
@@ -250,16 +316,17 @@ export class Phase3AnswerResolution {
   /**
    * Resolves values for all fields in a template using the cascading resolution engine.
    */
-  async resolveValues(template, client, clientHistory = [], globalHistory = [], existingValues = {}, customResumeText = null) {
+  async resolveValues(template, client, clientHistory = [], globalHistory = [], existingValues = {}, customResumeText = null, force = false) {
     const values = {};
     const resumeText = customResumeText || client?.additional_information?.experience || client?.additional_information?.role || '';
 
     for (const field of flattenTemplateFields(template)) {
       if (field.repeatableGroupId) continue;
 
-      // Preserve previously operator-reviewed values
+      // Preserve previously operator-reviewed values (saved manually via dashboard / saveAnswers)
       const existing = existingValues[field.id];
-      if (existing?.reviewed === true && existing?.value !== null && existing?.value !== undefined && existing?.value !== '') {
+      const isOperatorReviewed = !force && existing && (existing.source === 'dashboard' || existing.source === 'operator' || existing.source === 'manual');
+      if (isOperatorReviewed && existing.value !== null && existing.value !== undefined && existing.value !== '') {
         values[field.id] = existing;
         continue;
       }

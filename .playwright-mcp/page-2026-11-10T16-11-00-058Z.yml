@@ -1,0 +1,142 @@
+- generic [ref=e1]:
+  - generic [aria-hidden] [ref=e2]:
+    - generic [ref=e3]: .
+    - generic [ref=e4]: ..
+    - generic [ref=e5]: .
+  - generic [ref=e7]:
+    - link "Skip to main content." [ref=e8] [cursor=pointer]:
+      - /url: "#main"
+    - generic [ref=e10]:
+      - generic [ref=e11]:
+        - banner [ref=e13]:
+          - generic [ref=e16]:
+            - link "Go to Home Page" [ref=e18] [cursor=pointer]:
+              - /url: https://hcog.fa.em2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/
+            - generic [ref=e19]:
+              - link "Manage profile" [ref=e22] [cursor=pointer]:
+                - /url: https://hcog.fa.em2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/my-profile/sign-in
+                - generic [ref=e23]: 
+              - button "Open menu" [ref=e25] [cursor=pointer]:
+                - generic [ref=e26]:
+                  - emphasis [ref=e27]
+                  - emphasis [ref=e28]
+                  - emphasis [ref=e29]
+        - main [ref=e31]:
+          - generic [ref=e38]:
+            - generic [ref=e41]:
+              - button "Copy Link" [ref=e46] [cursor=pointer]:
+                - emphasis [ref=e47]: 
+              - button "Add Job to My Job Selections" [ref=e49] [cursor=pointer]: 
+              - link "View More Jobs" [ref=e51] [cursor=pointer]:
+                - /url: https://hcog.fa.em2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/jobs
+                - generic [ref=e52]:
+                  - text: 
+                  - generic [ref=e53]: View More Jobs
+            - article [ref=e54]:
+              - generic [ref=e60]:
+                - generic [ref=e64]:
+                  - heading "Project Engineer, Geotechnical" [level=1] [ref=e66]
+                  - generic [ref=e67]: Sherwood, AR, United States
+                  - generic [ref=e73]:
+                    - emphasis [ref=e74]: 
+                    - generic [ref=e75]: Be the First to Apply
+                - generic [ref=e83]:
+                  - heading "Job Description" [level=2] [ref=e84]
+                  - generic [ref=e85]:
+                    - paragraph [ref=e86]:
+                      - strong [ref=e87]: Project Engineer, Geotechnical – Sherwood, AR
+                    - paragraph [ref=e88]:
+                      - text: Intertek, a leading provider of quality and safety solutions to many of the world’s top-recognized brands and companies, is actively seeking a
+                      - strong [ref=e89]: Geotechnical Project Engineer
+                      - text: to join our Building & Construction team in Sherwood, AR.
+                    - paragraph [ref=e90]: "Intertek's Building and Construction division is a suite of Intertek brands that are industry leaders across multiple architecture, engineering and construction disciplines, developing the most innovative product and project solutions. Intertek's project-related assurance, testing, inspection and consulting services are the risk management and quality assurance partner you need to ensure the reliability, safety and performance of your new developments, existing assets and facilities. Intertek is continually innovating and evolving to reduce risk for consumers, brands and organizations in every sector and industry around the world. We go beyond Testing, Inspection and Certification of products: we are a Total Quality Assurance Provider to industries worldwide. Our Purpose: Bringing quality, safety, and sustainability to life."
+                    - paragraph [ref=e91]: "Employer: Professional Service Industries, Inc. d/b/a Intertek PSI"
+                    - paragraph [ref=e92]: "Job Title: Project Engineer, Geotechnical"
+                    - paragraph [ref=e93]: "Job Location: 404 Manson Road, Sherwood, AR 72120"
+                    - paragraph [ref=e94]: "Schedule: 40 hours per week, Monday through Friday"
+                    - paragraph [ref=e95]: "Duties: • Direct and execute one or all of the following geotechnical project assignments but not limited to field exploration, laboratory services, engineering analysis, report preparation and report technical review. • Provide quality control review of proposals and reports and direct operations in a manner to consistently meet commitments to the clients. • Actively participate in business development and marketing efforts while establishing and maintaining client relationships related to technical aspects of our client assignments.• Responsible for the mentoring and training of senior and junior professional staff professionals. • Actively participate in relationship building with professional and technical organizations."
+                    - paragraph [ref=e96]: Requirements:• Bachelor’s degree in Civil Engineering, Geotechnical Engineering, or related field of study and three years of experience as a Site/Planning Engineer, Geotechnical Engineer, or related role where required experience was gained. Also requires experience in the following:• Engineer in Training (EIT) certification;• Valid Driver’s License and reliable driving record;• 3 years of project management experience (such as drawing up work schedules, communicating adjustments to staff and clients, delegating tasks and scheduling meetings and trainings, etc.);• Foundation design experience;• Pavement engineering experience;• Slope stability analysis experience;• Ground improvement experience; and• Commercial, residential, industrial, transportation, power plant, and landfill infrastructure project experience.
+                    - paragraph [ref=e97]: Send resume to Angela Dabney at angela.dabney@intertek.com. Please reference job title and position location.
+                    - paragraph [ref=e98]:
+                      - strong [ref=e99]: "Intertek: Total Quality. Assured."
+                    - paragraph [ref=e100]: Intertek is a world leader in the Quality Assurance market, with a proven, high-quality business model and a global network of customer-focused operations and highly engaged subject matter experts. With passion, pace, and precision we work to exceed our customers’ expectations, while engaging with our employees to be 10X in their performance and professional growth.
+                    - paragraph [ref=e101]: Intertek is a drug-free workplace. As a condition of employment, certain positions may be required to pass a pre-employment drug test based on the type of work that will be performed.
+                    - paragraph [ref=e102]:
+                      - strong [ref=e103]: We Value Diversity
+                    - paragraph [ref=e104]: Intertek’s network of phenomenal people are our greatest assets, and the diversity they bring fuels our success. Intertek is an Equal Employment Opportunity Employer that values inclusion and diversity. We take affirmative action to ensure all qualified applicants will receive consideration for employment without regard to race, color, religion, sex, sexual orientation, gender identity, national origin, disability, veteran status, or other legally protected characteristics.
+                    - paragraph [ref=e105]: "For individuals with disabilities who would like to request accommodation, or who need assistance applying, please email intertekhrusa@intertek.com or call 1-877-694-8543 (option #5) to speak with a member of the HR Department."
+                - generic [ref=e111]:
+                  - heading "About Us" [level=2] [ref=e112]
+                  - generic [ref=e113]: Intertek is a leading Total Quality Assurance provider to industries worldwide. Our network of more than 1,000 laboratories and offices in more than 100 countries, delivers innovative and bespoke Assurance, Testing, Inspection and Certification (ATIC) solutions for our customers' operations and supply chains. Working at Intertek means joining a global network of state-of-the-art facilities and passionate people who deliver superior customer service with a purpose of bringing quality, safety, and sustainability to life.
+                - generic [ref=e119]:
+                  - heading "About the Team" [level=2] [ref=e120]
+                  - generic [ref=e121]: The Building & Construction team provides assurance, testing, inspection, and certification services and building science solutions to deliver Total Quality Assurance to the built environment. The team offers the architectural, engineering and construction (A/E/C) industry with a full suite of capabilities both in the lab and on site.
+                - button "Apply Now" [ref=e128] [cursor=pointer]
+                - generic [ref=e135]:
+                  - heading "Job Info" [level=2] [ref=e136]
+                  - list [ref=e140]:
+                    - listitem [ref=e141]:
+                      - generic [ref=e142]: Job Identification
+                      - generic [ref=e143]: "16246"
+                    - listitem [ref=e144]:
+                      - generic [ref=e145]: Job Category
+                      - generic [ref=e146]: ENGINEERING
+                    - listitem [ref=e147]:
+                      - generic [ref=e148]: Posting Date
+                      - generic [ref=e149]: 11/10/2026, 03:29 AM
+                    - listitem [ref=e150]:
+                      - generic [ref=e151]: Apply Before
+                      - generic [ref=e152]: 11/24/2026, 05:30 AM
+                    - listitem [ref=e153]:
+                      - generic [ref=e154]: Job Schedule
+                      - generic [ref=e155]: Full time
+                    - listitem [ref=e156]:
+                      - generic [ref=e157]: Job Shift
+                      - generic [ref=e158]: First Shift
+                    - listitem [ref=e159]:
+                      - generic [ref=e160]: Locations
+                      - generic [ref=e163]:
+                        - emphasis [aria-hidden] [ref=e164]: 
+                        - text: 404 Manson Road, Sherwood, AR, 72120, US
+                    - listitem [ref=e165]:
+                      - generic [ref=e166]: Regular or Temporary
+                      - generic [ref=e167]: Regular
+                    - listitem [ref=e168]:
+                      - generic [ref=e169]: Job Type
+                      - generic [ref=e170]: Standard
+                    - listitem [ref=e171]:
+                      - generic [ref=e172]: Department
+                      - generic [ref=e173]: Building & Construction
+                - generic:
+                  - generic:
+                    - generic:
+                      - generic:
+                        - generic:
+                          - generic:
+                            - list
+      - contentinfo [ref=e174]:
+        - list [ref=e176]:
+          - listitem [ref=e177]:
+            - generic [ref=e178] [cursor=pointer]: FAQ
+          - listitem [ref=e179]:
+            - link "Facebook" [ref=e180] [cursor=pointer]:
+              - /url: https://www.facebook.com/intertek
+          - listitem [ref=e181]:
+            - link "Twitter" [ref=e182] [cursor=pointer]:
+              - /url: https://twitter.com/Intertek?ref_src=twsrc%5Egoogle%7Ctwcamp%5Eserp%7Ctwgr%5Eauthor
+          - listitem [ref=e183]:
+            - link "LinkedIn" [ref=e184] [cursor=pointer]:
+              - /url: https://www.linkedin.com/company/intertek/
+    - dialog "Cookie Consent Message" [ref=e186]:
+      - article [ref=e192]:
+        - generic [ref=e196]:
+          - paragraph [active] [ref=e202]:
+            - document [ref=e203]: For more information on our Cookies policy, please click on
+            - link "Learn more about the cookie policy" [ref=e205] [cursor=pointer]:
+              - /url: javascript:void(0)
+              - text: Learn more
+          - button "Accept Cookie Policy" [ref=e214] [cursor=pointer]
+    - alert
+    - status [ref=e216]:
+      - paragraph [ref=e217]: Page Project Engineer, Geotechnical - Intertek USA Careers loaded
+    - alert [ref=e218]

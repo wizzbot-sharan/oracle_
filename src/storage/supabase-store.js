@@ -356,6 +356,9 @@ export class SupabaseStore {
       const globalHistory = [];
 
       for (const row of data || []) {
+        if (row.value && /^\s*professional\s*experience\s*$/i.test(row.value)) {
+          continue;
+        }
         const applywizzId = row.applywizz_id?.trim();
         const record = {
           id: row.id,
