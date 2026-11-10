@@ -13,14 +13,16 @@ test('computeDashboardMetrics calculates accurate KPI counts and client list', a
   const clientsPath = path.join(tmpDir, 'clients.json');
   fs.writeFileSync(clientsPath, JSON.stringify({
     'AWL-1': { client: { full_name: 'Alice Cooper' } },
-    'AWL-2': { client: { full_name: 'Bob Marley' } }
+    'AWL-2': { client: { full_name: 'Bob Marley' } },
+    'AWL-3': { client: { full_name: 'Charlie Chaplin' } }
   }), 'utf8');
 
   const jobs = {
     assignments: [
       { assignmentId: 'asg-1', applywizzId: 'AWL-1', clientName: 'Alice Cooper', jobKey: 'job_1', jobId: '101' },
       { assignmentId: 'asg-2', applywizzId: 'AWL-1', clientName: 'Alice Cooper', jobKey: 'job_2', jobId: '102' },
-      { assignmentId: 'asg-3', applywizzId: 'AWL-2', clientName: 'Bob Marley', jobKey: 'job_1', jobId: '101' }
+      { assignmentId: 'asg-3', applywizzId: 'AWL-2', clientName: 'Bob Marley', jobKey: 'job_1', jobId: '101' },
+      { assignmentId: 'asg-4', applywizzId: 'AWL-3', clientName: 'Charlie Chaplin', jobKey: 'job_2', jobId: '102' }
     ],
     uniqueJobs: [
       { jobKey: 'job_1', jobId: '101' },
@@ -63,8 +65,8 @@ test('computeDashboardMetrics calculates accurate KPI counts and client list', a
 
   const { metrics, clients } = result;
 
-  assert.equal(metrics.totalClients, 2);
-  assert.equal(metrics.totalJobs, 3);
+  assert.equal(metrics.totalClients, 3);
+  assert.equal(metrics.totalJobs, 4);
   assert.equal(metrics.uniqueUrls, 2);
   assert.equal(metrics.scannedUrls, 1);
   assert.equal(metrics.unlockableApplications, 2, 'Should unlock 2 assignments matching job_1');
@@ -73,9 +75,14 @@ test('computeDashboardMetrics calculates accurate KPI counts and client list', a
   assert.equal(metrics.dashboardReviewApps, 1);
   assert.equal(metrics.dashboardReviewQuestions, 1);
 
-  assert.equal(clients.length, 2);
+  // Clients list only includes AWL-1 and AWL-2 (AWL-3 has no resolved applications)
+  assert.equal(clients.length, 2, 'Unresolved candidate AWL-3 should be hidden from dashboard clients');
   assert.equal(clients[0].applywizzId, 'AWL-1');
   assert.equal(clients[0].clientName, 'Alice Cooper');
+  assert.equal(clients[1].applywizzId, 'AWL-2');
+  assert.ok(Array.isArray(result.cas));
+  assert.ok(typeof result.clientToCaMap === 'object');
+  assert.ok(typeof result.unassignedClientsCount === 'number');
 });
 
 test('saveAnswers performs in-place upsert in question_bank.csv with zero row duplication', async () => {

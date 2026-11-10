@@ -47,9 +47,15 @@ export class ResumeService {
           const arrayBuffer = await res.arrayBuffer();
           const buffer = Buffer.from(arrayBuffer);
           if (buffer.length > 0) {
-            await fs.writeFile(targetFile, buffer);
-            console.error(`[ResumeService] Successfully downloaded and cached resume for ${applywizzId} (${buffer.length} bytes)`);
-            return targetFile;
+            // Derive filename from URL slug if possible, else fallback to applywizzId
+            const urlParts = rawUrl.split('/');
+            let filename = urlParts[urlParts.length - 1].split('?')[0];
+            if (!filename.toLowerCase().endsWith('.pdf')) filename = `${applywizzId || 'candidate'}_resume.pdf`;
+            const customTargetFile = path.resolve(this.cacheDir, filename);
+            
+            await fs.writeFile(customTargetFile, buffer);
+            console.error(`[ResumeService] Successfully downloaded and cached resume for ${applywizzId} as ${filename} (${buffer.length} bytes)`);
+            return customTargetFile;
           }
         } else {
           console.warn(`[ResumeService] S3 resume download returned status ${res.status} for ${applywizzId}`);

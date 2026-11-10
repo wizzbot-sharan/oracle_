@@ -63,6 +63,7 @@ export const config = Object.freeze({
     submitWaitMs: numberEnv('SUBMISSION_SETTLE_MS', 10000),
     submitDir: path.resolve(rootDir, process.env.SUBMISSION_DIR ?? 'data/submit'),
     resumeDir: path.resolve(rootDir, process.env.RESUME_DIR ?? 'data/runtime/resumes'),
-    statusPath: path.resolve(rootDir, process.env.SUBMISSION_STATUS_PATH ?? 'data/submission-status.json')
+    statusPath: path.resolve(rootDir, process.env.SUBMISSION_STATUS_PATH ?? 'data/submission-status.json'),
+    dryRun: process.env.SUBMISSION_DRY_RUN !== 'false'
   }
 });

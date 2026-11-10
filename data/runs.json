@@ -2496,5 +2496,50 @@
     "applicationId": "app_538ef441aa8527f7",
     "jobId": "4711",
     "tenantHost": "edwa.fa.us2.oraclecloud.com"
+  },
+  {
+    "eventId": "evt_23942380-08ec-4091-93c9-ce1175bf5181",
+    "type": "phase4.fill_complete",
+    "at": "2026-11-10T17:05:03.037Z",
+    "applicationId": "app_538ef441aa8527f7",
+    "failures": 15
+  },
+  {
+    "eventId": "evt_a75b8de9-e59b-4fd7-930a-0fee019978e1",
+    "type": "phase1.authenticated",
+    "at": "2026-11-10T17:36:52.068Z",
+    "applicationId": "app_538ef441aa8527f7",
+    "jobId": "4711",
+    "tenantHost": "edwa.fa.us2.oraclecloud.com"
+  },
+  {
+    "eventId": "evt_08feceb7-7eac-4697-8551-bd56c8155517",
+    "type": "phase4.fill_complete",
+    "at": "2026-11-10T17:38:54.925Z",
+    "applicationId": "app_538ef441aa8527f7",
+    "failures": 8
+  },
+  {
+    "eventId": "evt_23594b85-4a98-4783-9543-c261466e65e1",
+    "type": "phase1.authenticated",
+    "at": "2026-11-10T17:40:44.601Z",
+    "applicationId": "app_538ef441aa8527f7",
+    "jobId": "4711",
+    "tenantHost": "edwa.fa.us2.oraclecloud.com"
+  },
+  {
+    "eventId": "evt_7e194013-0b1f-4411-9026-4b0cc0bd2a84",
+    "type": "phase4.fill_complete",
+    "at": "2026-11-10T17:40:58.265Z",
+    "applicationId": "app_538ef441aa8527f7",
+    "failures": 0
+  },
+  {
+    "eventId": "evt_128397a6-a614-43ac-bfa0-7c94022fdc27",
+    "type": "phase3.applications_resolved",
+    "at": "2026-11-10T18:40:01.700Z",
+    "count": 138,
+    "resolved": 2,
+    "needsInput": 1
   }
 ]

@@ -227,11 +227,12 @@ export function coerceToMultiSelect(value, availableOptions = []) {
  */
 export function coerceToString(value, availableOptions = []) {
   if (value === null || value === undefined) return '';
+  const options = Array.isArray(availableOptions) ? availableOptions : [];
 
   if (typeof value === 'boolean') {
-    if (availableOptions.length > 0) {
-      const truthy = availableOptions.find(opt => /^(yes|agree|true)$/i.test(String(opt).trim()));
-      const falsy = availableOptions.find(opt => /^(no|disagree|false)$/i.test(String(opt).trim()));
+    if (options.length > 0) {
+      const truthy = options.find(opt => /^(yes|agree|true)$/i.test(String(opt).trim()));
+      const falsy = options.find(opt => /^(no|disagree|false)$/i.test(String(opt).trim()));
       if (value && truthy) return truthy;
       if (!value && falsy) return falsy;
     }
@@ -240,18 +241,18 @@ export function coerceToString(value, availableOptions = []) {
 
   if (Array.isArray(value)) {
     if (!value.length) return '';
-    if (availableOptions.length > 0) {
-      const match = findBestOptionMatch(value, availableOptions);
+    if (options.length > 0) {
+      const match = findBestOptionMatch(value, options);
       if (match) return match;
     }
     return String(value[0]);
   }
 
   const str = String(value).trim();
-  if (availableOptions.length > 0) {
-    const exactCaseInsensitive = availableOptions.find(opt => String(opt).trim().toLowerCase() === str.toLowerCase());
+  if (options.length > 0) {
+    const exactCaseInsensitive = options.find(opt => String(opt).trim().toLowerCase() === str.toLowerCase());
     if (exactCaseInsensitive) return exactCaseInsensitive;
-    const match = findBestOptionMatch([str], availableOptions, 50);
+    const match = findBestOptionMatch([str], options, 50);
     if (match) return match;
   }
 

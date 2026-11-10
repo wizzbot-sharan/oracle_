@@ -441,3 +441,120 @@ test('Phase3AnswerResolution supports range, client, and company filters with du
   assert.equal(companyResult.batchSummary.candidateApplications, 2);
   assert.equal(companyResult.batchSummary.targetedJobs, 1);
 });
+
+test('Phase3AnswerResolution validates repeatable group child fields and flags missing required fields as needs_input', async () => {
+  const tmpDir = path.join(os.tmpdir(), `phase3-child-fields-test-${Date.now()}`);
+  fs.mkdirSync(tmpDir, { recursive: true });
+
+  const qbCsvPath = path.join(tmpDir, 'question_bank.csv');
+  fs.writeFileSync(qbCsvPath, 'id,applywizz_id,question_label,field_type,value,source,confidence,created_at,updated_at\n', 'utf8');
+
+  const clientsJsonPath = path.join(tmpDir, 'clients.json');
+  fs.writeFileSync(clientsJsonPath, JSON.stringify({
+    'AWL-EXP-1': {
+      client: { full_name: 'Alex Rivera', personal_email: 'alex@example.com', callable_phone: '+1 555-4321' },
+      additional_information: {
+        is_over_18: true,
+        eligible_to_work_in_us: true,
+        experience_records: [
+          {
+            title: 'Quality Engineer',
+            company: 'KIK Consumer Products',
+            startDate: '01/2021',
+            endDate: 'Present'
+          }
+        ]
+      }
+    }
+  }), 'utf8');
+
+  const templateWithRepeatable = {
+    templateId: 'tpl_kik_repeatable',
+    fields: [
+      { id: 'first_name', label: 'First Name', type: 'text', required: true }
+    ],
+    repeatableGroups: [
+      {
+        id: 'experience',
+        label: 'Work Experience',
+        required: true,
+        children: [
+          { id: 'employer_name', label: 'Employer Name', type: 'text', required: true },
+          { id: 'employer_city', label: 'Employer City', type: 'text', required: true },
+          { id: 'country_code', label: 'Employer Country', type: 'combobox', required: true },
+          { id: 'leaving_reason', label: 'Reason for Leaving', type: 'text', required: true }
+        ]
+      }
+    ]
+  };
+
+  const inMemoryStore = {
+    data: {
+      jobs: {
+        assignments: [
+          { applywizzId: 'AWL-EXP-1', jobKey: 'job_kik_1', companyName: 'KIK Products', canonicalUrl: 'https://test/job/kik1' }
+        ]
+      },
+      'form-templates': {
+        job_kik_1: templateWithRepeatable
+      },
+      applications: []
+    },
+    async read(key) { return this.data[key] ?? []; },
+    readSync(key) { return this.data[key] ?? []; },
+    async write(key, val) { this.data[key] = val; },
+    async update(key, fallback, fn) { this.data[key] = fn(this.data[key] ?? fallback); }
+  };
+
+  const phase3 = new Phase3AnswerResolution({
+    store: inMemoryStore,
+    config: {
+      clientsPath: clientsJsonPath,
+      questionBankCsvPath: qbCsvPath
+    }
+  });
+
+  const res = await phase3.createOrResolveApplications({ jobKey: 'job_kik_1' });
+  assert.equal(res.length, 1);
+  const app = res[0];
+
+  // 1. Should flag as needs_input because employer_city and leaving_reason were not provided in experience_records
+  assert.equal(app.status, 'needs_input', 'Application should be needs_input due to missing required child fields');
+  assert.ok(app.unresolvedFields.includes('experience[0].leaving_reason'), 'Should specifically identify missing child field id');
+
+  // 2. Direct validation with unresolved():
+  const mockValuesMissing = {
+    first_name: { value: 'Alex', confidence: 1.0 },
+    experience: {
+      value: [
+        {
+          employer_name: 'KIK Consumer Products',
+          employer_city: 'Slough',
+          country_code: 'United Kingdom',
+          leaving_reason: '' // empty!
+        }
+      ]
+    }
+  };
+  const unres = phase3.unresolved(templateWithRepeatable, mockValuesMissing);
+  assert.equal(unres.length, 1);
+  assert.equal(unres[0].id, 'experience[0].leaving_reason');
+  assert.equal(unres[0].label, 'Work Experience #1: Reason for Leaving');
+
+  // 3. When all child fields are provided, unresolved() should be empty
+  const mockValuesFilled = {
+    first_name: { value: 'Alex', confidence: 1.0 },
+    experience: {
+      value: [
+        {
+          employer_name: 'KIK Consumer Products',
+          employer_city: 'Slough',
+          country_code: 'United Kingdom',
+          leaving_reason: 'Career growth'
+        }
+      ]
+    }
+  };
+  const unresFilled = phase3.unresolved(templateWithRepeatable, mockValuesFilled);
+  assert.equal(unresFilled.length, 0, 'Should be 0 missing fields when all required child fields are filled');
+});

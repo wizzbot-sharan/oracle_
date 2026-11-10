@@ -65,12 +65,22 @@ test('OracleRecruitingAdapter maps repeatable group child fields to candidate re
   const expRecord = {
     title: 'Senior Software Engineer',
     company: 'Enterprise Cloud Corp',
+    country: 'United States',
+    city: 'New Haven',
+    phone: '+1 555-0199',
+    ok_to_contact_supervisor: 'Yes',
+    leaving_reason: 'Relocation',
     startDate: '03/2021',
     endDate: 'Present',
     description: 'Designed and built distributed microservices.'
   };
 
   assert.equal(adapter._resolveChildAnswerForTest({ id: 'employer_name', label: 'Employer Name' }, expRecord), 'Enterprise Cloud Corp');
+  assert.equal(adapter._resolveChildAnswerForTest({ id: 'country_code', label: 'Employer Country' }, expRecord), 'United States');
+  assert.equal(adapter._resolveChildAnswerForTest({ id: 'employer_city', label: 'Employer City' }, expRecord), 'New Haven');
+  assert.equal(adapter._resolveChildAnswerForTest({ id: 'employer_phone', label: 'Employer Phone' }, expRecord), '+1 555-0199');
+  assert.equal(adapter._resolveChildAnswerForTest({ id: 'ok_to_contact_supervisor', label: 'OK to Contact Supervisor' }, expRecord), 'Yes');
+  assert.equal(adapter._resolveChildAnswerForTest({ id: 'leaving_reason', label: 'Reason for Leaving' }, expRecord), 'Relocation');
   assert.equal(adapter._resolveChildAnswerForTest({ id: 'job_title', label: 'Job Title' }, expRecord), 'Senior Software Engineer');
   assert.equal(adapter._resolveChildAnswerForTest({ id: 'start_date', label: 'Start Date Month' }, expRecord), 'March');
   assert.equal(adapter._resolveChildAnswerForTest({ id: 'start_date_start_date_year', label: 'Start Date Year' }, expRecord), '2021');

@@ -51208,8 +51208,8 @@
     "canonicalUrl": "https://edwa.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/job/4711",
     "tenantHost": "edwa.fa.us2.oraclecloud.com",
     "tenantKey": "edwa",
-    "status": "fill_failed",
-    "reviewStatus": "not_ready",
+    "status": "needs_input",
+    "reviewStatus": "pending",
     "values": {
       "select_the_races_you_identify_with": {
         "value": null,
@@ -51584,19 +51584,34 @@
         "reviewed": false
       }
     },
-    "unresolvedFields": [],
+    "unresolvedFields": [
+      "experience[0].end_date",
+      "experience[0].end_date_end_date_year",
+      "experience[0].country_code",
+      "experience[0].employer_city",
+      "experience[0].ok_to_contact_supervisor",
+      "experience[0].leaving_reason",
+      "education[0].country_code",
+      "education[0].city_city"
+    ],
     "fillResults": [
       {
         "fieldId": "first_name",
-        "status": "verified"
+        "status": "verified",
+        "prefilled": true,
+        "currentValue": "Sathvik"
       },
       {
         "fieldId": "last_name",
-        "status": "verified"
+        "status": "verified",
+        "prefilled": true,
+        "currentValue": "Manoj Karpurapu"
       },
       {
         "fieldId": "title",
-        "status": "verified"
+        "status": "verified",
+        "prefilled": true,
+        "currentValue": "Mr."
       },
       {
         "fieldId": "email",
@@ -51624,50 +51639,82 @@
       },
       {
         "fieldId": "address_line1",
-        "status": "failed",
-        "error": "Cannot read properties of null (reading 'length')"
-      },
-      {
-        "fieldId": "postal_code",
-        "status": "failed",
-        "error": "Cannot read properties of null (reading 'length')"
-      },
-      {
-        "fieldId": "city",
-        "status": "failed",
-        "error": "Cannot read properties of null (reading 'length')"
-      },
-      {
-        "fieldId": "region2",
-        "status": "failed",
-        "error": "Cannot read properties of null (reading 'length')"
-      },
-      {
-        "fieldId": "region1",
-        "status": "failed",
-        "error": "Cannot read properties of null (reading 'length')"
-      },
-      {
-        "fieldId": "are_you_legally_authorized_to_work_in_the_united_states",
         "status": "verified"
       },
       {
-        "fieldId": "experience",
-        "status": "failed",
-        "error": "locator.click: Target page, context or browser has been closed"
+        "fieldId": "postal_code",
+        "status": "verified",
+        "prefilled": true,
+        "currentValue": "79065"
       },
       {
-        "fieldId": "education",
-        "status": "failed",
-        "error": "locator.click: Target page, context or browser has been closed"
+        "fieldId": "city",
+        "status": "verified",
+        "prefilled": true,
+        "currentValue": "Pampa"
       },
       {
-        "fieldId": "supporting_links",
-        "status": "failed",
-        "error": "locator.click: Target page, context or browser has been closed"
+        "fieldId": "region2",
+        "status": "verified",
+        "prefilled": true,
+        "currentValue": "TX"
+      },
+      {
+        "fieldId": "region1",
+        "status": "verified",
+        "prefilled": true,
+        "currentValue": "Gray"
+      },
+      {
+        "fieldId": "are_you_legally_authorized_to_work_in_the_united_states",
+        "status": "verified",
+        "prefilled": true,
+        "currentValue": "Yes"
+      },
+      {
+        "fieldId": "will_you_now_or_in_the_future_require_visa_sponsorship_to_work_in_the_united_states",
+        "status": "verified",
+        "prefilled": true,
+        "currentValue": "No"
+      },
+      {
+        "fieldId": "have_you_previously_worked_for_kik_consumer_products_or_a_kik_subsidiary",
+        "status": "verified",
+        "prefilled": true,
+        "currentValue": "No"
+      },
+      {
+        "fieldId": "site_link_1",
+        "status": "verified",
+        "prefilled": true,
+        "currentValue": "https://www.linkedin.com/in/sathvik648/"
+      },
+      {
+        "fieldId": "us_standard_ora_gender_standard",
+        "status": "verified",
+        "prefilled": true,
+        "currentValue": "Male"
+      },
+      {
+        "fieldId": "do_you_have_a_disability",
+        "status": "verified",
+        "prefilled": true,
+        "currentValue": "No, I do not have a disability and have not had one in the past"
+      },
+      {
+        "fieldId": "us_standard_ora_veteran_status_standard",
+        "status": "verified",
+        "prefilled": true,
+        "currentValue": "Not a Protected Veteran"
+      },
+      {
+        "fieldId": "full_name",
+        "status": "verified",
+        "prefilled": true,
+        "currentValue": "Sathvik Manoj Karpurapu"
       }
     ],
-    "updatedAt": "2026-11-10T16:57:47.554Z"
+    "updatedAt": "2026-11-10T18:40:01.690Z"
   },
   {
     "applicationId": "app_799e53d52745043c",
@@ -55374,5 +55421,705 @@
     ],
     "fillResults": [],
     "updatedAt": "2026-11-10T16:54:23.646Z"
+  },
+  {
+    "applicationId": "app_18fc03eec273edd8",
+    "userId": "AWL-41589",
+    "applywizzId": "AWL-41589",
+    "clientName": "RAHULREDDY BANALA",
+    "companyName": "KIK Consumer Products",
+    "jobId": "4711",
+    "jobKey": "job_405",
+    "templateId": "tpl_c1eaa8d25bf2aee0",
+    "canonicalUrl": "https://edwa.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/job/4711",
+    "tenantHost": "edwa.fa.us2.oraclecloud.com",
+    "tenantKey": "edwa",
+    "status": "answers_resolved",
+    "reviewStatus": "not_ready",
+    "values": {
+      "select_the_races_you_identify_with": {
+        "value": null,
+        "source": null,
+        "stage": "stage5_operator",
+        "tier": null,
+        "confidence": 0,
+        "questionLabel": "Select the races you identify with.",
+        "fieldType": "multi-checkbox",
+        "reviewed": false
+      },
+      "first_name": {
+        "value": "RAHULREDDY",
+        "source": "tier1_client_profile",
+        "stage": "stage1_taxonomy",
+        "tier": 1,
+        "confidence": 1,
+        "questionLabel": "First Name",
+        "fieldType": "text",
+        "reviewed": false
+      },
+      "last_name": {
+        "value": "BANALA",
+        "source": "tier1_client_profile",
+        "stage": "stage1_taxonomy",
+        "tier": 1,
+        "confidence": 1,
+        "questionLabel": "Last Name",
+        "fieldType": "text",
+        "reviewed": false
+      },
+      "title": {
+        "value": "Mr.",
+        "source": "tier1_client_profile",
+        "stage": "stage1_taxonomy",
+        "tier": 1,
+        "confidence": 0.95,
+        "questionLabel": "Title",
+        "fieldType": "radio",
+        "reviewed": false
+      },
+      "middle_names": {
+        "value": "",
+        "source": "tier1_client_profile",
+        "stage": "stage1_taxonomy",
+        "tier": 1,
+        "confidence": 1,
+        "questionLabel": "Middle Name",
+        "fieldType": "text",
+        "reviewed": false
+      },
+      "email": {
+        "value": "banalarahulreddy@gmail.com",
+        "source": "tier1_client_profile",
+        "stage": "stage1_taxonomy",
+        "tier": 1,
+        "confidence": 1,
+        "questionLabel": "Email Address",
+        "fieldType": "email",
+        "reviewed": false
+      },
+      "phone_country_code": {
+        "value": "+1",
+        "source": "tier1_client_profile",
+        "stage": "stage1_taxonomy",
+        "tier": 1,
+        "confidence": 1,
+        "questionLabel": "Country code",
+        "fieldType": "combobox",
+        "reviewed": false
+      },
+      "phone_number": {
+        "value": "3138581437",
+        "source": "tier1_client_profile",
+        "stage": "stage1_taxonomy",
+        "tier": 1,
+        "confidence": 1,
+        "questionLabel": "Phone Number",
+        "fieldType": "tel",
+        "reviewed": false
+      },
+      "country": {
+        "value": "United States",
+        "source": "tier1_client_profile",
+        "stage": "stage1_taxonomy",
+        "tier": 1,
+        "confidence": 1,
+        "questionLabel": "Country *",
+        "fieldType": "combobox",
+        "reviewed": false
+      },
+      "address_line1": {
+        "value": "15865 Goddard road",
+        "source": "tier1_client_profile",
+        "stage": "stage1_taxonomy",
+        "tier": 1,
+        "confidence": 1,
+        "questionLabel": "Address Line 1 *",
+        "fieldType": "combobox",
+        "reviewed": false
+      },
+      "address_line2": {
+        "value": "Apt 306",
+        "source": "tier1_client_profile",
+        "stage": "stage1_taxonomy",
+        "tier": 1,
+        "confidence": 1,
+        "questionLabel": "Address Line 2",
+        "fieldType": "text",
+        "reviewed": false
+      },
+      "postal_code": {
+        "value": "48195",
+        "source": "tier1_client_profile",
+        "stage": "stage1_taxonomy",
+        "tier": 1,
+        "confidence": 1,
+        "questionLabel": "ZIP Code *",
+        "fieldType": "combobox",
+        "reviewed": false
+      },
+      "city": {
+        "value": "Michigan",
+        "source": "tier1_client_profile",
+        "stage": "stage1_taxonomy",
+        "tier": 1,
+        "confidence": 1,
+        "questionLabel": "City *",
+        "fieldType": "combobox",
+        "reviewed": false
+      },
+      "region2": {
+        "value": "MI",
+        "source": "tier1_client_profile",
+        "stage": "stage1_taxonomy",
+        "tier": 1,
+        "confidence": 1,
+        "questionLabel": "State *",
+        "fieldType": "combobox",
+        "reviewed": false
+      },
+      "addl_address_attribute4": {
+        "value": null,
+        "source": null,
+        "stage": "stage5_operator",
+        "tier": null,
+        "confidence": 0,
+        "questionLabel": "Tax District",
+        "fieldType": "text",
+        "reviewed": false
+      },
+      "region1": {
+        "value": "NONE",
+        "source": "tier2_question_bank_global",
+        "stage": "stage2_fuzzy",
+        "tier": 2,
+        "confidence": 0.85,
+        "questionLabel": "County *",
+        "fieldType": "combobox",
+        "reviewed": false
+      },
+      "are_you_legally_authorized_to_work_in_the_united_states": {
+        "value": "Yes",
+        "source": "tier1_client_profile",
+        "stage": "stage1_taxonomy",
+        "tier": 1,
+        "confidence": 1,
+        "questionLabel": "Are you legally authorized to work in the United States?",
+        "fieldType": "radio",
+        "reviewed": false
+      },
+      "will_you_now_or_in_the_future_require_visa_sponsorship_to_work_in_the_united_states": {
+        "value": "No",
+        "source": "tier1_client_profile",
+        "stage": "stage1_taxonomy",
+        "tier": 1,
+        "confidence": 1,
+        "questionLabel": "Will you now or in the future require visa sponsorship to work in the United States?",
+        "fieldType": "radio",
+        "reviewed": false
+      },
+      "have_you_previously_worked_for_kik_consumer_products_or_a_kik_subsidiary": {
+        "value": "No",
+        "source": "tier1_client_profile",
+        "stage": "stage1_taxonomy",
+        "tier": 1,
+        "confidence": 1,
+        "questionLabel": "Have you previously worked for KIK Consumer Products or a KIK subsidiary?",
+        "fieldType": "radio",
+        "reviewed": false
+      },
+      "resume": {
+        "value": "https://applywizz-prod.s3.us-east-2.amazonaws.com/CRM/AWL-41589-05112026-0458-resume_rahulreddy-banala_me.pdf",
+        "source": "tier3_resume",
+        "stage": "stage1_taxonomy",
+        "tier": 3,
+        "confidence": 0.9,
+        "questionLabel": "Upload Resume",
+        "fieldType": "file",
+        "reviewed": false
+      },
+      "cover_letter": {
+        "value": null,
+        "source": null,
+        "stage": "stage5_operator",
+        "tier": null,
+        "confidence": 0,
+        "questionLabel": "Upload Cover Letter",
+        "fieldType": "file",
+        "reviewed": false
+      },
+      "site_link_1": {
+        "value": null,
+        "source": null,
+        "stage": "stage5_operator",
+        "tier": null,
+        "confidence": 0,
+        "questionLabel": "Supporting Documents and URLs Link 1",
+        "fieldType": "url",
+        "reviewed": false
+      },
+      "i_am_hispanic_or_latino": {
+        "value": false,
+        "source": "tier1_client_profile",
+        "stage": "stage1_taxonomy",
+        "tier": 1,
+        "confidence": 1,
+        "questionLabel": "I am Hispanic or Latino.",
+        "fieldType": "checkbox",
+        "reviewed": false
+      },
+      "us_standard_ora_gender_standard": {
+        "value": "Male",
+        "source": "tier1_client_profile",
+        "stage": "stage1_taxonomy",
+        "tier": 1,
+        "confidence": 1,
+        "questionLabel": "Gender",
+        "fieldType": "combobox",
+        "reviewed": false
+      },
+      "do_you_have_a_disability": {
+        "value": "No, I do not have a disability and have not had one in the past",
+        "source": "tier1_client_profile",
+        "stage": "stage1_taxonomy",
+        "tier": 1,
+        "confidence": 1,
+        "questionLabel": "Do you have a disability?",
+        "fieldType": "radio",
+        "reviewed": false
+      },
+      "us_standard_ora_veteran_status_standard": {
+        "value": "Not a Protected Veteran",
+        "source": "tier1_client_profile",
+        "stage": "stage1_taxonomy",
+        "tier": 1,
+        "confidence": 1,
+        "questionLabel": "Veteran Status",
+        "fieldType": "combobox",
+        "reviewed": false
+      },
+      "i_agree_to_receive_updates_about_new_job_opportunities": {
+        "value": true,
+        "source": "tier1_client_profile",
+        "stage": "stage1_taxonomy",
+        "tier": 1,
+        "confidence": 1,
+        "questionLabel": "I agree to receive updates about new job opportunities.",
+        "fieldType": "checkbox",
+        "reviewed": false
+      },
+      "i_agree_to_receive_marketing_communications": {
+        "value": true,
+        "source": "tier1_client_profile",
+        "stage": "stage1_taxonomy",
+        "tier": 1,
+        "confidence": 1,
+        "questionLabel": "I agree to receive marketing communications",
+        "fieldType": "checkbox",
+        "reviewed": false
+      },
+      "full_name": {
+        "value": "RAHULREDDY BANALA",
+        "source": "tier1_client_profile",
+        "stage": "stage1_taxonomy",
+        "tier": 1,
+        "confidence": 1,
+        "questionLabel": "Full Name",
+        "fieldType": "text",
+        "reviewed": false
+      },
+      "experience": {
+        "value": [],
+        "source": "tier1_client_profile",
+        "stage": "stage1_taxonomy",
+        "tier": 1,
+        "confidence": 1,
+        "questionLabel": "experience",
+        "fieldType": "repeatable-group",
+        "reviewed": false
+      },
+      "education": {
+        "value": [],
+        "source": "tier1_client_profile",
+        "stage": "stage1_taxonomy",
+        "tier": 1,
+        "confidence": 1,
+        "questionLabel": "education",
+        "fieldType": "repeatable-group",
+        "reviewed": false
+      },
+      "supporting_links": {
+        "value": null,
+        "source": null,
+        "stage": "stage5_operator",
+        "tier": null,
+        "confidence": 0,
+        "questionLabel": "supporting links",
+        "fieldType": "repeatable-group",
+        "reviewed": false
+      },
+      "another_link": {
+        "value": null,
+        "source": null,
+        "stage": "stage5_operator",
+        "tier": null,
+        "confidence": 0,
+        "questionLabel": "another link",
+        "fieldType": "repeatable-group",
+        "reviewed": false
+      }
+    },
+    "unresolvedFields": [],
+    "fillResults": [],
+    "updatedAt": "2026-11-10T18:40:00.263Z"
+  },
+  {
+    "applicationId": "app_9d1c759d7d217db4",
+    "userId": "AWL-46682",
+    "applywizzId": "AWL-46682",
+    "clientName": "Ajay Sai Pallerla",
+    "companyName": "KIK Consumer Products",
+    "jobId": "4711",
+    "jobKey": "job_405",
+    "templateId": "tpl_c1eaa8d25bf2aee0",
+    "canonicalUrl": "https://edwa.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/job/4711",
+    "tenantHost": "edwa.fa.us2.oraclecloud.com",
+    "tenantKey": "edwa",
+    "status": "answers_resolved",
+    "reviewStatus": "not_ready",
+    "values": {
+      "select_the_races_you_identify_with": {
+        "value": null,
+        "source": null,
+        "stage": "stage5_operator",
+        "tier": null,
+        "confidence": 0,
+        "questionLabel": "Select the races you identify with.",
+        "fieldType": "multi-checkbox",
+        "reviewed": false
+      },
+      "first_name": {
+        "value": "Ajay",
+        "source": "tier1_client_profile",
+        "stage": "stage1_taxonomy",
+        "tier": 1,
+        "confidence": 1,
+        "questionLabel": "First Name",
+        "fieldType": "text",
+        "reviewed": false
+      },
+      "last_name": {
+        "value": "Sai Pallerla",
+        "source": "tier1_client_profile",
+        "stage": "stage1_taxonomy",
+        "tier": 1,
+        "confidence": 1,
+        "questionLabel": "Last Name",
+        "fieldType": "text",
+        "reviewed": false
+      },
+      "title": {
+        "value": "Mr.",
+        "source": "tier1_client_profile",
+        "stage": "stage1_taxonomy",
+        "tier": 1,
+        "confidence": 0.95,
+        "questionLabel": "Title",
+        "fieldType": "radio",
+        "reviewed": false
+      },
+      "middle_names": {
+        "value": "",
+        "source": "tier1_client_profile",
+        "stage": "stage1_taxonomy",
+        "tier": 1,
+        "confidence": 1,
+        "questionLabel": "Middle Name",
+        "fieldType": "text",
+        "reviewed": false
+      },
+      "email": {
+        "value": "pallerla.ajaysai@applywizard.ai",
+        "source": "tier1_client_profile",
+        "stage": "stage1_taxonomy",
+        "tier": 1,
+        "confidence": 1,
+        "questionLabel": "Email Address",
+        "fieldType": "email",
+        "reviewed": false
+      },
+      "phone_country_code": {
+        "value": "+1",
+        "source": "tier1_client_profile",
+        "stage": "stage1_taxonomy",
+        "tier": 1,
+        "confidence": 1,
+        "questionLabel": "Country code",
+        "fieldType": "combobox",
+        "reviewed": false
+      },
+      "phone_number": {
+        "value": "6146700665",
+        "source": "tier1_client_profile",
+        "stage": "stage1_taxonomy",
+        "tier": 1,
+        "confidence": 1,
+        "questionLabel": "Phone Number",
+        "fieldType": "tel",
+        "reviewed": false
+      },
+      "country": {
+        "value": "United States",
+        "source": "tier1_client_profile",
+        "stage": "stage1_taxonomy",
+        "tier": 1,
+        "confidence": 1,
+        "questionLabel": "Country *",
+        "fieldType": "combobox",
+        "reviewed": false
+      },
+      "address_line1": {
+        "value": "978 irving ave",
+        "source": "tier1_client_profile",
+        "stage": "stage1_taxonomy",
+        "tier": 1,
+        "confidence": 1,
+        "questionLabel": "Address Line 1 *",
+        "fieldType": "combobox",
+        "reviewed": false
+      },
+      "address_line2": {
+        "value": "Apt 15",
+        "source": "tier1_client_profile",
+        "stage": "stage1_taxonomy",
+        "tier": 1,
+        "confidence": 1,
+        "questionLabel": "Address Line 2",
+        "fieldType": "text",
+        "reviewed": false
+      },
+      "postal_code": {
+        "value": "45419",
+        "source": "tier1_client_profile",
+        "stage": "stage1_taxonomy",
+        "tier": 1,
+        "confidence": 1,
+        "questionLabel": "ZIP Code *",
+        "fieldType": "combobox",
+        "reviewed": false
+      },
+      "city": {
+        "value": "Dayton",
+        "source": "tier1_client_profile",
+        "stage": "stage1_taxonomy",
+        "tier": 1,
+        "confidence": 1,
+        "questionLabel": "City *",
+        "fieldType": "combobox",
+        "reviewed": false
+      },
+      "region2": {
+        "value": "OH",
+        "source": "tier1_client_profile",
+        "stage": "stage1_taxonomy",
+        "tier": 1,
+        "confidence": 1,
+        "questionLabel": "State *",
+        "fieldType": "combobox",
+        "reviewed": false
+      },
+      "addl_address_attribute4": {
+        "value": null,
+        "source": null,
+        "stage": "stage5_operator",
+        "tier": null,
+        "confidence": 0,
+        "questionLabel": "Tax District",
+        "fieldType": "text",
+        "reviewed": false
+      },
+      "region1": {
+        "value": "NONE",
+        "source": "tier2_question_bank_global",
+        "stage": "stage2_fuzzy",
+        "tier": 2,
+        "confidence": 0.85,
+        "questionLabel": "County *",
+        "fieldType": "combobox",
+        "reviewed": false
+      },
+      "are_you_legally_authorized_to_work_in_the_united_states": {
+        "value": "Yes",
+        "source": "tier1_client_profile",
+        "stage": "stage1_taxonomy",
+        "tier": 1,
+        "confidence": 1,
+        "questionLabel": "Are you legally authorized to work in the United States?",
+        "fieldType": "radio",
+        "reviewed": false
+      },
+      "will_you_now_or_in_the_future_require_visa_sponsorship_to_work_in_the_united_states": {
+        "value": "No",
+        "source": "tier1_client_profile",
+        "stage": "stage1_taxonomy",
+        "tier": 1,
+        "confidence": 1,
+        "questionLabel": "Will you now or in the future require visa sponsorship to work in the United States?",
+        "fieldType": "radio",
+        "reviewed": false
+      },
+      "have_you_previously_worked_for_kik_consumer_products_or_a_kik_subsidiary": {
+        "value": "No",
+        "source": "tier1_client_profile",
+        "stage": "stage1_taxonomy",
+        "tier": 1,
+        "confidence": 1,
+        "questionLabel": "Have you previously worked for KIK Consumer Products or a KIK subsidiary?",
+        "fieldType": "radio",
+        "reviewed": false
+      },
+      "resume": {
+        "value": "https://applywizz-prod.s3.us-east-2.amazonaws.com/CRM/AWL-46682-02112026-1719-resume_p-ajay-sai-_me.pdf",
+        "source": "tier3_resume",
+        "stage": "stage1_taxonomy",
+        "tier": 3,
+        "confidence": 0.9,
+        "questionLabel": "Upload Resume",
+        "fieldType": "file",
+        "reviewed": false
+      },
+      "cover_letter": {
+        "value": null,
+        "source": null,
+        "stage": "stage5_operator",
+        "tier": null,
+        "confidence": 0,
+        "questionLabel": "Upload Cover Letter",
+        "fieldType": "file",
+        "reviewed": false
+      },
+      "site_link_1": {
+        "value": null,
+        "source": null,
+        "stage": "stage5_operator",
+        "tier": null,
+        "confidence": 0,
+        "questionLabel": "Supporting Documents and URLs Link 1",
+        "fieldType": "url",
+        "reviewed": false
+      },
+      "i_am_hispanic_or_latino": {
+        "value": false,
+        "source": "tier1_client_profile",
+        "stage": "stage1_taxonomy",
+        "tier": 1,
+        "confidence": 1,
+        "questionLabel": "I am Hispanic or Latino.",
+        "fieldType": "checkbox",
+        "reviewed": false
+      },
+      "us_standard_ora_gender_standard": {
+        "value": "Male",
+        "source": "tier1_client_profile",
+        "stage": "stage1_taxonomy",
+        "tier": 1,
+        "confidence": 1,
+        "questionLabel": "Gender",
+        "fieldType": "combobox",
+        "reviewed": false
+      },
+      "do_you_have_a_disability": {
+        "value": "No, I do not have a disability and have not had one in the past",
+        "source": "tier1_client_profile",
+        "stage": "stage1_taxonomy",
+        "tier": 1,
+        "confidence": 1,
+        "questionLabel": "Do you have a disability?",
+        "fieldType": "radio",
+        "reviewed": false
+      },
+      "us_standard_ora_veteran_status_standard": {
+        "value": "Not a Protected Veteran",
+        "source": "tier1_client_profile",
+        "stage": "stage1_taxonomy",
+        "tier": 1,
+        "confidence": 1,
+        "questionLabel": "Veteran Status",
+        "fieldType": "combobox",
+        "reviewed": false
+      },
+      "i_agree_to_receive_updates_about_new_job_opportunities": {
+        "value": true,
+        "source": "tier1_client_profile",
+        "stage": "stage1_taxonomy",
+        "tier": 1,
+        "confidence": 1,
+        "questionLabel": "I agree to receive updates about new job opportunities.",
+        "fieldType": "checkbox",
+        "reviewed": false
+      },
+      "i_agree_to_receive_marketing_communications": {
+        "value": true,
+        "source": "tier1_client_profile",
+        "stage": "stage1_taxonomy",
+        "tier": 1,
+        "confidence": 1,
+        "questionLabel": "I agree to receive marketing communications",
+        "fieldType": "checkbox",
+        "reviewed": false
+      },
+      "full_name": {
+        "value": "Ajay Sai Pallerla",
+        "source": "tier1_client_profile",
+        "stage": "stage1_taxonomy",
+        "tier": 1,
+        "confidence": 1,
+        "questionLabel": "Full Name",
+        "fieldType": "text",
+        "reviewed": false
+      },
+      "experience": {
+        "value": [],
+        "source": "tier1_client_profile",
+        "stage": "stage1_taxonomy",
+        "tier": 1,
+        "confidence": 1,
+        "questionLabel": "experience",
+        "fieldType": "repeatable-group",
+        "reviewed": false
+      },
+      "education": {
+        "value": [],
+        "source": "tier1_client_profile",
+        "stage": "stage1_taxonomy",
+        "tier": 1,
+        "confidence": 1,
+        "questionLabel": "education",
+        "fieldType": "repeatable-group",
+        "reviewed": false
+      },
+      "supporting_links": {
+        "value": null,
+        "source": null,
+        "stage": "stage5_operator",
+        "tier": null,
+        "confidence": 0,
+        "questionLabel": "supporting links",
+        "fieldType": "repeatable-group",
+        "reviewed": false
+      },
+      "another_link": {
+        "value": null,
+        "source": null,
+        "stage": "stage5_operator",
+        "tier": null,
+        "confidence": 0,
+        "questionLabel": "another link",
+        "fieldType": "repeatable-group",
+        "reviewed": false
+      }
+    },
+    "unresolvedFields": [],
+    "fillResults": [],
+    "updatedAt": "2026-11-10T18:40:01.184Z"
   }
 ]

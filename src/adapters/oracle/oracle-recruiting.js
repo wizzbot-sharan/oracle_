@@ -106,6 +106,8 @@ export class OracleRecruitingAdapter {
       '--no-sandbox',
       '--disable-setuid-sandbox',
       '--disable-dev-shm-usage',
+      '--deny-permission-prompts',
+      '--disable-features=Geolocation',
       ...(this.headless ? ['--headless=new'] : []),
       '--disable-gpu',
       '--disable-software-rasterizer',
@@ -1374,13 +1376,19 @@ export class OracleRecruitingAdapter {
     const { page } = session;
     const jobId = context.jobId ?? 'unknown';
     const userId = context.userId ?? 'unknown';
+    const applicationId = context.applicationId ?? `${userId}_${jobId}`;
 
     await this.#ensureStandardApplyFlow(page);
 
     const results = [];
     const filledFieldIds = new Set();
+    const screenshots = [];
+    const logs = [];
     let pageNumber = 1;
     const maxPages = 10;
+
+    const proofDir = path.resolve('data/submit/proofs', applicationId);
+    await fs.mkdir(proofDir, { recursive: true }).catch(() => {});
 
     console.error(`[Phase 4] [Job ${jobId} | User ${userId}] Starting DOM-driven multi-page form fill across ${template.fields?.length ?? 0} fields...`);
 
@@ -1552,16 +1560,55 @@ export class OracleRecruitingAdapter {
       const submitButton = page.getByRole('button', { name: SUBMIT_PATTERN }).first();
       const isSubmitVisible = (await visible(submitButton)) && (await submitButton.isVisible().catch(() => false));
       if (isSubmitVisible) {
-        console.error(`[Phase 4] [Job ${jobId} | User ${userId}] Submit button detected on page ${pageNumber}. Halting for operator review.`);
+        console.error(`[Phase 4] [Job ${jobId} | User ${userId}] Submit button detected on page ${pageNumber}. Capturing final proof screenshot.`);
         await this.#smoothScrollIntoView(page, submitButton);
+
+        const filename = `page_${pageNumber}_final_submit.png`;
+        const fullPath = path.join(proofDir, filename);
+        if (page?.screenshot) {
+          await page.screenshot({ path: fullPath, fullPage: true }).catch(err => console.warn('[Screenshot Warning]:', err.message));
+          screenshots.push({
+            pageNumber,
+            step: 'final_submit',
+            label: `Page ${pageNumber} (Submit Detected)`,
+            filename,
+            capturedAt: new Date().toISOString()
+          });
+        }
         break;
       }
 
       // Check if a safe Next button is available to advance
       const nextButton = this.#nextButtonLocator(page);
       if (!(await visible(nextButton))) {
-        console.error(`[Phase 4] [Job ${jobId} | User ${userId}] No further Next button on page ${pageNumber}; fill completed. Halting for review.`);
+        console.error(`[Phase 4] [Job ${jobId} | User ${userId}] No further Next button on page ${pageNumber}; fill completed.`);
+        const filename = `page_${pageNumber}_completed.png`;
+        const fullPath = path.join(proofDir, filename);
+        if (page?.screenshot) {
+          await page.screenshot({ path: fullPath, fullPage: true }).catch(err => console.warn('[Screenshot Warning]:', err.message));
+          screenshots.push({
+            pageNumber,
+            step: 'completed',
+            label: `Page ${pageNumber} (Completed)`,
+            filename,
+            capturedAt: new Date().toISOString()
+          });
+        }
         break;
+      }
+
+      // Capture audit screenshot before clicking Next
+      const beforeNextFilename = `page_${pageNumber}_before_next.png`;
+      const beforeNextPath = path.join(proofDir, beforeNextFilename);
+      if (page?.screenshot) {
+        await page.screenshot({ path: beforeNextPath, fullPage: true }).catch(err => console.warn('[Screenshot Warning]:', err.message));
+        screenshots.push({
+          pageNumber,
+          step: 'before_next',
+          label: `Page ${pageNumber} (Before Next)`,
+          filename: beforeNextFilename,
+          capturedAt: new Date().toISOString()
+        });
       }
 
       const currentUrl = page.url();
@@ -1573,7 +1620,19 @@ export class OracleRecruitingAdapter {
       await page.waitForLoadState('domcontentloaded').catch(() => {});
 
       if (page.url() === currentUrl && (await visible(submitButton)) && (await submitButton.isVisible().catch(() => false))) {
-        console.error(`[Phase 4] [Job ${jobId} | User ${userId}] Submit button reached. Halting for review.`);
+        console.error(`[Phase 4] [Job ${jobId} | User ${userId}] Submit button reached. Capturing final proof screenshot.`);
+        const filename = `page_${pageNumber + 1}_final_submit.png`;
+        const fullPath = path.join(proofDir, filename);
+        if (page?.screenshot) {
+          await page.screenshot({ path: fullPath, fullPage: true }).catch(() => {});
+          screenshots.push({
+            pageNumber: pageNumber + 1,
+            step: 'final_submit',
+            label: `Page ${pageNumber + 1} (Submit Detected)`,
+            filename,
+            capturedAt: new Date().toISOString()
+          });
+        }
         break;
       }
       pageNumber += 1;
@@ -1581,7 +1640,9 @@ export class OracleRecruitingAdapter {
 
     const verifiedCount = results.filter(r => r.status === 'verified').length;
     const failedCount = results.filter(r => r.status === 'failed').length;
-    console.error(`[Phase 4] [Job ${jobId} | User ${userId}] Fill completed: ${verifiedCount} verified, ${failedCount} failed. Halting for operator review.`);
+    console.error(`[Phase 4] [Job ${jobId} | User ${userId}] Fill completed: ${verifiedCount} verified, ${failedCount} failed (${screenshots.length} audit screenshots captured).`);
+    results.screenshots = screenshots;
+    results.logs = logs;
     return results;
   }
 
@@ -1651,17 +1712,7 @@ export class OracleRecruitingAdapter {
   }
 
   async #visibleAddButtons(page) {
-    const hasSections = (await page.locator('.apply-flow-section').count().catch(() => 0)) > 0;
-    const prefix = hasSections ? '.apply-flow-section:not([style*="display: none"]) ' : '';
-
-    const addButtons = page.locator([
-      `${prefix}button:has-text("Add"):not(.apply-flow-pagination__button):visible`,
-      `${prefix}button:has-text("+ Add"):visible`,
-      `${prefix}button:has-text("+Add"):visible`,
-      `${prefix}button[aria-label*="Add " i]:not(.apply-flow-pagination__button):visible`,
-      `${prefix}.apply-flow-repeatable__add-button:visible`,
-      `${prefix}button.candidate-links__add-link:visible`
-    ].join(', '));
+    const addButtons = page.locator('button:has-text(/^\\+?\\s*Add/i):visible, .apply-flow-repeatable__add-button:visible, button.candidate-links__add-link:visible');
 
     const count = await addButtons.count().catch(() => 0);
     const result = [];
@@ -2030,10 +2081,10 @@ export class OracleRecruitingAdapter {
     }
 
     if (!locator) {
-      locator = field.sourceName
-        ? page.locator(`[name="${field.sourceName.replaceAll('"', '\\"')}"]`).first()
-        : field.sourceId
-          ? page.locator(`#${field.sourceId.replaceAll(':', '\\:')}`).first()
+      locator = field.sourceId
+        ? page.locator(`[id="${field.sourceId.replaceAll('"', '\\"')}"]`).first()
+        : field.sourceName
+          ? page.locator(`[name="${field.sourceName.replaceAll('"', '\\"')}"]`).first()
           : page.getByLabel(field.label).first();
     }
 
@@ -2370,8 +2421,26 @@ export class OracleRecruitingAdapter {
       return row[child.id];
     }
 
-    // 2. Experience Fields
-    if (/employer|company|organization/i.test(label) || /employer|company/i.test(id)) {
+    // 2. Specific Experience Fields (Country, City, Phone, Supervisor, Reason MUST precede generic employer/company check)
+    if (/country/i.test(label) || /country_code/i.test(id)) {
+      return row.country || row.country_code || 'United States';
+    }
+    if (/\bcity\b/i.test(label) || /employer_city|city_city/i.test(id)) {
+      return row.city || row.employer_city || '';
+    }
+    if (/\bphone\b/i.test(label) || /employer_phone/i.test(id)) {
+      return row.phone || row.employer_phone || '';
+    }
+    if (/supervisor.*contact|contact.*supervisor/i.test(label) || /ok_to_contact_supervisor/i.test(id)) {
+      return row.ok_to_contact_supervisor ?? '';
+    }
+    if (/leaving_reason|reason\s*for\s*leaving/i.test(label) || /leaving_reason/i.test(id)) {
+      return row.leaving_reason || row.reason_for_leaving || '';
+    }
+    if (/employer\s*name|company\s*name/i.test(label) || id === 'employer_name' || id === 'company') {
+      return row.company || row.employer || row.organization || '';
+    }
+    if ((/employer|company|organization/i.test(label) || /employer|company/i.test(id)) && !/country|city|phone/i.test(label) && !/country|city|phone/i.test(id)) {
       return row.company || row.employer || row.organization || '';
     }
     if (/job\s*title|position|role|title/i.test(label) || /job_title|position|title/i.test(id)) {
@@ -2396,12 +2465,6 @@ export class OracleRecruitingAdapter {
     }
     if (/description|responsibilities|summary/i.test(label) || /responsibilities|description/i.test(id)) {
       return row.description || row.summary || row.responsibilities || '';
-    }
-    if (/country/i.test(label) || /country_code/i.test(id)) {
-      return row.country || 'United States';
-    }
-    if (/city/i.test(label) || /city/i.test(id)) {
-      return row.city || '';
     }
 
     // 3. Education Fields

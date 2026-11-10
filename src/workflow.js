@@ -14,7 +14,8 @@ import { SubmissionQueueRunner } from './phases/submission-queue.js';
 import { resumeService } from './services/resume-service.js';
 
 const isSupabaseConfigured = Boolean(
-  process.env.SUPABASE_URL && (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_KEY)
+  process.env.DATABASE_URL ||
+  (process.env.SUPABASE_URL && (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_KEY))
 );
 
 const store = isSupabaseConfigured

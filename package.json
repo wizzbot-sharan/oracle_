@@ -19,13 +19,15 @@
     "resolve": "node src/cli.js resolve",
     "resolve:answers": "node src/cli.js resolve",
     "prepare:application": "node src/cli.js prepare",
-    "fetch:clients": "node scripts/fetch_clients.mjs"
+    "fetch:clients": "node scripts/fetch_clients.mjs",
+    "sync:cas": "node scripts/fetch_cas.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.119.0",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "pdf-parse": "^2.4.5",
+    "pg": "^8.23.1",
     "playwright": "^1.56.1",
     "playwright-extra": "^4.3.6",
     "puppeteer-extra-plugin-stealth": "^2.11.2",

@@ -162,16 +162,26 @@ export class Phase1IngestAuth {
 
   async syncJobsFromOracleJobs() {
     if (typeof this.store?.isAvailable === 'function' && this.store.isAvailable()) {
-      const [jobsRes, oracleJobsRes] = await Promise.all([
-        this.store.client.from('jobs').select('*'),
-        this.store.client.from('oracle_jobs').select('*')
-      ]);
+      let existingJobs = [];
+      let oracleJobs = [];
 
-      if (jobsRes.error) throw jobsRes.error;
-      if (oracleJobsRes.error) throw oracleJobsRes.error;
-
-      const existingJobs = jobsRes.data || [];
-      const oracleJobs = oracleJobsRes.data || [];
+      if (this.store.pool) {
+        const [jobsRes, oracleJobsRes] = await Promise.all([
+          this.store.query('SELECT job_key, job_url FROM jobs'),
+          this.store.query('SELECT id, job_key, job_url FROM oracle_jobs')
+        ]);
+        existingJobs = jobsRes.rows || [];
+        oracleJobs = oracleJobsRes.rows || [];
+      } else if (this.store.client) {
+        const [jobsRes, oracleJobsRes] = await Promise.all([
+          this.store.client.from('jobs').select('job_key, job_url'),
+          this.store.client.from('oracle_jobs').select('id, job_key, job_url')
+        ]);
+        if (jobsRes.error) throw jobsRes.error;
+        if (oracleJobsRes.error) throw oracleJobsRes.error;
+        existingJobs = jobsRes.data || [];
+        oracleJobs = oracleJobsRes.data || [];
+      }
 
       const urlToKey = new Map();
       let maxIndex = 0;
@@ -223,13 +233,29 @@ export class Phase1IngestAuth {
       }
 
       if (newJobsToInsert.length > 0) {
-        const { error } = await this.store.client.from('jobs').upsert(newJobsToInsert, { onConflict: 'job_key' });
-        if (error) throw error;
+        if (this.store.pool) {
+          for (const j of newJobsToInsert) {
+            await this.store.query(`
+              INSERT INTO jobs (job_key, job_url, tenant_host, tenant_key, metadata, updated_at)
+              VALUES ($1, $2, $3, $4, $5::jsonb, NOW())
+              ON CONFLICT (job_key) DO UPDATE SET job_url = EXCLUDED.job_url
+            `, [j.job_key, j.job_url, j.tenant_host, j.tenant_key, JSON.stringify(j.metadata || {})]);
+          }
+        } else if (this.store.client) {
+          const { error } = await this.store.client.from('jobs').upsert(newJobsToInsert, { onConflict: 'job_key' });
+          if (error) throw error;
+        }
       }
 
       if (oracleUpdates.length > 0) {
-        for (const update of oracleUpdates) {
-          await this.store.client.from('oracle_jobs').update({ job_key: update.job_key }).eq('id', update.id);
+        if (this.store.pool) {
+          for (const update of oracleUpdates) {
+            await this.store.query('UPDATE oracle_jobs SET job_key = $1 WHERE id = $2', [update.job_key, update.id]);
+          }
+        } else if (this.store.client) {
+          for (const update of oracleUpdates) {
+            await this.store.client.from('oracle_jobs').update({ job_key: update.job_key }).eq('id', update.id);
+          }
         }
       }
 

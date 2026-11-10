@@ -6,6 +6,7 @@ import { workflow } from './workflow.js';
 import { seedReconData } from './seed.js';
 import { parseOracleJobUrl } from './shared/url.js';
 import { syncClients } from '../scripts/fetch_clients.mjs';
+import { syncCAs } from '../scripts/fetch_cas.mjs';
 
 export async function computeDashboardMetrics({ jobs, applications, templates, clientsPath }) {
   let clientsData = {};
@@ -65,14 +66,63 @@ export async function computeDashboardMetrics({ jobs, applications, templates, c
     }
   }
 
-  // Unique clients and assignments for cascading filter
+  // Only include candidates who have an application resolved or needing operator input
+  const dashboardStatuses = new Set([
+    'answers_resolved',
+    'needs_input',
+    'needs_review',
+    'submitted',
+    'approved'
+  ]);
+  const activeAppClients = new Set(
+    applications
+      .filter(a => dashboardStatuses.has(a.status))
+      .map(a => a.userId || a.applywizzId)
+  );
+
+  // Load CA mappings if present
+  let caData = { cas: [], clientToCaMap: {} };
+  try {
+    const caMappingsPath = path.resolve(config.dataDir || path.join(config.rootDir, 'data'), 'ca-mappings.json');
+    if (fs.existsSync(caMappingsPath)) {
+      caData = JSON.parse(await fs.promises.readFile(caMappingsPath, 'utf8'));
+    }
+  } catch {}
+
+  // Recalculate CA counts based strictly on active dashboard clients
+  const caClientCounts = {};
+  for (const clientId of activeAppClients) {
+    const caInfo = caData.clientToCaMap?.[clientId];
+    if (caInfo?.caId) {
+      caClientCounts[caInfo.caId] = (caClientCounts[caInfo.caId] || 0) + 1;
+    }
+  }
+
+  const enrichedCas = (caData.cas || []).map(ca => ({
+    ...ca,
+    dashboardClientCount: caClientCounts[ca.id] || 0
+  })).sort((a, b) => {
+    if (b.dashboardClientCount !== a.dashboardClientCount) {
+      return b.dashboardClientCount - a.dashboardClientCount;
+    }
+    return a.name.localeCompare(b.name);
+  });
+
+  // Unique clients for dashboard: strictly those in activeAppClients
   const clientMap = new Map();
+  let unassignedCount = 0;
   for (const a of assignments) {
     const id = a.applywizzId || a.userId;
-    if (id && !clientMap.has(id)) {
+    if (id && activeAppClients.has(id) && !clientMap.has(id)) {
+      const caInfo = caData.clientToCaMap?.[id] || null;
+      if (!caInfo) unassignedCount++;
       clientMap.set(id, {
         applywizzId: id,
-        clientName: a.clientName || clientsData[id]?.client?.full_name || id
+        clientName: a.clientName || clientsData[id]?.client?.full_name || id,
+        clientEmail: clientsData[id]?.client?.personal_email || clientsData[id]?.client?.email || a.clientEmail || '',
+        caId: caInfo?.caId || null,
+        caName: caInfo?.caName || null,
+        caEmail: caInfo?.caEmail || null
       });
     }
   }
@@ -95,7 +145,10 @@ export async function computeDashboardMetrics({ jobs, applications, templates, c
       prepared,
       submitted
     },
-    clients: clientsList
+    clients: clientsList,
+    cas: enrichedCas,
+    clientToCaMap: caData.clientToCaMap || {},
+    unassignedClientsCount: unassignedCount
   };
 }
 
@@ -132,6 +185,61 @@ app.post('/api/clients/sync', async (_request, response) => {
   syncClients({ store: workflow.store })
     .catch(err => console.error('[ClientSync Error]:', err.message))
     .finally(() => { isClientSyncing = false; });
+});
+
+// Sync CA list and mappings from external API
+let isCaSyncing = false;
+app.post('/api/cas/sync', async (_request, response) => {
+  if (isCaSyncing) {
+    return response.status(409).json({ error: 'CA synchronization already in progress' });
+  }
+  isCaSyncing = true;
+  try {
+    const res = await syncCAs({ dataDir: config.dataDir || path.join(config.rootDir, 'data') });
+
+    // Also persist directly into SupabaseStore if available
+    if (workflow.store && typeof workflow.store.write === 'function') {
+      try {
+        const caFile = path.resolve(config.dataDir || path.join(config.rootDir, 'data'), 'ca.csv');
+        const mapFile = path.resolve(config.dataDir || path.join(config.rootDir, 'data'), 'ca-mappings.json');
+        if (fs.existsSync(caFile)) {
+          const lines = fs.readFileSync(caFile, 'utf8').trim().split('\n').slice(1);
+          const cas = lines.map(line => {
+            const [id, name, email, role] = line.split(',');
+            return { id: id?.trim(), name: name?.trim(), email: email?.trim(), role: role?.trim() };
+          }).filter(c => c.id && c.email);
+          await workflow.store.write('cas', { cas });
+        }
+        if (fs.existsSync(mapFile)) {
+          const rawMap = JSON.parse(fs.readFileSync(mapFile, 'utf8'));
+          const mappings = [];
+          const items = rawMap.cas || rawMap.data || [];
+          for (const item of items) {
+            const caId = item.id || item.ca_id;
+            for (const c of item.clients || []) {
+              mappings.push({
+                ca_id: caId,
+                applywizz_id: c.applywizz_id,
+                client_email: c.client_email,
+                full_name: c.full_name,
+                assignment_type: c.assignment_type || 'permanent'
+              });
+            }
+          }
+          await workflow.store.write('ca-mappings', { mappings });
+        }
+      } catch (dbErr) {
+        console.warn('[CASync Supabase Warning]:', dbErr.message);
+      }
+    }
+
+    response.json({ success: true, ...res });
+  } catch (err) {
+    console.error('[CASync Error]:', err.message);
+    response.status(500).json({ error: err.message });
+  } finally {
+    isCaSyncing = false;
+  }
 });
 
 // Launch scoped scanner queue in background
@@ -175,7 +283,7 @@ app.get('/api/dashboard', async (_request, response) => {
     workflow.store.read('runs', [])
   ]);
 
-  const { metrics, clients } = await computeDashboardMetrics({
+  const { metrics, clients, cas, clientToCaMap, unassignedClientsCount } = await computeDashboardMetrics({
     jobs,
     applications,
     templates,
@@ -189,6 +297,9 @@ app.get('/api/dashboard', async (_request, response) => {
     runs: runs.slice(-100).reverse(),
     metrics,
     clients,
+    cas: cas || [],
+    clientToCaMap: clientToCaMap || {},
+    unassignedClientsCount: unassignedClientsCount || 0,
     submissionStatus: workflow.submissionQueue.getStatus()
   });
 });
@@ -299,6 +410,28 @@ app.post('/api/applications/:applicationId/submit', async (request, response) =>
   response.json(await workflow.submissionQueue.submitApplication(request.params.applicationId, request.body.confirmation));
 });
 
+// Serve visual audit screenshots captured before Next and on Submit detection
+app.get('/api/applications/:id/screenshots/:filename', async (request, response) => {
+  const { id, filename } = request.params;
+  const safeFilename = path.basename(filename);
+  const filePath = path.resolve(config.submission?.submitDir ?? 'data/submit', 'proofs', id, safeFilename);
+  if (!fs.existsSync(filePath)) {
+    return response.status(404).json({ error: 'Screenshot not found' });
+  }
+  response.sendFile(filePath);
+});
+
+// Serve submission confirmation receipt
+app.get('/api/applications/:id/receipt/:filename', async (request, response) => {
+  const { filename } = request.params;
+  const safeFilename = path.basename(filename);
+  const filePath = path.resolve(config.submission?.submitDir ?? 'data/submit', safeFilename);
+  if (!fs.existsSync(filePath)) {
+    return response.status(404).json({ error: 'Receipt not found' });
+  }
+  response.sendFile(filePath);
+});
+
 // SPA fallback for React Dashboard routes
 app.use((request, response, next) => {
   if (request.method !== 'GET' || request.path.startsWith('/api')) return next();
@@ -324,6 +457,23 @@ const isMainModule = process.argv[1] && fileURLToPath(import.meta.url) === proce
 if (isMainModule) {
   if (config.submission?.submitDir) fs.mkdirSync(config.submission.submitDir, { recursive: true });
   if (config.submission?.resumeDir) fs.mkdirSync(config.submission.resumeDir, { recursive: true });
+
+  const caCsvPath = path.resolve(config.dataDir || path.join(config.rootDir, 'data'), 'ca.csv');
+  if (!fs.existsSync(caCsvPath)) {
+    console.log('[Server Startup] ca.csv not found; initiating background CA sync...');
+    syncCAs({ dataDir: config.dataDir || path.join(config.rootDir, 'data') }).catch(err => {
+      console.error('[Server Startup] Background CA sync failed:', err.message);
+    });
+  }
+
+  const locJsonPath = path.resolve(config.dataDir || path.join(config.rootDir, 'data'), 'oracle-us-locations.json');
+  if (fs.existsSync(locJsonPath) && workflow.store && typeof workflow.store.write === 'function') {
+    try {
+      const locData = JSON.parse(fs.readFileSync(locJsonPath, 'utf8'));
+      workflow.store.write('reference-metadata', { key: 'oracle_us_locations', payload: locData }).catch(() => {});
+    } catch {}
+  }
+
   app.listen(config.port, '0.0.0.0', () => {
     console.log(`Oracle application workflow listening on http://0.0.0.0:${config.port}`);
   });

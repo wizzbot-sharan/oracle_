@@ -527,55 +527,66 @@ function WorkerPoolWidget({ status }) {
   );
 }
 
-function FilterBar({ clients = [], assignments = [], selectedClientId, selectedJobKey, onClientChange, onJobChange }) {
-  const assignedJobs = useMemo(() => {
-    if (!selectedClientId) return [];
-    return assignments.filter(a => (a.applywizzId || a.userId) === selectedClientId);
-  }, [assignments, selectedClientId]);
+function TopNavbar({
+  cas = [],
+  selectedCaId,
+  onCaChange,
+  unassignedCount = 0,
+  activeCa,
+  onSyncCas,
+  onSyncJobs,
+  onSyncClients,
+  onOpenScan,
+  onOpenResolve,
+  onRefresh,
+  busy
+}) {
+  const currentDate = new Date().toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric'
+  }).replaceAll('/', '-');
 
-  return (
-    <div className="filter-bar">
-      <div className="filter-group">
-        <label>Candidate (Client)</label>
-        <select value={selectedClientId ?? ''} onChange={e => onClientChange(e.target.value)}>
-          <option value="">Select Candidate...</option>
-          {clients.map(c => (
-            <option key={c.applywizzId} value={c.applywizzId}>
-              {c.clientName} ({c.applywizzId})
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className="filter-group">
-        <label>Job Requisition</label>
-        <select
-          value={selectedJobKey ?? ''}
-          onChange={e => onJobChange(e.target.value)}
-          disabled={!selectedClientId || assignedJobs.length === 0}
-        >
-          <option value="">
-            {assignedJobs.length === 0 ? 'No jobs assigned' : 'Select Assigned Job...'}
-          </option>
-          {assignedJobs.map(j => (
-            <option key={j.assignmentId || `${j.jobKey}-${j.jobId}`} value={j.jobKey || j.jobId}>
-              {j.jobKey ? `${j.jobKey}: ` : ''}{j.companyName || 'Company'} ({j.jobId})
-            </option>
-          ))}
-        </select>
-      </div>
-    </div>
-  );
-}
-
-function TopNavbar({ onSyncJobs, onSyncClients, onOpenScan, onOpenResolve, onRefresh, busy }) {
   return (
     <div className="top-navbar">
-      <div className="top-navbar-title">
-        <span className="brand-mark" style={{ width: '28px', height: '28px', fontSize: '13px' }}>AW</span>
-        <span>Oracle Production Console</span>
+      <div className="top-navbar-left">
+        <div className="top-navbar-title">
+          <span className="brand-mark" style={{ width: '28px', height: '28px', fontSize: '13px' }}>AW</span>
+          <div className="brand-text">
+            <strong>APPLYWIZZ</strong>
+            <small>Oracle Operator V2</small>
+          </div>
+        </div>
+
+        <div className="ca-filter-wrapper">
+          <label className="ca-filter-label" htmlFor="ca-selector">CA:</label>
+          <select
+            id="ca-selector"
+            className="ca-select"
+            value={selectedCaId}
+            onChange={e => onCaChange(e.target.value)}
+          >
+            <option value="all">All CAs ({cas.length})</option>
+            <option value="unassigned">Other (Unassigned Clients) ({unassignedCount})</option>
+            <optgroup label="Career Associates">
+              {cas.map(ca => (
+                <option key={ca.id} value={ca.id}>
+                  {ca.name} ({ca.dashboardClientCount ?? ca.clientCount ?? 0} clients)
+                </option>
+              ))}
+            </optgroup>
+          </select>
+        </div>
       </div>
+
+      <div className="top-navbar-center">
+        <span className="ist-date-pill">IST: {currentDate}</span>
+      </div>
+
       <div className="top-navbar-actions">
+        <button className="nav-btn" disabled={Boolean(busy)} onClick={onSyncCas} title="Sync CAs & Mappings">
+          Sync CAs
+        </button>
         <button className="nav-btn" disabled={Boolean(busy)} onClick={onSyncJobs}>
           Sync Jobs
         </button>
@@ -588,9 +599,197 @@ function TopNavbar({ onSyncJobs, onSyncClients, onOpenScan, onOpenResolve, onRef
         <button className="nav-btn primary" disabled={Boolean(busy)} onClick={onOpenResolve}>
           Resolve...
         </button>
-        <button className="nav-btn" disabled={Boolean(busy)} onClick={onRefresh} title="Refresh Dashboard">
-          ↻ Refresh
+        <button className="nav-btn icon-only" disabled={Boolean(busy)} onClick={onRefresh} title="Refresh Dashboard">
+          ↻
         </button>
+
+        <div className="ca-user-pill" title={activeCa?.email || 'All CAs Overview'}>
+          <span className="user-avatar-initial">
+            {(activeCa?.name || 'A').charAt(0).toUpperCase()}
+          </span>
+          <span className="user-email-text">
+            {activeCa?.email || 'All CAs Overview'}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CandidatesDirectory({
+  candidates = [],
+  totalCandidatesCount = 0,
+  selectedClientId,
+  onSelectClient,
+  assignments = [],
+  searchQuery,
+  onSearchChange,
+  sidebarWidth = '330px',
+  onSidebarWidthChange
+}) {
+  const currentDate = new Date().toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric'
+  }).replaceAll('/', '-');
+
+  return (
+    <aside className="candidates-directory-sidebar">
+      <div className="directory-header">
+        <div className="directory-title-row">
+          <span className="directory-title">CANDIDATES DIRECTORY</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            {onSidebarWidthChange && (
+              <div className="sidebar-size-toggle" title="Adjust sidebar width">
+                <button
+                  type="button"
+                  className={`size-btn ${sidebarWidth === '280px' ? 'active' : ''}`}
+                  onClick={() => onSidebarWidthChange('280px')}
+                  title="Compact (280px)"
+                >
+                  S
+                </button>
+                <button
+                  type="button"
+                  className={`size-btn ${sidebarWidth === '330px' ? 'active' : ''}`}
+                  onClick={() => onSidebarWidthChange('330px')}
+                  title="Medium (330px)"
+                >
+                  M
+                </button>
+                <button
+                  type="button"
+                  className={`size-btn ${sidebarWidth === '390px' ? 'active' : ''}`}
+                  onClick={() => onSidebarWidthChange('390px')}
+                  title="Wide (390px)"
+                >
+                  L
+                </button>
+              </div>
+            )}
+            <span className="directory-count-badge">
+              {candidates.length} / {totalCandidatesCount}
+            </span>
+          </div>
+        </div>
+
+        <div className="directory-subfilter-row">
+          <span className="directory-assigned-pill">
+            Assigned: {currentDate} (IST)
+          </span>
+        </div>
+
+        <div className="directory-search-wrapper">
+          <input
+            type="text"
+            placeholder="Search name or AWL-ID..."
+            value={searchQuery}
+            onChange={e => onSearchChange(e.target.value)}
+            className="directory-search-input"
+          />
+          {searchQuery && (
+            <button className="search-clear-btn" onClick={() => onSearchChange('')}>×</button>
+          )}
+        </div>
+      </div>
+
+      <div className="candidate-cards-list">
+        {candidates.map(c => {
+          const isSelected = c.applywizzId === selectedClientId;
+          const clientJobsCount = assignments.filter(
+            a => (a.applywizzId || a.userId) === c.applywizzId
+          ).length;
+          const initials = (c.clientName || 'C')
+            .split(' ')
+            .map(p => p[0])
+            .filter(Boolean)
+            .slice(0, 2)
+            .join('')
+            .toUpperCase();
+
+          return (
+            <div
+              key={c.applywizzId}
+              className={`candidate-card ${isSelected ? 'selected' : ''}`}
+              onClick={() => onSelectClient(c.applywizzId)}
+            >
+              <div className="candidate-card-top">
+                <div className="candidate-avatar">{initials}</div>
+                <div className="candidate-card-ids">
+                  <span className="candidate-awl-id">{c.applywizzId}</span>
+                  <span className={`candidate-status-pill ${clientJobsCount > 0 ? 'active' : 'pending'}`}>
+                    {clientJobsCount > 0 ? '• In progress' : '• Pending'}
+                  </span>
+                </div>
+              </div>
+              <div className="candidate-name" title={c.clientName}>
+                {c.clientName}
+              </div>
+              {c.clientEmail && (
+                <div className="candidate-email" title={c.clientEmail}>
+                  {c.clientEmail}
+                </div>
+              )}
+              <div className="candidate-jobs-footer">
+                <span className="jobs-count-badge">{clientJobsCount} Jobs</span>
+              </div>
+            </div>
+          );
+        })}
+        {candidates.length === 0 && (
+          <div className="empty-directory">
+            No candidates match current selection.
+          </div>
+        )}
+      </div>
+    </aside>
+  );
+}
+
+function AssignedApplicationsQueue({
+  items = [],
+  selectedJobKey,
+  onSelectJob
+}) {
+  return (
+    <div className="assigned-applications-queue-container">
+      <div className="queue-header-row">
+        <span className="queue-title">ASSIGNED APPLICATIONS QUEUE</span>
+        <div className="queue-badges">
+          <span className="queue-active-badge">{items.length} Active</span>
+        </div>
+      </div>
+      <div className="applications-horizontal-track">
+        {items.map(item => {
+          const isSelected = item.jobKey === selectedJobKey;
+          const companyInitial = (item.companyName || 'C').charAt(0).toUpperCase();
+
+          return (
+            <div
+              key={item.jobKey}
+              className={`app-queue-card ${isSelected ? 'selected' : ''}`}
+              onClick={() => onSelectJob(item.jobKey)}
+            >
+              <div className="app-queue-card-top">
+                <span className="app-queue-company-avatar">{companyInitial}</span>
+                <span className="app-queue-company" title={item.companyName}>
+                  {item.companyName}
+                </span>
+                <span className={`app-queue-status-pill ${item.status}`}>
+                  {item.status.replaceAll('_', ' ')}
+                </span>
+              </div>
+              <div className="app-queue-title" title={item.title}>
+                {item.title}
+              </div>
+            </div>
+          );
+        })}
+        {items.length === 0 && (
+          <div className="empty-queue-message">
+            No applications found for this candidate.
+          </div>
+        )}
       </div>
     </div>
   );
@@ -850,9 +1049,136 @@ function ResolveModal({ isOpen, onClose, onLaunch, clients = [] }) {
   );
 }
 
+function AuditProofsGallery({ screenshots = [], logs = [], applicationId, fillCompletedAt, status }) {
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [showLogs, setShowLogs] = useState(false);
+
+  if (!screenshots || screenshots.length === 0) return null;
+
+  return (
+    <div className="audit-gallery-section">
+      <div className="audit-gallery-header">
+        <div>
+          <div className="audit-gallery-title">
+            <span className="audit-gallery-icon">📸</span>
+            Visual Audit Proofs ({screenshots.length} Page Captures)
+          </div>
+          <p className="audit-gallery-subtitle">
+            Screenshots captured before each "Next" button click and upon detecting the final "Submit" button.
+            {status === 'filled_verified' && (
+              <span className="audit-dry-run-pill">Dry-Run Mode • Submit Held • Worker Freed</span>
+            )}
+          </p>
+        </div>
+        {fillCompletedAt && (
+          <div className="audit-timestamp">
+            Audited {new Date(fillCompletedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+          </div>
+        )}
+      </div>
+
+      <div className="audit-thumbnails-grid">
+        {screenshots.map((s, idx) => {
+          const imgUrl = `/api/applications/${applicationId}/screenshots/${s.filename}`;
+          const isSubmit = s.step === 'final_submit';
+          return (
+            <div
+              key={idx}
+              className={`audit-thumbnail-card ${isSubmit ? 'submit-step' : ''}`}
+              onClick={() => setSelectedImage({ url: imgUrl, label: s.label || `Page ${s.pageNumber}`, filename: s.filename })}
+            >
+              <div className="audit-card-badge">
+                {isSubmit ? '🏁 Final Submit Detected' : `📄 ${s.label || `Page ${s.pageNumber}`}`}
+              </div>
+              <div className="audit-img-wrapper">
+                <img
+                  src={imgUrl}
+                  alt={s.label || `Audit Page ${s.pageNumber}`}
+                  loading="lazy"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                    if (e.currentTarget.nextSibling) e.currentTarget.nextSibling.style.display = 'flex';
+                  }}
+                />
+                <div className="audit-img-fallback" style={{ display: 'none' }}>
+                  <span>Preview Unavailable</span>
+                </div>
+                <div className="audit-zoom-overlay">
+                  <span>🔍 View Full Resolution</span>
+                </div>
+              </div>
+              <div className="audit-card-footer">
+                <span className="audit-filename">{s.filename}</span>
+                {s.capturedAt && (
+                  <span className="audit-time">
+                    {new Date(s.capturedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                  </span>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {logs && logs.length > 0 && (
+        <div className="audit-logs-container">
+          <button
+            type="button"
+            className="audit-logs-toggle"
+            onClick={() => setShowLogs(!showLogs)}
+          >
+            <span>{showLogs ? '▼' : '►'} Execution & Verification Logs ({logs.length} events)</span>
+            <span className="audit-logs-badge">All DOM Fields Verified</span>
+          </button>
+          {showLogs && (
+            <div className="audit-logs-list">
+              {logs.map((log, i) => (
+                <div key={i} className="audit-log-entry">
+                  <span className="audit-log-dot">✓</span>
+                  <span className="audit-log-text">{typeof log === 'string' ? log : (log.message || JSON.stringify(log))}</span>
+                  {log.timestamp && (
+                    <span className="audit-log-time">
+                      {new Date(log.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {selectedImage && (
+        <div className="modal-backdrop" onClick={() => setSelectedImage(null)}>
+          <div className="audit-modal-dialog" onClick={(e) => e.stopPropagation()}>
+            <div className="audit-modal-header">
+              <div>
+                <h3>{selectedImage.label}</h3>
+                <small>{selectedImage.filename}</small>
+              </div>
+              <button className="nav-btn icon-only" onClick={() => setSelectedImage(null)}>✕</button>
+            </div>
+            <div className="audit-modal-body">
+              <img src={selectedImage.url} alt={selectedImage.label} />
+            </div>
+            <div className="audit-modal-footer">
+              <button className="secondary" onClick={() => setSelectedImage(null)}>Close Preview</button>
+              <a href={selectedImage.url} target="_blank" rel="noreferrer" className="nav-btn primary">
+                Open in New Tab ↗
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function App() {
   const [data, setData] = useState(null);
   const [selectedId, setSelectedId] = useState(null);
+  const [selectedCaId, setSelectedCaId] = useState('');
+  const [candidateSearch, setCandidateSearch] = useState('');
   const [selectedClientId, setSelectedClientId] = useState('');
   const [selectedJobKey, setSelectedJobKey] = useState('');
   const [busy, setBusy] = useState('');
@@ -863,6 +1189,8 @@ export function App() {
   const [showScanModal, setShowScanModal] = useState(false);
   const [showResolveModal, setShowResolveModal] = useState(false);
   const [notification, setNotification] = useState(null);
+  const [sidebarWidth, setSidebarWidth] = useState('330px');
+  const [copiedUrl, setCopiedUrl] = useState(false);
 
   const refresh = async () => {
     const next = await api('/api/dashboard');
@@ -890,37 +1218,60 @@ export function App() {
     return () => clearInterval(interval);
   }, []);
 
-  // Sync selected application when data loads or selection changes
+  // Default to first active CA with dashboard clients
   useEffect(() => {
-    if (!data?.applications?.length) return;
-
-    if (!selectedId && !selectedClientId) {
-      const first = data.applications[0];
-      setSelectedId(first.applicationId);
-      setSelectedClientId(first.userId || first.applywizzId || '');
-      setSelectedJobKey(first.jobKey || first.jobId || '');
+    if (!data?.cas?.length) return;
+    if (!selectedCaId) {
+      const firstActive = data.cas.find(c => (c.dashboardClientCount || 0) > 0);
+      const defaultCaId = firstActive ? firstActive.id : 'all';
+      setSelectedCaId(defaultCaId);
     }
   }, [data]);
 
-  const handleClientChange = (newClientId) => {
+  const activeCa = useMemo(() => {
+    if (!data?.cas || !selectedCaId || selectedCaId === 'all' || selectedCaId === 'unassigned') return null;
+    return data.cas.find(c => c.id === selectedCaId) || null;
+  }, [data, selectedCaId]);
+
+  const filteredCandidates = useMemo(() => {
+    if (!data?.clients) return [];
+    let list = data.clients;
+
+    if (selectedCaId === 'unassigned') {
+      list = list.filter(c => !c.caId && !data.clientToCaMap?.[c.applywizzId]);
+    } else if (selectedCaId && selectedCaId !== 'all') {
+      list = list.filter(c => {
+        const caInfo = data.clientToCaMap?.[c.applywizzId];
+        return c.caId === selectedCaId || caInfo?.caId === selectedCaId;
+      });
+    }
+
+    if (candidateSearch.trim()) {
+      const q = candidateSearch.toLowerCase().trim();
+      list = list.filter(c =>
+        (c.clientName && c.clientName.toLowerCase().includes(q)) ||
+        (c.applywizzId && c.applywizzId.toLowerCase().includes(q)) ||
+        (c.clientEmail && c.clientEmail.toLowerCase().includes(q))
+      );
+    }
+    return list;
+  }, [data, selectedCaId, candidateSearch]);
+
+  const handleClientSelect = (newClientId) => {
     setSelectedClientId(newClientId);
     if (!data) return;
 
-    const assignedJobs = (data.jobs?.assignments || []).filter(
+    // Pick first application instance from data.applications
+    const clientApps = (data.applications || []).filter(
       a => (a.applywizzId || a.userId) === newClientId
     );
-    const firstJobKey = assignedJobs[0]?.jobKey || assignedJobs[0]?.jobId || '';
+    const firstApp = clientApps[0];
+    const firstJobKey = firstApp?.jobKey || firstApp?.jobId || '';
     setSelectedJobKey(firstJobKey);
-
-    const matchingApp = data.applications.find(
-      a =>
-        (a.userId === newClientId || a.applywizzId === newClientId) &&
-        (a.jobKey === firstJobKey || a.jobId === firstJobKey)
-    );
-    setSelectedId(matchingApp?.applicationId || null);
+    setSelectedId(firstApp?.applicationId || null);
   };
 
-  const handleJobChange = (newJobKey) => {
+  const handleJobSelect = (newJobKey) => {
     setSelectedJobKey(newJobKey);
     if (!data) return;
 
@@ -932,11 +1283,39 @@ export function App() {
     setSelectedId(matchingApp?.applicationId || null);
   };
 
-  const handleCardClick = (application) => {
-    setSelectedId(application.applicationId);
-    setSelectedClientId(application.userId || application.applywizzId || '');
-    setSelectedJobKey(application.jobKey || application.jobId || '');
-  };
+  // Sync selected application when candidates list changes or loads
+  useEffect(() => {
+    if (!filteredCandidates.length) {
+      setSelectedClientId('');
+      setSelectedJobKey('');
+      setSelectedId(null);
+      return;
+    }
+    const isCurrentInList = filteredCandidates.some(c => c.applywizzId === selectedClientId);
+    if (!isCurrentInList) {
+      handleClientSelect(filteredCandidates[0].applywizzId);
+    }
+  }, [filteredCandidates]);
+
+  // Derive active applications strictly from resolved application instances
+  const candidateAppsWithJobs = useMemo(() => {
+    if (!selectedClientId || !data?.applications) return [];
+    return data.applications
+      .filter(a => (a.userId === selectedClientId || a.applywizzId === selectedClientId))
+      .map(app => {
+        const jobKey = app.jobKey || app.jobId;
+        return {
+          job: app,
+          jobKey,
+          companyName: app.companyName || 'Company',
+          jobId: app.jobId,
+          title: app.clientName ? `${app.companyName || 'Company'} (${jobKey})` : `Job ${jobKey}`,
+          application: app,
+          status: app.status || 'needs_input',
+          reviewStatus: app.reviewStatus || 'not_ready'
+        };
+      });
+  }, [data, selectedClientId]);
 
   const run = async (label, fn) => {
     setBusy(label);
@@ -949,6 +1328,16 @@ export function App() {
     } finally {
       setBusy('');
     }
+  };
+
+  const handleSyncCas = async () => {
+    run('Syncing CAs...', async () => {
+      const res = await api('/api/cas/sync', { method: 'POST' });
+      setNotification({
+        type: 'success',
+        message: `Synced ${res.totalCas || 0} Career Associates with ${res.totalAssignedClients || 0} assigned clients!`
+      });
+    });
   };
 
   const handleSyncJobs = async () => {
@@ -1026,76 +1415,105 @@ export function App() {
        Object.values(data.templates).find(t => t.jobId === selected.jobId || t.jobKey === selected.jobKey || t.id === selected.templateId))
     : null;
 
+  const selectedJobInfo = (() => {
+    if (!selected) return { jobUrl: null, companyName: null };
+
+    let url = selected.canonicalUrl || selected.originalUrl || selected.jobUrl || selected.url;
+    let company = selected.companyName;
+
+    if (!url || !company) {
+      const uniqueJob = data?.jobs?.uniqueJobs?.find(
+        j => (j.jobKey && (j.jobKey === selected.jobKey || j.jobKey === selected.jobId)) ||
+             (j.jobId && (j.jobId === selected.jobId || j.jobId === selected.jobKey))
+      );
+      if (!url) url = uniqueJob?.canonicalUrl || uniqueJob?.originalUrl;
+      if (!company) company = uniqueJob?.companyName;
+    }
+
+    if (!url || !company) {
+      const assignment = data?.jobs?.assignments?.find(
+        a => (a.jobKey && (a.jobKey === selected.jobKey || a.jobKey === selected.jobId)) ||
+             (a.jobId && (a.jobId === selected.jobId || a.jobId === selected.jobKey))
+      );
+      if (!url) url = assignment?.canonicalUrl || assignment?.originalUrl;
+      if (!company) company = assignment?.companyName;
+    }
+
+    if (!url && template?.canonicalUrl) {
+      url = template.canonicalUrl;
+    }
+
+    return { jobUrl: url, companyName: company };
+  })();
+
   return (
-    <div className="app-shell">
-      <aside>
-        <div className="brand">
-          <span className="brand-mark">AW</span>
-          <div>
-            <strong>Apply Workflow</strong>
-            <small>Oracle Recruiting Cloud</small>
-          </div>
-        </div>
-        <button
-          className="secondary full"
-          onClick={() => run('Seeding', () => api('/api/seed', { method: 'POST', body: '{}' }))}
-        >
-          Load reconnaissance sample
-        </button>
-        <nav>
-          {data.applications.map(application => (
-            <button
-              key={application.applicationId}
-              className={`application-card ${selectedId === application.applicationId ? 'active' : ''}`}
-              onClick={() => handleCardClick(application)}
-            >
-              <span>{application.jobKey || `Job ${application.jobId}`}</span>
-              <small>{application.clientName ? `${application.clientName} (${application.userId})` : application.userId}</small>
-              <em data-status={application.status}>{application.status.replaceAll('_', ' ')}</em>
-            </button>
-          ))}
-        </nav>
-      </aside>
+    <div className="dashboard-app-container" style={{ '--sidebar-width': sidebarWidth }}>
+      {/* 1. Full-Width Edge-to-Edge Top Header Bar */}
+      <TopNavbar
+        cas={data.cas || []}
+        selectedCaId={selectedCaId}
+        onCaChange={setSelectedCaId}
+        unassignedCount={data.unassignedClientsCount || 0}
+        activeCa={activeCa}
+        onSyncCas={handleSyncCas}
+        onSyncJobs={handleSyncJobs}
+        onSyncClients={handleSyncClients}
+        onOpenScan={() => setShowScanModal(true)}
+        onOpenResolve={() => setShowResolveModal(true)}
+        onRefresh={refresh}
+        busy={busy}
+      />
 
-      <main>
-        {/* Top Production Navbar */}
-        <TopNavbar
-          onSyncJobs={handleSyncJobs}
-          onSyncClients={handleSyncClients}
-          onOpenScan={() => setShowScanModal(true)}
-          onOpenResolve={() => setShowResolveModal(true)}
-          onRefresh={refresh}
-          busy={busy}
-        />
-
-        {notification && (
+      {/* 2. Full-Width Notifications / Toasts */}
+      {notification && (
+        <div className="dashboard-banner-wrap">
           <div className={`action-toast ${notification.type}`}>
             <span>{notification.message}</span>
             <button className="toast-close" onClick={() => setNotification(null)}>×</button>
           </div>
-        )}
+        </div>
+      )}
 
-        {/* Live Scanner Queue Panel */}
-        <ScannerLivePanel
-          status={scannerStatus}
-          onCancel={handleCancelScan}
-        />
+      {/* 3. Live Scanner Queue Panel */}
+      {scannerStatus?.isScanning && (
+        <div className="dashboard-banner-wrap">
+          <ScannerLivePanel
+            status={scannerStatus}
+            onCancel={handleCancelScan}
+          />
+        </div>
+      )}
 
-        {/* Executive Metrics Overview Strip */}
+      {/* 4. Full Horizontal Stats Scroll Directly Below Top Bar */}
+      <div className="metrics-section">
         <ExecutiveMetrics metrics={data.metrics} />
+      </div>
 
-        {/* 3-Browser Concurrency Worker Pool Widget */}
-        <WorkerPoolWidget status={submissionStatus} />
-
-        {/* Cascading Dropdown Filter Bar */}
-        <FilterBar
-          clients={data.clients || []}
-          assignments={data.jobs?.assignments || []}
+      {/* 5. Lower Workspace: Two-Column Split (Adjustable) */}
+      <div className="dashboard-body-split">
+        {/* Candidates Directory Left Sidebar */}
+        <CandidatesDirectory
+          candidates={filteredCandidates}
+          totalCandidatesCount={data.clients?.length || 0}
           selectedClientId={selectedClientId}
-          selectedJobKey={selectedJobKey}
-          onClientChange={handleClientChange}
-          onJobChange={handleJobChange}
+          onSelectClient={handleClientSelect}
+          assignments={data.applications || []}
+          searchQuery={candidateSearch}
+          onSearchChange={setCandidateSearch}
+          sidebarWidth={sidebarWidth}
+          onSidebarWidthChange={setSidebarWidth}
         />
+
+        <main className="dashboard-main-content">
+          {/* 3-Browser Concurrency Worker Pool Widget */}
+          <WorkerPoolWidget status={submissionStatus} />
+
+          {/* Top Horizontal Queue: Assigned Applications Queue */}
+          <AssignedApplicationsQueue
+            items={candidateAppsWithJobs}
+            selectedJobKey={selectedJobKey}
+            onSelectJob={handleJobSelect}
+          />
 
         <header>
           <div>
@@ -1105,8 +1523,55 @@ export function App() {
                 ? `${selected.jobKey || `Job ${selected.jobId}`} - ${selected.clientName || selected.userId}`
                 : 'Select an application'}
             </h1>
+            {selected && (
+              <div className="header-job-meta">
+                {selectedJobInfo.companyName && (
+                  <span className="header-company-tag">{selectedJobInfo.companyName}</span>
+                )}
+                {selectedJobInfo.jobUrl && (
+                  <div className="header-job-link-row">
+                    <span className="url-icon">🔗</span>
+                    <a
+                      href={selectedJobInfo.jobUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="job-link"
+                      title={selectedJobInfo.jobUrl}
+                    >
+                      {selectedJobInfo.jobUrl}
+                    </a>
+                    <button
+                      type="button"
+                      className="copy-url-btn"
+                      onClick={() => {
+                        if (navigator.clipboard) {
+                          navigator.clipboard.writeText(selectedJobInfo.jobUrl);
+                          setCopiedUrl(true);
+                          setTimeout(() => setCopiedUrl(false), 2000);
+                        }
+                      }}
+                      title="Copy Job URL to clipboard"
+                    >
+                      {copiedUrl ? '✓ Copied' : '📋 Copy'}
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            {selectedJobInfo.jobUrl && (
+              <a
+                href={selectedJobInfo.jobUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="nav-btn primary btn-inline"
+                style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '5px' }}
+                title="Open official Oracle job requisition page in new tab"
+              >
+                ↗ Open Job URL
+              </a>
+            )}
             {selected && (
               <button
                 className="secondary btn-inline"
@@ -1168,6 +1633,8 @@ export function App() {
           } else if (isQueued) {
             applyButtonText = 'Queued in Submission Pool...';
             applyDisabled = true;
+          } else if (selected.status === 'filled_verified') {
+            applyButtonText = '✓ Filled & Audited (Click to Re-run)';
           } else if (selected.status === 'needs_input') {
             applyButtonText = 'Resolve Questions Before Applying';
             applyDisabled = true;
@@ -1184,6 +1651,7 @@ export function App() {
                 <span className={selected.status !== 'needs_input' ? 'done' : ''}>Answers</span>
                 <span
                   className={
+                    selected.status === 'filled_verified' ||
                     selected.status === 'needs_review' ||
                     selected.status === 'approved' ||
                     selected.status === 'submitted'
@@ -1191,18 +1659,38 @@ export function App() {
                       : ''
                   }
                 >
-                  Review
+                  {selected.status === 'filled_verified' ? 'Audited' : 'Review'}
                 </span>
                 <span className={selected.status === 'submitted' ? 'done' : ''}>Submitted</span>
               </div>
 
               <TemplateForm template={template} application={selected} onSaved={refresh} />
 
+              <AuditProofsGallery
+                screenshots={selected.screenshots || []}
+                logs={selected.fillLogs || []}
+                applicationId={selected.applicationId}
+                fillCompletedAt={selected.fillCompletedAt}
+                status={selected.status}
+              />
+
               <section className="apply-panel">
                 <h2>Live Submission Engine (Max 3 Browsers)</h2>
                 <p>
-                  Authenticates with real candidate <strong>company_email</strong>, attaches cached resume, fills multi-page form, and halts at final review.
+                  Authenticates with real candidate <strong>company_email</strong>, attaches cached resume, fills multi-page form, captures audit proofs, and auto-closes in dry-run mode.
                 </p>
+
+                {selected.status === 'filled_verified' && (
+                  <div className="verified-dryrun-banner">
+                    <strong>✓ Form Fields Filled & Verified on Live Oracle Portal</strong>
+                    <div>
+                      Visual audit screenshots were captured before advancing each page and on detecting the final Submit button.
+                    </div>
+                    <div>
+                      Submission was paused in <strong>Dry-Run Mode</strong>, and the browser session was cleanly closed so worker slots remain free for queued candidate applications.
+                    </div>
+                  </div>
+                )}
 
                 {selected.receipt && (
                   <div className="receipt-banner">
@@ -1296,5 +1784,6 @@ export function App() {
         />
       </main>
     </div>
+  </div>
   );
 }

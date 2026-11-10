@@ -293,3 +293,79 @@ test('frees worker slot when operator manually closes browser window', async () 
 
   await fs.rm(tempDir, { recursive: true, force: true }).catch(() => {});
 });
+
+test('dry-run mode auto-closes session, captures audit proofs, and transitions to cooldown without submitting', async () => {
+  const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'dry-run-test-'));
+  const applications = [
+    { applicationId: 'app-dry-1', userId: 'AWL-DRY1', jobId: 'job-d1', jobKey: 'job-d1', status: 'answers_resolved' },
+    { applicationId: 'app-dry-2', userId: 'AWL-DRY2', jobId: 'job-d2', jobKey: 'job-d2', status: 'answers_resolved' }
+  ];
+
+  let appStore = [...applications];
+  const store = {
+    async read(name) { return name === 'applications' ? appStore : {}; },
+    async update(name, fallback, updater) {
+      appStore = updater(appStore);
+      return appStore;
+    }
+  };
+
+  const sessions = new Map();
+  let closedSessionsCount = 0;
+
+  const phase4 = {
+    async prepare(appId) {
+      const page = createMockPage();
+      sessions.set(appId, { page });
+      return {
+        status: 'filled_verified',
+        reviewStatus: 'audited',
+        screenshots: [
+          { pageNumber: 1, step: 'before_next', filename: 'page_1_before_next.png' },
+          { pageNumber: 2, step: 'final_submit', filename: 'page_2_final_submit.png' }
+        ]
+      };
+    }
+  };
+
+  const runner = new SubmissionQueueRunner({
+    store,
+    runLog: { append: async () => {} },
+    oracle: {
+      closeSession: async () => { closedSessionsCount++; }
+    },
+    phase1: {},
+    phase4,
+    sessions,
+    config: {
+      clientsPath: path.join(tempDir, 'clients.json'),
+      submission: {
+        concurrency: 1,
+        launchThrottleMs: 0,
+        cooldownMs: 80,
+        submitWaitMs: 30,
+        dryRun: true // Explicitly enable dry run
+      }
+    }
+  });
+
+  // Enqueue both applications
+  await runner.enqueueApplication('app-dry-1');
+  await runner.enqueueApplication('app-dry-2');
+
+  // Let worker process app-dry-1
+  await delay(40);
+
+  // During or right after prepare, slot transitions to cooldown (never stalls in awaiting_review)
+  const slot = runner.slots[0];
+  assert.notEqual(slot.status, 'awaiting_review', 'Slot must NOT stall in awaiting_review in dryRun mode');
+  assert.equal(closedSessionsCount, 1, 'First session should have been closed automatically');
+
+  // After cooldown finishes, Slot 1 automatically picks up app-dry-2
+  await delay(120);
+
+  assert.equal(closedSessionsCount, 2, 'Second queued session should be auto-processed and closed');
+  assert.equal(runner.pendingQueue.length, 0, 'Queue should be empty');
+
+  await fs.rm(tempDir, { recursive: true, force: true }).catch(() => {});
+});

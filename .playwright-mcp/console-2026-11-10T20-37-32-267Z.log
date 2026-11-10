@@ -1,0 +1,47 @@
+[      79ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:5173/@fs/Users/sharan/Desktop/oracle/node_modules/.vite/deps/react-dom_client.js?v=deeda86b:22162
+[     161ms] [ERROR] React has detected a change in the order of Hooks called by %s. This will lead to bugs and errors if not fixed. For more information, read the Rules of Hooks: https://react.dev/link/rules-of-hooks
+
+   Previous render            Next render
+   ------------------------------------------------------
+%s   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ App 1. useState                   useState
+2. useState                   useState
+3. useState                   useState
+4. useState                   useState
+5. useState                   useState
+6. useState                   useState
+7. useState                   useState
+8. useState                   useState
+9. useState                   useState
+10. useState                  useState
+11. useState                  useState
+12. useState                  useState
+13. useState                  useState
+14. useState                  useState
+15. useState                  useState
+16. useState                  useState
+17. useEffect                 useEffect
+18. useEffect                 useEffect
+19. useEffect                 useEffect
+20. useMemo                   useMemo
+21. useMemo                   useMemo
+22. useEffect                 useEffect
+23. useMemo                   useMemo
+24. undefined                 useMemo
+ @ http://localhost:5173/@fs/Users/sharan/Desktop/oracle/node_modules/.vite/deps/react-dom_client.js?v=deeda86b:5855
+[     166ms] Error: Rendered more hooks than during the previous render.
+    at updateWorkInProgressHook (http://localhost:5173/@fs/Users/sharan/Desktop/oracle/node_modules/.vite/deps/react-dom_client.js?v=deeda86b:6056:19)
+    at updateMemo (http://localhost:5173/@fs/Users/sharan/Desktop/oracle/node_modules/.vite/deps/react-dom_client.js?v=deeda86b:6812:20)
+    at Object.useMemo (http://localhost:5173/@fs/Users/sharan/Desktop/oracle/node_modules/.vite/deps/react-dom_client.js?v=deeda86b:20716:20)
+    at exports.useMemo (http://localhost:5173/@fs/Users/sharan/Desktop/oracle/node_modules/.vite/deps/chunk-SU6MV2YM.js?v=deeda86b:977:36)
+    at App (http://localhost:5173/src/App.jsx?t=1794342977077:2521:27)
+    at Object.react_stack_bottom_frame (http://localhost:5173/@fs/Users/sharan/Desktop/oracle/node_modules/.vite/deps/react-dom_client.js?v=deeda86b:20257:20)
+    at renderWithHooks (http://localhost:5173/@fs/Users/sharan/Desktop/oracle/node_modules/.vite/deps/react-dom_client.js?v=deeda86b:5916:24)
+    at updateFunctionComponent (http://localhost:5173/@fs/Users/sharan/Desktop/oracle/node_modules/.vite/deps/react-dom_client.js?v=deeda86b:7761:21)
+    at beginWork (http://localhost:5173/@fs/Users/sharan/Desktop/oracle/node_modules/.vite/deps/react-dom_client.js?v=deeda86b:8841:20)
+    at runWithFiberInDEV (http://localhost:5173/@fs/Users/sharan/Desktop/oracle/node_modules/.vite/deps/react-dom_client.js?v=deeda86b:1131:72)
+[     166ms] [WARNING] %s
+
+%s
+ An error occurred in the <App> component. Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries. @ http://localhost:5173/@fs/Users/sharan/Desktop/oracle/node_modules/.vite/deps/react-dom_client.js?v=deeda86b:7238

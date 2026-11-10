@@ -23,6 +23,7 @@ export class SubmissionQueueRunner {
     this.cooldownMs = this.config.submission?.cooldownMs ?? config.submission?.cooldownMs ?? 10000;
     this.submitWaitMs = this.config.submission?.submitWaitMs ?? config.submission?.submitWaitMs ?? 10000;
     this.submitDir = this.config.submission?.submitDir ?? (this.config.dataDir ? path.resolve(this.config.dataDir, 'submit') : config.submission?.submitDir);
+    this.dryRun = this.config.submission?.dryRun ?? false;
 
     this.lastLaunchTime = 0;
     this.launchLock = Promise.resolve();
@@ -214,6 +215,19 @@ export class SubmissionQueueRunner {
       if (updatedApp.status === 'fill_failed') {
         slot.error = 'Form filling encountered errors';
         console.warn(`[Submission Worker Slot ${slot.slotId}] Form filling had failures; halting for operator inspection.`);
+      }
+
+      // Dry-Run Visual Audit Mode: Do not click Submit. Auto-close browser cleanly to free worker slot for queued applications.
+      if (this.dryRun) {
+        console.log(`[Submission Worker Slot ${slot.slotId}] Dry-Run Audit Mode: All pages filled and visual audit screenshots captured. Auto-closing session without submitting.`);
+        const session = this.sessions.get(applicationId);
+        if (session) {
+          await this.oracle.closeSession(session).catch(() => {});
+          this.sessions.delete(applicationId);
+        }
+        slot.session = null;
+        await this.#cooldownSlot(slot);
+        return;
       }
 
       // 3. Safety Gate Reached: Halt at final page before submit

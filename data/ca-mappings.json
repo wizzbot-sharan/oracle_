@@ -1,0 +1,2168 @@
+{
+  "updatedAt": "2026-11-10T19:02:44.364Z",
+  "totalCas": 52,
+  "totalAssignedClients": 141,
+  "cas": [
+    {
+      "id": "5297728f-b2bf-4d4d-a3fa-0f2943fbcbe5",
+      "name": "Arun Gogulothu",
+      "email": "arungogulothu@applywizz.ai",
+      "role": "Junior CA",
+      "clientCount": 6,
+      "clients": [
+        {
+          "applywizz_id": "AWL-42044",
+          "client_email": "aishwarya.parupati@applywizard.ai",
+          "full_name": "AISHWARYA REDDY PARUPATI",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-4593",
+          "client_email": "bharath.kumar@applywizard.ai",
+          "full_name": "Bharath Kumar ",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-32516",
+          "client_email": "dorababu.chintala@applywizard.ai",
+          "full_name": "DORA BABU CHINTALA",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-31114",
+          "client_email": "sandeep.reddy@applywizard.ai",
+          "full_name": "Sandeep Kumar Reddy Sandhadi",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-26459",
+          "client_email": "tejeshwar.junnareddyboopathi@applywizard.ai",
+          "full_name": "TEJESHWAR Junnareddy boopathi",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-6307",
+          "client_email": "vinaykumarreddy.budideti@applywizard.ai",
+          "full_name": "Vinay Kumar Reddy Budideti",
+          "assignment_type": "permanent"
+        }
+      ]
+    },
+    {
+      "id": "48148ef9-f476-4e3e-9e80-0b4246684e75",
+      "name": "Shravani",
+      "email": "shravani@applywizz.com",
+      "role": "CA",
+      "clientCount": 6,
+      "clients": [
+        {
+          "applywizz_id": "AWL-29666",
+          "client_email": "chilukuri.ramyateja@applywizard.ai",
+          "full_name": "CHILUKURI RAMYATEJA",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-44741",
+          "client_email": "gayathridevi.kotapati@applywizard.ai",
+          "full_name": "Gayathri Devi Kotapati",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-25648",
+          "client_email": "jayaprakash.garikipati@applywizard.ai",
+          "full_name": "Jayaprakash  ",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-39240",
+          "client_email": "keerthiraj.0999@gmail.com",
+          "full_name": "Keerthi raj Sathelli",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-30424",
+          "client_email": "rahulprasad8320@gmail.com",
+          "full_name": "Rahul Prasad",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-32852",
+          "client_email": "sharone.busamalla@applywizard.ai",
+          "full_name": "Sharone Aneeta Busamalla",
+          "assignment_type": "permanent"
+        }
+      ]
+    },
+    {
+      "id": "29b86adf-4e0d-442f-afe9-1e7951b95b3a",
+      "name": "Aparna",
+      "email": "aparna@applywizz.com",
+      "role": "CA",
+      "clientCount": 5,
+      "clients": [
+        {
+          "applywizz_id": "AWL-35076",
+          "client_email": "punithreddy.dappili@applywizard.ai",
+          "full_name": "Punith Reddy Dappili",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-27157",
+          "client_email": "rajanikanth.suragani@applywizard.ai",
+          "full_name": "Rajanikanth Suragani",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-32876",
+          "client_email": "rajasekharreddy.kothapalli@applywizard.ai",
+          "full_name": "Rajasekhar Reddy Kothapalli",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-29197",
+          "client_email": "sanjanakrishnareddy.navar@applywizard.ai",
+          "full_name": "SANJANA KRISHNA REDDY NAVAR",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-31121",
+          "client_email": "vishal.bitla@applywizard.ai",
+          "full_name": "Vishal Bitla",
+          "assignment_type": "permanent"
+        }
+      ]
+    },
+    {
+      "id": "c4caaf5d-637c-498e-a939-3e3bc0d5ab65",
+      "name": "Deekshitha",
+      "email": "deekshitha@applywizz.com",
+      "role": "CA",
+      "clientCount": 4,
+      "clients": [
+        {
+          "applywizz_id": "AWL-32898",
+          "client_email": "naveenkumar.modepalli@applywizard.ai",
+          "full_name": "NAVEEN KUMAR MODEPALLI",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-34779",
+          "client_email": "sai.kalluri@applywizard.ai",
+          "full_name": "SAI KIRAN KALLURI",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-32458",
+          "client_email": "shiva.kumar@applywizard.ai",
+          "full_name": "Shiva kumar ",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-33095",
+          "client_email": "saikumar.s@applywizard.ai",
+          "full_name": "Somasi Sai Kumar",
+          "assignment_type": "permanent"
+        }
+      ]
+    },
+    {
+      "id": "5815fd7e-da56-4455-a96d-406093288b39",
+      "name": "Kavya",
+      "email": "kavya@applywizz.com",
+      "role": "CA",
+      "clientCount": 4,
+      "clients": [
+        {
+          "applywizz_id": "AWL-2211",
+          "client_email": "akhil.settybalija@applywizard.ai",
+          "full_name": "AKHIL Setty Balija",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-35215",
+          "client_email": "bulipekamalakar9@gmail.com",
+          "full_name": "Kamalakar Bulipe",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-4220",
+          "client_email": "rinkukasala04@gmail.com",
+          "full_name": "RINKU KASALA",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-32042",
+          "client_email": "sai.kiran@applywizard.ai",
+          "full_name": "Sai Kiran",
+          "assignment_type": "permanent"
+        }
+      ]
+    },
+    {
+      "id": "aae784eb-f821-44f8-889a-bca30eae7812",
+      "name": "Kiran Reddy Pappula",
+      "email": "kiranreddypappula@applywizz.ai",
+      "role": "Junior CA",
+      "clientCount": 4,
+      "clients": [
+        {
+          "applywizz_id": "AWL-29612",
+          "client_email": "kalyan.thatikonda@applywizard.ai",
+          "full_name": "Kalyan Kumar Thatikonda",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-32635",
+          "client_email": "mani.nancharla@applywizard.ai",
+          "full_name": "Mani Nancharla",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-32840",
+          "client_email": "vallojupavankumar@gmail.com",
+          "full_name": "Pavankumar valloju",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-32557",
+          "client_email": "sandhya.rani@applywizard.ai",
+          "full_name": "SANDHYA RANI",
+          "assignment_type": "permanent"
+        }
+      ]
+    },
+    {
+      "id": "bcd2a69f-0ce8-4546-96ac-e4cd6110f259",
+      "name": "Manusha Nune",
+      "email": "manushanune@applywizz.com",
+      "role": "Junior CA",
+      "clientCount": 4,
+      "clients": [
+        {
+          "applywizz_id": "AWL-25663",
+          "client_email": "abhilash.thota@applywizard.ai",
+          "full_name": "Abhilash Reddy Thota",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-39786",
+          "client_email": "sai.kondapalli@applywizard.ai",
+          "full_name": "Sai chand kondapalli",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-29555",
+          "client_email": "krishna.kompella@applywizard.ai",
+          "full_name": "Vamsi Krishna",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-41703",
+          "client_email": "venkata.pasumarthi@applywizard.ai",
+          "full_name": "Venkata P",
+          "assignment_type": "permanent"
+        }
+      ]
+    },
+    {
+      "id": "753e0ab8-7c0c-4715-b37b-867041acfdd4",
+      "name": "Maskuri Rathnamala",
+      "email": "RathnamalaM@Applywizz.com",
+      "role": "Junior CA",
+      "clientCount": 4,
+      "clients": [
+        {
+          "applywizz_id": "AWL-26257",
+          "client_email": "dajayreddy09@gmail.com",
+          "full_name": "AJAYKUMAR REDDY DEVARAPALLI",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-2452",
+          "client_email": "akhiludayd@gmail.com",
+          "full_name": "Akhil Uday Devayani",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-42671",
+          "client_email": "prasad.bhanu@applywizard.ai",
+          "full_name": "Bhanu prasad ",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-584",
+          "client_email": "harish.tanniru@applywizard.ai",
+          "full_name": "Harish Tanniru",
+          "assignment_type": "permanent"
+        }
+      ]
+    },
+    {
+      "id": "b56f3c6b-c33a-4f90-8125-f4c1fc0494a1",
+      "name": "Munigela Srujana",
+      "email": "srujana@applywizz.com",
+      "role": "CA",
+      "clientCount": 4,
+      "clients": [
+        {
+          "applywizz_id": "AWL-39223",
+          "client_email": "adarsh.teakaigari@applywizard.ai",
+          "full_name": "Adarsh Teakaigari",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-29945",
+          "client_email": "chinavadabhawankumar@gmail.com",
+          "full_name": "Bhawan Kumar Chinavada",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-31243",
+          "client_email": "jasper.dasari@applywizard.ai",
+          "full_name": "Jasper D⭐⭐",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-6093",
+          "client_email": "spoorthigopu814@gmail.com",
+          "full_name": "spoorthi Gopu",
+          "assignment_type": "permanent"
+        }
+      ]
+    },
+    {
+      "id": "9b954a35-adf0-46cd-8b91-9a50e812b9f2",
+      "name": "Navya Repaka",
+      "email": "navya@applywizz.com",
+      "role": "CA",
+      "clientCount": 4,
+      "clients": [
+        {
+          "applywizz_id": "AWL-32830",
+          "client_email": "bhavani.mogilipaka@applywizard.ai",
+          "full_name": "Bhavani  Mogilipaka ",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-37066",
+          "client_email": "kalyankumar.konduru@applywizard.ai",
+          "full_name": "Kalyankumar Konduru",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-4039",
+          "client_email": "saibenkannagari@gmail.com",
+          "full_name": "Saiteja Benkannagari",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-43950",
+          "client_email": "venkatesh.bhukya@applywizard.ai",
+          "full_name": "Venkatesh Bhukya",
+          "assignment_type": "permanent"
+        }
+      ]
+    },
+    {
+      "id": "d4085245-1626-46cb-9cbf-1a6fdbfcebbe",
+      "name": "Sana",
+      "email": "sana@applywizz.com",
+      "role": "CA",
+      "clientCount": 4,
+      "clients": [
+        {
+          "applywizz_id": "AWL-30711",
+          "client_email": "rajesh.chandaluri@applywizard.ai",
+          "full_name": "Rajesh Chandaluri",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-39785",
+          "client_email": "siva.bobbili@applywizard.ai",
+          "full_name": "Siva Bobbili",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-41707",
+          "client_email": "jangamhsumanth@gmail.com",
+          "full_name": "Sumanth Jangam",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-26230",
+          "client_email": "uday.talasila@applywizard.ai",
+          "full_name": "Uday Talasila",
+          "assignment_type": "permanent"
+        }
+      ]
+    },
+    {
+      "id": "f0200139-40ae-4ebf-bbf1-4bbd8fc40af2",
+      "name": "Santhoshini G",
+      "email": "santhoshinig@applywizz.com",
+      "role": "Junior CA",
+      "clientCount": 4,
+      "clients": [
+        {
+          "applywizz_id": "AWL-42673",
+          "client_email": "haritha.k@applywizard.ai",
+          "full_name": "Haritha K",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-32523",
+          "client_email": "parthavanaidu.jyotha@applywizard.ai",
+          "full_name": "Parthava Naidu Jyotha",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-26675",
+          "client_email": "bravindrareddy5173@gmail.com",
+          "full_name": "Ravindra reddy bijjam",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-4287",
+          "client_email": "shanmukhharshithguduguntla@gmail.com",
+          "full_name": "Shanmukh Harshith Guduguntla",
+          "assignment_type": "permanent"
+        }
+      ]
+    },
+    {
+      "id": "eec9bdf2-ceb8-453c-8f7a-133ecfa659bb",
+      "name": "Shivani Pentham",
+      "email": "shivani@applywizz.com",
+      "role": "CA",
+      "clientCount": 4,
+      "clients": [
+        {
+          "applywizz_id": "AWL-25400",
+          "client_email": "aishwarya.nlysa@gmail.com",
+          "full_name": "Aishwarya Vuppunoothi",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-27613",
+          "client_email": "kpatlolla.connect@gmail.com",
+          "full_name": "Karthik P",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-38650",
+          "client_email": "pratyusha.ramadugu@applywizard.ai",
+          "full_name": "PRATYUSHA RAMADUGU",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-30415",
+          "client_email": "vadiraja.korlahalli@applywizard.ai",
+          "full_name": "Vadiraja Korlahalli",
+          "assignment_type": "permanent"
+        }
+      ]
+    },
+    {
+      "id": "831b40c8-8ba0-4d50-9a8b-384ec1c211ff",
+      "name": "Sreeja",
+      "email": "sreeja@applywizz.com",
+      "role": "CA",
+      "clientCount": 4,
+      "clients": [
+        {
+          "applywizz_id": "AWL-44782",
+          "client_email": "dileep.guduru@applywizard.ai",
+          "full_name": "Dileep Guduru",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-7020",
+          "client_email": "mohanlakshmiml10@gmail.com",
+          "full_name": "Lakshmi Mohan",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-35585",
+          "client_email": "santhi.muppalla@applywizard.ai",
+          "full_name": "Santhi Muppalla",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-25629",
+          "client_email": "maryalasrujan05@gmail.com",
+          "full_name": "Srujan Maryala",
+          "assignment_type": "permanent"
+        }
+      ]
+    },
+    {
+      "id": "32fff2b9-2f22-47e7-b55e-b6583b9214b7",
+      "name": "Akhila Karike",
+      "email": "akhilakarike@applywizz.ai",
+      "role": "Junior CA",
+      "clientCount": 3,
+      "clients": [
+        {
+          "applywizz_id": "AWL-45411",
+          "client_email": "saikarthik.inkulu@applywizard.ai",
+          "full_name": "Sai Karthik Inkulu",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-6451",
+          "client_email": "vchallagundla24@gmail.com",
+          "full_name": "Vamshi Challagundla",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-26956",
+          "client_email": "venkat.pallati@applywizard.ai",
+          "full_name": "VENKATESH PALLATI",
+          "assignment_type": "permanent"
+        }
+      ]
+    },
+    {
+      "id": "b67b8e0f-b864-4126-b915-f249a6eee25c",
+      "name": "Amulya Ravula",
+      "email": "amulyaravula@applywizz.com",
+      "role": "Junior CA",
+      "clientCount": 3,
+      "clients": [
+        {
+          "applywizz_id": "AWL-41700",
+          "client_email": "harini.muppala@applywizard.ai",
+          "full_name": "Harini Muppala",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-31874",
+          "client_email": "saikumar.sama@applywizard.ai",
+          "full_name": "Sai Kumar",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-36898",
+          "client_email": "yugandhar.ethamukkala@applywizard.ai",
+          "full_name": "Yugandhar",
+          "assignment_type": "permanent"
+        }
+      ]
+    },
+    {
+      "id": "e33284fc-6ef3-47fb-9047-80cfddd2ff75",
+      "name": "Dayakar Gundi",
+      "email": "dayakar@applywizz.com",
+      "role": "CA",
+      "clientCount": 3,
+      "clients": [
+        {
+          "applywizz_id": "AWL-29518",
+          "client_email": "akshay.joshi@applywizard.ai",
+          "full_name": "AKSHAY JOSHI",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-28492",
+          "client_email": "ramprathyusha.g@gmail.com",
+          "full_name": "Prathyusha Gangisetty⭐⭐",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-43949",
+          "client_email": "vikhil.baswaraju@applywizard.ai",
+          "full_name": "VIKHIL BASWARAJU",
+          "assignment_type": "permanent"
+        }
+      ]
+    },
+    {
+      "id": "bb69a47c-39aa-4eac-9b03-4e98d9125ce0",
+      "name": "Harika Medikayala",
+      "email": "harika@applywizz.com",
+      "role": "CA",
+      "clientCount": 3,
+      "clients": [
+        {
+          "applywizz_id": "AWL-35049",
+          "client_email": "manisha.medasani@applywizard.ai",
+          "full_name": "MANISHA MEDASANI",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-44794",
+          "client_email": "radhika.chauhan@applywizard.ai",
+          "full_name": "RADHIKA CHAUHAN",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-1568",
+          "client_email": "ssunaitechjobs@gmail.com",
+          "full_name": "Sai Sunai Madhamshetty",
+          "assignment_type": "permanent"
+        }
+      ]
+    },
+    {
+      "id": "3a4e0d50-dd5a-4140-9099-1652ef725753",
+      "name": "Kappera Sandeep",
+      "email": "ksandeepreddy@applywizz.com",
+      "role": "CA",
+      "clientCount": 3,
+      "clients": [
+        {
+          "applywizz_id": "AWL-31424",
+          "client_email": "deekshitha.gunde@applywizard.ai",
+          "full_name": "Deekshitha Gunde",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-31930",
+          "client_email": "malavika.palupunuri@applywizard.ai",
+          "full_name": "Malavika Palupunuri",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-31813",
+          "client_email": "steffyv099@gmail.com",
+          "full_name": "STEFFY VARGHESE",
+          "assignment_type": "permanent"
+        }
+      ]
+    },
+    {
+      "id": "86026266-b46b-42cb-b198-bc52f83d2c80",
+      "name": "Manasa",
+      "email": "manasa@applywizz.com",
+      "role": "CA",
+      "clientCount": 3,
+      "clients": [
+        {
+          "applywizz_id": "AWL-31880",
+          "client_email": "gopinathkota0397@gmail.com",
+          "full_name": "Gopi Nath Kota",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-26828",
+          "client_email": "nikhila.lankela10@gmail.com",
+          "full_name": "Nikhila Yadav Lankela",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-35198",
+          "client_email": "vineeth.reddy@applywizard.ai",
+          "full_name": "VINEETH REDDY",
+          "assignment_type": "permanent"
+        }
+      ]
+    },
+    {
+      "id": "adffca8f-1746-4fc1-8ae4-309138ceca63",
+      "name": "Nagaraju Diviti",
+      "email": "nagarajudiviti@applywizz.ai",
+      "role": "Junior CA",
+      "clientCount": 3,
+      "clients": [
+        {
+          "applywizz_id": "AWL-33085",
+          "client_email": "kranthi.yedla@applywizard.ai",
+          "full_name": "Kranthi Kumar Yedla",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-28684",
+          "client_email": "manojkolli.nz@gmail.com",
+          "full_name": "MANOJKUMAR KOLLI",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-45422",
+          "client_email": "rajkumarbharath.dev@gmail.com",
+          "full_name": "Rajkumar Bharath",
+          "assignment_type": "permanent"
+        }
+      ]
+    },
+    {
+      "id": "06c8abe9-f3b4-4df4-9657-5284b81b5d03",
+      "name": "PavanKumar Veerabathini",
+      "email": "pavankumarveerabathini@applywizz.ai",
+      "role": "Junior CA",
+      "clientCount": 3,
+      "clients": [
+        {
+          "applywizz_id": "AWL-44770",
+          "client_email": "neeraj.borra@applywizard.ai",
+          "full_name": "Neeraj Borra",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-36117",
+          "client_email": "nikesh.addula@applywizard.ai",
+          "full_name": "NIKESH REDDY ADDULA",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-39218",
+          "client_email": "srinija.puvvula@applywizard.ai",
+          "full_name": "Srinija Puvvula",
+          "assignment_type": "permanent"
+        }
+      ]
+    },
+    {
+      "id": "6b5686ed-8ae8-4481-9f50-17475a02be64",
+      "name": "Ramyasri",
+      "email": "ramyasri@applywizz.com",
+      "role": "CA",
+      "clientCount": 3,
+      "clients": [
+        {
+          "applywizz_id": "AWL-31134",
+          "client_email": "dileep.dasarapu@applywizard.ai",
+          "full_name": "Dileep  Dasarapu ",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-44801",
+          "client_email": "sanapala.mounica@applywizard.ai",
+          "full_name": "SANAPALA MOUNICA",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-36028",
+          "client_email": "surajkumar.ch@applywizard.ai",
+          "full_name": "Suraj kumar CH",
+          "assignment_type": "permanent"
+        }
+      ]
+    },
+    {
+      "id": "a1c28829-01ac-47a9-8859-a2e9b6184ef2",
+      "name": "Roshini Gotte",
+      "email": "roshinigotte@applywizz.ai",
+      "role": "Junior CA",
+      "clientCount": 3,
+      "clients": [
+        {
+          "applywizz_id": "AWL-25015",
+          "client_email": "dorasaiganeshreddy.satti@applywizard.ai",
+          "full_name": "Dora Sai Ganesh Reddy Satti",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-36883",
+          "client_email": "hemanth.malladhi@applywizard.ai",
+          "full_name": "Lakshman Hemanth Malladhi",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-31380",
+          "client_email": "pardeepan.subramaniam@applywizard.ai",
+          "full_name": "PARDEEPAN SUBRAMANIAM",
+          "assignment_type": "permanent"
+        }
+      ]
+    },
+    {
+      "id": "76e3d5eb-be04-43f9-a993-08ace888b666",
+      "name": "Sahithi",
+      "email": "sahithi@applywizz.com",
+      "role": "CA",
+      "clientCount": 3,
+      "clients": [
+        {
+          "applywizz_id": "AWL-45416",
+          "client_email": "abdullah.zubair@applywizard.ai",
+          "full_name": "Abdullah Zubair Mohd",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-35262",
+          "client_email": "abhinav.kumar@applywizard.ai",
+          "full_name": "Abhi ",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-26538",
+          "client_email": "pappusaitarunreddy@gmail.com",
+          "full_name": "SAITARUNREDDY PAPPU",
+          "assignment_type": "permanent"
+        }
+      ]
+    },
+    {
+      "id": "928ec368-a690-45e5-b9ee-dd04c838115c",
+      "name": "Saritha Ganne",
+      "email": "saritha.ganne@applywizz.com",
+      "role": "Junior CA",
+      "clientCount": 3,
+      "clients": [
+        {
+          "applywizz_id": "AWL-35184",
+          "client_email": "pranav212pb@gmail.com",
+          "full_name": "Pranav Prasasth B",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-41698",
+          "client_email": "sravan.sama@applywizard.ai",
+          "full_name": "Sravan Reddy Sama",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-36116",
+          "client_email": "ssrujana704@gmail.com",
+          "full_name": "Srujana Reddy",
+          "assignment_type": "permanent"
+        }
+      ]
+    },
+    {
+      "id": "c9b56bdb-628f-49e0-be0e-9c42ea58d50f",
+      "name": "Sharanya Peddi",
+      "email": "sharanyapeddi@applywizz.ai",
+      "role": "Junior CA",
+      "clientCount": 3,
+      "clients": [
+        {
+          "applywizz_id": "AWL-26974",
+          "client_email": "aakanksharangdal1@gmail.com",
+          "full_name": "Aakanksha Rukmanna Rangdal",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-35033",
+          "client_email": "bhargava.suryadevara@applywizard.ai",
+          "full_name": "Bhargava Phaneendra Kumar Suryadevara",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-32094",
+          "client_email": "nikhilreddy.ramasagaram@applywizard.ai",
+          "full_name": "Nikhil Reddy Ramasagaram",
+          "assignment_type": "permanent"
+        }
+      ]
+    },
+    {
+      "id": "0e7f2701-8aec-468b-995c-48ffc9479471",
+      "name": "Venkatesh Goud G",
+      "email": "venkateshgoudg@applywizz.ai",
+      "role": "Junior CA",
+      "clientCount": 3,
+      "clients": [
+        {
+          "applywizz_id": "AWL-25574",
+          "client_email": "praneethr2429@gmail.com",
+          "full_name": "praneeth nalla",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-41710",
+          "client_email": "durgapravallika.vinjamuritirumala@applywizard.ai",
+          "full_name": "Pravalika Ammu",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-23632",
+          "client_email": "bvishwas4525@gmail.com",
+          "full_name": "Vishwas  Boddu",
+          "assignment_type": "permanent"
+        }
+      ]
+    },
+    {
+      "id": "3af2236d-20ea-41bf-840a-97f4ef91beaa",
+      "name": "vidhya palle",
+      "email": "vidhya@applywizz.com",
+      "role": "CA",
+      "clientCount": 3,
+      "clients": [
+        {
+          "applywizz_id": "AWL-32063",
+          "client_email": "sarada.gopu@applywizard.ai",
+          "full_name": "Sarada Gopu",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-31162",
+          "client_email": "vamshi.gutha@applywizard.ai",
+          "full_name": "vamshi gutha",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-32097",
+          "client_email": "venkateswari.kalva@applywizard.ai",
+          "full_name": "VENKATESWARI KALVA",
+          "assignment_type": "permanent"
+        }
+      ]
+    },
+    {
+      "id": "962023b2-b089-4e15-96a4-c6af0f6925eb",
+      "name": "Alekhya Ashangari",
+      "email": "alekhyaashangari@applywizz.ai",
+      "role": "Junior CA",
+      "clientCount": 2,
+      "clients": [
+        {
+          "applywizz_id": "AWL-33238",
+          "client_email": "sri.tanguturi@applywizard.ai",
+          "full_name": "Abhigna T",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-24852",
+          "client_email": "sankeerthpasula1006@gmail.com",
+          "full_name": "Sankeerth Pasula",
+          "assignment_type": "permanent"
+        }
+      ]
+    },
+    {
+      "id": "353f21f6-5629-4a15-b0a2-7b3feb5a4e97",
+      "name": "Bhavana Swamulapally",
+      "email": "bhavanaswamulapally@applywizz.ai",
+      "role": "Junior CA",
+      "clientCount": 2,
+      "clients": [
+        {
+          "applywizz_id": "AWL-33084",
+          "client_email": "amulya.v@applywizard.ai",
+          "full_name": "Amulya Found V",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-32241",
+          "client_email": "ganjigunta.narendar@applywizard.ai",
+          "full_name": "Ganjigunta Narendar",
+          "assignment_type": "permanent"
+        }
+      ]
+    },
+    {
+      "id": "d7de6b12-d97f-494c-b6b8-d294e6558229",
+      "name": "Meenakshi Kuncham",
+      "email": "meenakshi@applywizz.com",
+      "role": "CA",
+      "clientCount": 2,
+      "clients": [
+        {
+          "applywizz_id": "AWL-25527",
+          "client_email": "saiobulasetty05@gmail.com",
+          "full_name": "Sai Obulasetty",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-41702",
+          "client_email": "sameer.ali@applywizard.ai",
+          "full_name": "Sameer Ali Dhanaliwala",
+          "assignment_type": "permanent"
+        }
+      ]
+    },
+    {
+      "id": "b91c88d5-e0c5-4f8c-a4a1-0c1057a1f1e0",
+      "name": "Mohammad Shaik Ali",
+      "email": "ali@applywizz.com",
+      "role": "CA",
+      "clientCount": 2,
+      "clients": [
+        {
+          "applywizz_id": "AWL-25695",
+          "client_email": "tonsat151@gmail.com",
+          "full_name": "Sateesh Tondepu",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-43306",
+          "client_email": "sivalakshmaiah.ankipalli@applywizard.ai",
+          "full_name": "Siva Lakshmaiah Ankipalli",
+          "assignment_type": "permanent"
+        }
+      ]
+    },
+    {
+      "id": "bfdc5498-063a-440c-8a4c-d867016ea720",
+      "name": "Nari Ankitha",
+      "email": "nariankitha@applywizz.ai",
+      "role": "Junior CA",
+      "clientCount": 2,
+      "clients": [
+        {
+          "applywizz_id": "AWL-31640",
+          "client_email": "akash.sudini@applywizard.ai",
+          "full_name": "Akash Sudini",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-28177",
+          "client_email": "venkata.prasanth@applywizard.ai",
+          "full_name": "Venkata Prasanth Reddy Bontha ",
+          "assignment_type": "permanent"
+        }
+      ]
+    },
+    {
+      "id": "53a008e1-17ed-4d5b-abe3-4001cdf44772",
+      "name": "Rakesh Kancharla",
+      "email": "rakesh@applywizz.com",
+      "role": "CA",
+      "clientCount": 2,
+      "clients": [
+        {
+          "applywizz_id": "AWL-36019",
+          "client_email": "lakshmi.chinthalapudi@applywizard.ai",
+          "full_name": "Chinthalapudi Venkat Lakshmi",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-37259",
+          "client_email": "buddala.jeevan@applywizard.ai",
+          "full_name": "Pavanjeevan BUDDALA",
+          "assignment_type": "permanent"
+        }
+      ]
+    },
+    {
+      "id": "664e2c55-0521-4587-97eb-8f363bb869f0",
+      "name": "Saikiran Choutupelly",
+      "email": "saikiran.choutupelly@applywizz.ai",
+      "role": "Junior CA",
+      "clientCount": 2,
+      "clients": [
+        {
+          "applywizz_id": "AWL-35252",
+          "client_email": "ranjith.kotamraju@applywizard.ai",
+          "full_name": " RANJITH KOTAMRAJU",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-36164",
+          "client_email": "sailokesh.poloju@applywizard.ai",
+          "full_name": "SAI LOKESH POLOJU",
+          "assignment_type": "permanent"
+        }
+      ]
+    },
+    {
+      "id": "75baf7c8-b0c8-46ed-8274-421fde632df6",
+      "name": "Sherupally Shruthi",
+      "email": "shruthisherupally@applywizz.com",
+      "role": "CA",
+      "clientCount": 2,
+      "clients": [
+        {
+          "applywizz_id": "AWL-45425",
+          "client_email": "dedeepya.peyyala@applywizard.ai",
+          "full_name": "Dedeepya Peyyala",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-39819",
+          "client_email": "subbareddy.yemireddy@applywizard.ai",
+          "full_name": "Subbareddy Yemireddy",
+          "assignment_type": "permanent"
+        }
+      ]
+    },
+    {
+      "id": "4bb5e4c1-7274-41fa-8925-449399335853",
+      "name": "shivani kola",
+      "email": "kolashivani@applywizz.com",
+      "role": "CA",
+      "clientCount": 2,
+      "clients": [
+        {
+          "applywizz_id": "AWL-45417",
+          "client_email": "saivardhan.mategam@applywizard.ai",
+          "full_name": "Sai vardhan reddy mategam",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-44790",
+          "client_email": "shailesh.palakurti@applywizard.ai",
+          "full_name": "Shailesh Palakurti",
+          "assignment_type": "permanent"
+        }
+      ]
+    },
+    {
+      "id": "07c6f0dc-ceca-4c5b-9fd6-e5c49e0671a0",
+      "name": "Sowmya chilumula",
+      "email": "sowmya@applywizz.com",
+      "role": "CA",
+      "clientCount": 2,
+      "clients": [
+        {
+          "applywizz_id": "AWL-41977",
+          "client_email": "hemanth.enukapallu@applywizard.ai",
+          "full_name": "Enukapally Hemanth kumar",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-42670",
+          "client_email": "srinivasa.mallempati@applywizard.ai",
+          "full_name": "Srinivasa Nikhil Mallempati",
+          "assignment_type": "permanent"
+        }
+      ]
+    },
+    {
+      "id": "59da955e-5aa9-4bf5-8335-bad0ea9a9b08",
+      "name": "Suguru Dheeraj",
+      "email": "sugurudheeraj@applywizz.ai",
+      "role": "Junior CA",
+      "clientCount": 2,
+      "clients": [
+        {
+          "applywizz_id": "AWL-32933",
+          "client_email": "aditya.pola@applywizard.ai",
+          "full_name": "ADITYA POLA",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-44161",
+          "client_email": "shashidher.mylarapu@applywizard.ai",
+          "full_name": "Shashidher Mylarapu",
+          "assignment_type": "permanent"
+        }
+      ]
+    },
+    {
+      "id": "a05be797-9b67-4bcb-b582-5c9b549e2003",
+      "name": "Tulasi Thatikonda",
+      "email": "tulasithatikonda@applywizz.ai",
+      "role": "Junior CA",
+      "clientCount": 2,
+      "clients": [
+        {
+          "applywizz_id": "AWL-35179",
+          "client_email": "ceryl.chukka@applywizard.ai",
+          "full_name": "Ceryl Tejas Chukka",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-43089",
+          "client_email": "monesh.pulla@applywizard.ai",
+          "full_name": "MONESH PULLA",
+          "assignment_type": "permanent"
+        }
+      ]
+    },
+    {
+      "id": "0741bac7-cbbe-4fe1-ac1d-9aea1dd9d2d7",
+      "name": "VinayKumar Bollam",
+      "email": "vinaykumarbollam@applywizz.ai",
+      "role": "Junior CA",
+      "clientCount": 2,
+      "clients": [
+        {
+          "applywizz_id": "AWL-43946",
+          "client_email": "kalathurabhiram@outlook.com",
+          "full_name": "Abhiram Kalathur",
+          "assignment_type": "permanent"
+        },
+        {
+          "applywizz_id": "AWL-32982",
+          "client_email": "vamshi.nalabolu@applywizard.ai",
+          "full_name": "VAMSHI TEJESH NALABOLU",
+          "assignment_type": "permanent"
+        }
+      ]
+    },
+    {
+      "id": "f1b2e868-eca8-4e50-bae6-be41fa664c6f",
+      "name": "Bandi Ashwitha",
+      "email": "ashwitha@applywizz.com",
+      "role": "CA",
+      "clientCount": 1,
+      "clients": [
+        {
+          "applywizz_id": "AWL-41701",
+          "client_email": "manikanta.katham@applywizard.ai",
+          "full_name": "MANIKANTA KATHAM",
+          "assignment_type": "permanent"
+        }
+      ]
+    },
+    {
+      "id": "2480a4db-67df-4d90-990a-03e5dc67308f",
+      "name": "Gummadidala Kaveri",
+      "email": "kaverigummadidala@applywizz.com",
+      "role": "CA",
+      "clientCount": 1,
+      "clients": [
+        {
+          "applywizz_id": "AWL-36105",
+          "client_email": "bhuvana.posa@applywizard.ai",
+          "full_name": "BHUVANA CHANDRA SEKHAR POSA",
+          "assignment_type": "permanent"
+        }
+      ]
+    },
+    {
+      "id": "bc53cb5c-f9e9-4109-be09-40bb81852a8e",
+      "name": "Mohammad Zia",
+      "email": "ziamd@applywizz.com",
+      "role": "Junior CA",
+      "clientCount": 1,
+      "clients": [
+        {
+          "applywizz_id": "AWL-32310",
+          "client_email": "balamurali.siriki@applywizard.ai",
+          "full_name": "Balamurali Siriki",
+          "assignment_type": "permanent"
+        }
+      ]
+    },
+    {
+      "id": "216536c0-8d89-4377-b457-c79a13b28765",
+      "name": "Nagaraju Mashti",
+      "email": "nagarajumashti@applywizz.ai",
+      "role": "Junior CA",
+      "clientCount": 1,
+      "clients": [
+        {
+          "applywizz_id": "AWL-44789",
+          "client_email": "abhitej970@gmail.com",
+          "full_name": "ABHITEJ NAGABHAIRAVA",
+          "assignment_type": "permanent"
+        }
+      ]
+    },
+    {
+      "id": "b723dbbb-9ddf-4364-a755-c2ac7448ae62",
+      "name": "Prasanna LaxmiKapuraboina",
+      "email": "prasannalaxmikapuraboina@applywizz.ai",
+      "role": "Junior CA",
+      "clientCount": 1,
+      "clients": [
+        {
+          "applywizz_id": "AWL-39777",
+          "client_email": "sowmya.nalla@applywizard.ai",
+          "full_name": "Sowmya Nalla",
+          "assignment_type": "permanent"
+        }
+      ]
+    },
+    {
+      "id": "8480837b-4138-4bb9-9046-e0186523407f",
+      "name": "Premchand Gangi",
+      "email": "premchandgangi@applywizz.ai",
+      "role": "Junior CA",
+      "clientCount": 1,
+      "clients": [
+        {
+          "applywizz_id": "AWL-32411",
+          "client_email": "sunkarichandu@applywizard.ai",
+          "full_name": "Sai Chander",
+          "assignment_type": "permanent"
+        }
+      ]
+    },
+    {
+      "id": "720174ea-6bef-4c4b-b482-41822f57a879",
+      "name": "Ruchitha Bongaram",
+      "email": "ruchitha@applywizz.com",
+      "role": "CA",
+      "clientCount": 1,
+      "clients": [
+        {
+          "applywizz_id": "AWL-3762",
+          "client_email": "sridhar.vadla@applywizard.ai",
+          "full_name": "Sridhar Vadla",
+          "assignment_type": "permanent"
+        }
+      ]
+    },
+    {
+      "id": "300006ca-a057-4d03-8992-f3aff75fb53e",
+      "name": "Sai Pavan Bhoompally",
+      "email": "saipavan@applywizz.com",
+      "role": "CA",
+      "clientCount": 1,
+      "clients": [
+        {
+          "applywizz_id": "AWL-33083",
+          "client_email": "sathvik.karpurapu@applywizard.ai",
+          "full_name": "Sathvik Manoj Karpurapu",
+          "assignment_type": "permanent"
+        }
+      ]
+    },
+    {
+      "id": "0441e046-058c-4162-b50f-b6203e89b6de",
+      "name": "Sai Prasanna",
+      "email": "saiprasanna@applywizz.com",
+      "role": "CA",
+      "clientCount": 1,
+      "clients": [
+        {
+          "applywizz_id": "AWL-36100",
+          "client_email": "arjunreddy.patill@applywizard.ai",
+          "full_name": "Arjun Reddy Patil",
+          "assignment_type": "permanent"
+        }
+      ]
+    },
+    {
+      "id": "4c986ffe-728e-43bd-bd9e-20f101a614e1",
+      "name": "Pravalika Patharla",
+      "email": "pravalika@applywizz.com",
+      "role": "CA",
+      "clientCount": 0,
+      "clients": []
+    }
+  ],
+  "clientToCaMap": {
+    "AWL-26974": {
+      "caId": "c9b56bdb-628f-49e0-be0e-9c42ea58d50f",
+      "caName": "Sharanya Peddi",
+      "caEmail": "sharanyapeddi@applywizz.ai",
+      "assignmentType": "permanent"
+    },
+    "AWL-35033": {
+      "caId": "c9b56bdb-628f-49e0-be0e-9c42ea58d50f",
+      "caName": "Sharanya Peddi",
+      "caEmail": "sharanyapeddi@applywizz.ai",
+      "assignmentType": "permanent"
+    },
+    "AWL-32094": {
+      "caId": "c9b56bdb-628f-49e0-be0e-9c42ea58d50f",
+      "caName": "Sharanya Peddi",
+      "caEmail": "sharanyapeddi@applywizz.ai",
+      "assignmentType": "permanent"
+    },
+    "AWL-41700": {
+      "caId": "b67b8e0f-b864-4126-b915-f249a6eee25c",
+      "caName": "Amulya Ravula",
+      "caEmail": "amulyaravula@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-31874": {
+      "caId": "b67b8e0f-b864-4126-b915-f249a6eee25c",
+      "caName": "Amulya Ravula",
+      "caEmail": "amulyaravula@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-36898": {
+      "caId": "b67b8e0f-b864-4126-b915-f249a6eee25c",
+      "caName": "Amulya Ravula",
+      "caEmail": "amulyaravula@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-29518": {
+      "caId": "e33284fc-6ef3-47fb-9047-80cfddd2ff75",
+      "caName": "Dayakar Gundi",
+      "caEmail": "dayakar@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-28492": {
+      "caId": "e33284fc-6ef3-47fb-9047-80cfddd2ff75",
+      "caName": "Dayakar Gundi",
+      "caEmail": "dayakar@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-43949": {
+      "caId": "e33284fc-6ef3-47fb-9047-80cfddd2ff75",
+      "caName": "Dayakar Gundi",
+      "caEmail": "dayakar@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-42044": {
+      "caId": "5297728f-b2bf-4d4d-a3fa-0f2943fbcbe5",
+      "caName": "Arun Gogulothu",
+      "caEmail": "arungogulothu@applywizz.ai",
+      "assignmentType": "permanent"
+    },
+    "AWL-4593": {
+      "caId": "5297728f-b2bf-4d4d-a3fa-0f2943fbcbe5",
+      "caName": "Arun Gogulothu",
+      "caEmail": "arungogulothu@applywizz.ai",
+      "assignmentType": "permanent"
+    },
+    "AWL-32516": {
+      "caId": "5297728f-b2bf-4d4d-a3fa-0f2943fbcbe5",
+      "caName": "Arun Gogulothu",
+      "caEmail": "arungogulothu@applywizz.ai",
+      "assignmentType": "permanent"
+    },
+    "AWL-31114": {
+      "caId": "5297728f-b2bf-4d4d-a3fa-0f2943fbcbe5",
+      "caName": "Arun Gogulothu",
+      "caEmail": "arungogulothu@applywizz.ai",
+      "assignmentType": "permanent"
+    },
+    "AWL-26459": {
+      "caId": "5297728f-b2bf-4d4d-a3fa-0f2943fbcbe5",
+      "caName": "Arun Gogulothu",
+      "caEmail": "arungogulothu@applywizz.ai",
+      "assignmentType": "permanent"
+    },
+    "AWL-6307": {
+      "caId": "5297728f-b2bf-4d4d-a3fa-0f2943fbcbe5",
+      "caName": "Arun Gogulothu",
+      "caEmail": "arungogulothu@applywizz.ai",
+      "assignmentType": "permanent"
+    },
+    "AWL-32063": {
+      "caId": "3af2236d-20ea-41bf-840a-97f4ef91beaa",
+      "caName": "vidhya palle",
+      "caEmail": "vidhya@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-31162": {
+      "caId": "3af2236d-20ea-41bf-840a-97f4ef91beaa",
+      "caName": "vidhya palle",
+      "caEmail": "vidhya@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-32097": {
+      "caId": "3af2236d-20ea-41bf-840a-97f4ef91beaa",
+      "caName": "vidhya palle",
+      "caEmail": "vidhya@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-45411": {
+      "caId": "32fff2b9-2f22-47e7-b55e-b6583b9214b7",
+      "caName": "Akhila Karike",
+      "caEmail": "akhilakarike@applywizz.ai",
+      "assignmentType": "permanent"
+    },
+    "AWL-6451": {
+      "caId": "32fff2b9-2f22-47e7-b55e-b6583b9214b7",
+      "caName": "Akhila Karike",
+      "caEmail": "akhilakarike@applywizz.ai",
+      "assignmentType": "permanent"
+    },
+    "AWL-26956": {
+      "caId": "32fff2b9-2f22-47e7-b55e-b6583b9214b7",
+      "caName": "Akhila Karike",
+      "caEmail": "akhilakarike@applywizz.ai",
+      "assignmentType": "permanent"
+    },
+    "AWL-32933": {
+      "caId": "59da955e-5aa9-4bf5-8335-bad0ea9a9b08",
+      "caName": "Suguru Dheeraj",
+      "caEmail": "sugurudheeraj@applywizz.ai",
+      "assignmentType": "permanent"
+    },
+    "AWL-44161": {
+      "caId": "59da955e-5aa9-4bf5-8335-bad0ea9a9b08",
+      "caName": "Suguru Dheeraj",
+      "caEmail": "sugurudheeraj@applywizz.ai",
+      "assignmentType": "permanent"
+    },
+    "AWL-35252": {
+      "caId": "664e2c55-0521-4587-97eb-8f363bb869f0",
+      "caName": "Saikiran Choutupelly",
+      "caEmail": "saikiran.choutupelly@applywizz.ai",
+      "assignmentType": "permanent"
+    },
+    "AWL-36164": {
+      "caId": "664e2c55-0521-4587-97eb-8f363bb869f0",
+      "caName": "Saikiran Choutupelly",
+      "caEmail": "saikiran.choutupelly@applywizz.ai",
+      "assignmentType": "permanent"
+    },
+    "AWL-35179": {
+      "caId": "a05be797-9b67-4bcb-b582-5c9b549e2003",
+      "caName": "Tulasi Thatikonda",
+      "caEmail": "tulasithatikonda@applywizz.ai",
+      "assignmentType": "permanent"
+    },
+    "AWL-43089": {
+      "caId": "a05be797-9b67-4bcb-b582-5c9b549e2003",
+      "caName": "Tulasi Thatikonda",
+      "caEmail": "tulasithatikonda@applywizz.ai",
+      "assignmentType": "permanent"
+    },
+    "AWL-32310": {
+      "caId": "bc53cb5c-f9e9-4109-be09-40bb81852a8e",
+      "caName": "Mohammad Zia",
+      "caEmail": "ziamd@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-32898": {
+      "caId": "c4caaf5d-637c-498e-a939-3e3bc0d5ab65",
+      "caName": "Deekshitha",
+      "caEmail": "deekshitha@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-34779": {
+      "caId": "c4caaf5d-637c-498e-a939-3e3bc0d5ab65",
+      "caName": "Deekshitha",
+      "caEmail": "deekshitha@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-32458": {
+      "caId": "c4caaf5d-637c-498e-a939-3e3bc0d5ab65",
+      "caName": "Deekshitha",
+      "caEmail": "deekshitha@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-33095": {
+      "caId": "c4caaf5d-637c-498e-a939-3e3bc0d5ab65",
+      "caName": "Deekshitha",
+      "caEmail": "deekshitha@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-30711": {
+      "caId": "d4085245-1626-46cb-9cbf-1a6fdbfcebbe",
+      "caName": "Sana",
+      "caEmail": "sana@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-39785": {
+      "caId": "d4085245-1626-46cb-9cbf-1a6fdbfcebbe",
+      "caName": "Sana",
+      "caEmail": "sana@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-41707": {
+      "caId": "d4085245-1626-46cb-9cbf-1a6fdbfcebbe",
+      "caName": "Sana",
+      "caEmail": "sana@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-26230": {
+      "caId": "d4085245-1626-46cb-9cbf-1a6fdbfcebbe",
+      "caName": "Sana",
+      "caEmail": "sana@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-29666": {
+      "caId": "48148ef9-f476-4e3e-9e80-0b4246684e75",
+      "caName": "Shravani",
+      "caEmail": "shravani@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-44741": {
+      "caId": "48148ef9-f476-4e3e-9e80-0b4246684e75",
+      "caName": "Shravani",
+      "caEmail": "shravani@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-25648": {
+      "caId": "48148ef9-f476-4e3e-9e80-0b4246684e75",
+      "caName": "Shravani",
+      "caEmail": "shravani@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-39240": {
+      "caId": "48148ef9-f476-4e3e-9e80-0b4246684e75",
+      "caName": "Shravani",
+      "caEmail": "shravani@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-30424": {
+      "caId": "48148ef9-f476-4e3e-9e80-0b4246684e75",
+      "caName": "Shravani",
+      "caEmail": "shravani@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-32852": {
+      "caId": "48148ef9-f476-4e3e-9e80-0b4246684e75",
+      "caName": "Shravani",
+      "caEmail": "shravani@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-35076": {
+      "caId": "29b86adf-4e0d-442f-afe9-1e7951b95b3a",
+      "caName": "Aparna",
+      "caEmail": "aparna@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-27157": {
+      "caId": "29b86adf-4e0d-442f-afe9-1e7951b95b3a",
+      "caName": "Aparna",
+      "caEmail": "aparna@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-32876": {
+      "caId": "29b86adf-4e0d-442f-afe9-1e7951b95b3a",
+      "caName": "Aparna",
+      "caEmail": "aparna@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-29197": {
+      "caId": "29b86adf-4e0d-442f-afe9-1e7951b95b3a",
+      "caName": "Aparna",
+      "caEmail": "aparna@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-31121": {
+      "caId": "29b86adf-4e0d-442f-afe9-1e7951b95b3a",
+      "caName": "Aparna",
+      "caEmail": "aparna@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-25574": {
+      "caId": "0e7f2701-8aec-468b-995c-48ffc9479471",
+      "caName": "Venkatesh Goud G",
+      "caEmail": "venkateshgoudg@applywizz.ai",
+      "assignmentType": "permanent"
+    },
+    "AWL-41710": {
+      "caId": "0e7f2701-8aec-468b-995c-48ffc9479471",
+      "caName": "Venkatesh Goud G",
+      "caEmail": "venkateshgoudg@applywizz.ai",
+      "assignmentType": "permanent"
+    },
+    "AWL-23632": {
+      "caId": "0e7f2701-8aec-468b-995c-48ffc9479471",
+      "caName": "Venkatesh Goud G",
+      "caEmail": "venkateshgoudg@applywizz.ai",
+      "assignmentType": "permanent"
+    },
+    "AWL-33084": {
+      "caId": "353f21f6-5629-4a15-b0a2-7b3feb5a4e97",
+      "caName": "Bhavana Swamulapally",
+      "caEmail": "bhavanaswamulapally@applywizz.ai",
+      "assignmentType": "permanent"
+    },
+    "AWL-32241": {
+      "caId": "353f21f6-5629-4a15-b0a2-7b3feb5a4e97",
+      "caName": "Bhavana Swamulapally",
+      "caEmail": "bhavanaswamulapally@applywizz.ai",
+      "assignmentType": "permanent"
+    },
+    "AWL-39223": {
+      "caId": "b56f3c6b-c33a-4f90-8125-f4c1fc0494a1",
+      "caName": "Munigela Srujana",
+      "caEmail": "srujana@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-29945": {
+      "caId": "b56f3c6b-c33a-4f90-8125-f4c1fc0494a1",
+      "caName": "Munigela Srujana",
+      "caEmail": "srujana@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-31243": {
+      "caId": "b56f3c6b-c33a-4f90-8125-f4c1fc0494a1",
+      "caName": "Munigela Srujana",
+      "caEmail": "srujana@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-6093": {
+      "caId": "b56f3c6b-c33a-4f90-8125-f4c1fc0494a1",
+      "caName": "Munigela Srujana",
+      "caEmail": "srujana@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-41701": {
+      "caId": "f1b2e868-eca8-4e50-bae6-be41fa664c6f",
+      "caName": "Bandi Ashwitha",
+      "caEmail": "ashwitha@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-25663": {
+      "caId": "bcd2a69f-0ce8-4546-96ac-e4cd6110f259",
+      "caName": "Manusha Nune",
+      "caEmail": "manushanune@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-39786": {
+      "caId": "bcd2a69f-0ce8-4546-96ac-e4cd6110f259",
+      "caName": "Manusha Nune",
+      "caEmail": "manushanune@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-29555": {
+      "caId": "bcd2a69f-0ce8-4546-96ac-e4cd6110f259",
+      "caName": "Manusha Nune",
+      "caEmail": "manushanune@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-41703": {
+      "caId": "bcd2a69f-0ce8-4546-96ac-e4cd6110f259",
+      "caName": "Manusha Nune",
+      "caEmail": "manushanune@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-35049": {
+      "caId": "bb69a47c-39aa-4eac-9b03-4e98d9125ce0",
+      "caName": "Harika Medikayala",
+      "caEmail": "harika@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-44794": {
+      "caId": "bb69a47c-39aa-4eac-9b03-4e98d9125ce0",
+      "caName": "Harika Medikayala",
+      "caEmail": "harika@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-1568": {
+      "caId": "bb69a47c-39aa-4eac-9b03-4e98d9125ce0",
+      "caName": "Harika Medikayala",
+      "caEmail": "harika@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-32830": {
+      "caId": "9b954a35-adf0-46cd-8b91-9a50e812b9f2",
+      "caName": "Navya Repaka",
+      "caEmail": "navya@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-37066": {
+      "caId": "9b954a35-adf0-46cd-8b91-9a50e812b9f2",
+      "caName": "Navya Repaka",
+      "caEmail": "navya@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-4039": {
+      "caId": "9b954a35-adf0-46cd-8b91-9a50e812b9f2",
+      "caName": "Navya Repaka",
+      "caEmail": "navya@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-43950": {
+      "caId": "9b954a35-adf0-46cd-8b91-9a50e812b9f2",
+      "caName": "Navya Repaka",
+      "caEmail": "navya@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-41977": {
+      "caId": "07c6f0dc-ceca-4c5b-9fd6-e5c49e0671a0",
+      "caName": "Sowmya chilumula",
+      "caEmail": "sowmya@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-42670": {
+      "caId": "07c6f0dc-ceca-4c5b-9fd6-e5c49e0671a0",
+      "caName": "Sowmya chilumula",
+      "caEmail": "sowmya@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-45425": {
+      "caId": "75baf7c8-b0c8-46ed-8274-421fde632df6",
+      "caName": "Sherupally Shruthi",
+      "caEmail": "shruthisherupally@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-39819": {
+      "caId": "75baf7c8-b0c8-46ed-8274-421fde632df6",
+      "caName": "Sherupally Shruthi",
+      "caEmail": "shruthisherupally@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-25527": {
+      "caId": "d7de6b12-d97f-494c-b6b8-d294e6558229",
+      "caName": "Meenakshi Kuncham",
+      "caEmail": "meenakshi@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-41702": {
+      "caId": "d7de6b12-d97f-494c-b6b8-d294e6558229",
+      "caName": "Meenakshi Kuncham",
+      "caEmail": "meenakshi@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-42673": {
+      "caId": "f0200139-40ae-4ebf-bbf1-4bbd8fc40af2",
+      "caName": "Santhoshini G",
+      "caEmail": "santhoshinig@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-32523": {
+      "caId": "f0200139-40ae-4ebf-bbf1-4bbd8fc40af2",
+      "caName": "Santhoshini G",
+      "caEmail": "santhoshinig@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-26675": {
+      "caId": "f0200139-40ae-4ebf-bbf1-4bbd8fc40af2",
+      "caName": "Santhoshini G",
+      "caEmail": "santhoshinig@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-4287": {
+      "caId": "f0200139-40ae-4ebf-bbf1-4bbd8fc40af2",
+      "caName": "Santhoshini G",
+      "caEmail": "santhoshinig@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-44782": {
+      "caId": "831b40c8-8ba0-4d50-9a8b-384ec1c211ff",
+      "caName": "Sreeja",
+      "caEmail": "sreeja@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-7020": {
+      "caId": "831b40c8-8ba0-4d50-9a8b-384ec1c211ff",
+      "caName": "Sreeja",
+      "caEmail": "sreeja@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-35585": {
+      "caId": "831b40c8-8ba0-4d50-9a8b-384ec1c211ff",
+      "caName": "Sreeja",
+      "caEmail": "sreeja@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-25629": {
+      "caId": "831b40c8-8ba0-4d50-9a8b-384ec1c211ff",
+      "caName": "Sreeja",
+      "caEmail": "sreeja@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-36019": {
+      "caId": "53a008e1-17ed-4d5b-abe3-4001cdf44772",
+      "caName": "Rakesh Kancharla",
+      "caEmail": "rakesh@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-37259": {
+      "caId": "53a008e1-17ed-4d5b-abe3-4001cdf44772",
+      "caName": "Rakesh Kancharla",
+      "caEmail": "rakesh@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-31640": {
+      "caId": "bfdc5498-063a-440c-8a4c-d867016ea720",
+      "caName": "Nari Ankitha",
+      "caEmail": "nariankitha@applywizz.ai",
+      "assignmentType": "permanent"
+    },
+    "AWL-28177": {
+      "caId": "bfdc5498-063a-440c-8a4c-d867016ea720",
+      "caName": "Nari Ankitha",
+      "caEmail": "nariankitha@applywizz.ai",
+      "assignmentType": "permanent"
+    },
+    "AWL-25695": {
+      "caId": "b91c88d5-e0c5-4f8c-a4a1-0c1057a1f1e0",
+      "caName": "Mohammad Shaik Ali",
+      "caEmail": "ali@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-43306": {
+      "caId": "b91c88d5-e0c5-4f8c-a4a1-0c1057a1f1e0",
+      "caName": "Mohammad Shaik Ali",
+      "caEmail": "ali@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-32411": {
+      "caId": "8480837b-4138-4bb9-9046-e0186523407f",
+      "caName": "Premchand Gangi",
+      "caEmail": "premchandgangi@applywizz.ai",
+      "assignmentType": "permanent"
+    },
+    "AWL-33238": {
+      "caId": "962023b2-b089-4e15-96a4-c6af0f6925eb",
+      "caName": "Alekhya Ashangari",
+      "caEmail": "alekhyaashangari@applywizz.ai",
+      "assignmentType": "permanent"
+    },
+    "AWL-24852": {
+      "caId": "962023b2-b089-4e15-96a4-c6af0f6925eb",
+      "caName": "Alekhya Ashangari",
+      "caEmail": "alekhyaashangari@applywizz.ai",
+      "assignmentType": "permanent"
+    },
+    "AWL-25015": {
+      "caId": "a1c28829-01ac-47a9-8859-a2e9b6184ef2",
+      "caName": "Roshini Gotte",
+      "caEmail": "roshinigotte@applywizz.ai",
+      "assignmentType": "permanent"
+    },
+    "AWL-36883": {
+      "caId": "a1c28829-01ac-47a9-8859-a2e9b6184ef2",
+      "caName": "Roshini Gotte",
+      "caEmail": "roshinigotte@applywizz.ai",
+      "assignmentType": "permanent"
+    },
+    "AWL-31380": {
+      "caId": "a1c28829-01ac-47a9-8859-a2e9b6184ef2",
+      "caName": "Roshini Gotte",
+      "caEmail": "roshinigotte@applywizz.ai",
+      "assignmentType": "permanent"
+    },
+    "AWL-43946": {
+      "caId": "0741bac7-cbbe-4fe1-ac1d-9aea1dd9d2d7",
+      "caName": "VinayKumar Bollam",
+      "caEmail": "vinaykumarbollam@applywizz.ai",
+      "assignmentType": "permanent"
+    },
+    "AWL-32982": {
+      "caId": "0741bac7-cbbe-4fe1-ac1d-9aea1dd9d2d7",
+      "caName": "VinayKumar Bollam",
+      "caEmail": "vinaykumarbollam@applywizz.ai",
+      "assignmentType": "permanent"
+    },
+    "AWL-44770": {
+      "caId": "06c8abe9-f3b4-4df4-9657-5284b81b5d03",
+      "caName": "PavanKumar Veerabathini",
+      "caEmail": "pavankumarveerabathini@applywizz.ai",
+      "assignmentType": "permanent"
+    },
+    "AWL-36117": {
+      "caId": "06c8abe9-f3b4-4df4-9657-5284b81b5d03",
+      "caName": "PavanKumar Veerabathini",
+      "caEmail": "pavankumarveerabathini@applywizz.ai",
+      "assignmentType": "permanent"
+    },
+    "AWL-39218": {
+      "caId": "06c8abe9-f3b4-4df4-9657-5284b81b5d03",
+      "caName": "PavanKumar Veerabathini",
+      "caEmail": "pavankumarveerabathini@applywizz.ai",
+      "assignmentType": "permanent"
+    },
+    "AWL-44789": {
+      "caId": "216536c0-8d89-4377-b457-c79a13b28765",
+      "caName": "Nagaraju Mashti",
+      "caEmail": "nagarajumashti@applywizz.ai",
+      "assignmentType": "permanent"
+    },
+    "AWL-31424": {
+      "caId": "3a4e0d50-dd5a-4140-9099-1652ef725753",
+      "caName": "Kappera Sandeep",
+      "caEmail": "ksandeepreddy@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-31930": {
+      "caId": "3a4e0d50-dd5a-4140-9099-1652ef725753",
+      "caName": "Kappera Sandeep",
+      "caEmail": "ksandeepreddy@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-31813": {
+      "caId": "3a4e0d50-dd5a-4140-9099-1652ef725753",
+      "caName": "Kappera Sandeep",
+      "caEmail": "ksandeepreddy@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-3762": {
+      "caId": "720174ea-6bef-4c4b-b482-41822f57a879",
+      "caName": "Ruchitha Bongaram",
+      "caEmail": "ruchitha@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-31880": {
+      "caId": "86026266-b46b-42cb-b198-bc52f83d2c80",
+      "caName": "Manasa",
+      "caEmail": "manasa@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-26828": {
+      "caId": "86026266-b46b-42cb-b198-bc52f83d2c80",
+      "caName": "Manasa",
+      "caEmail": "manasa@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-35198": {
+      "caId": "86026266-b46b-42cb-b198-bc52f83d2c80",
+      "caName": "Manasa",
+      "caEmail": "manasa@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-35184": {
+      "caId": "928ec368-a690-45e5-b9ee-dd04c838115c",
+      "caName": "Saritha Ganne",
+      "caEmail": "saritha.ganne@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-41698": {
+      "caId": "928ec368-a690-45e5-b9ee-dd04c838115c",
+      "caName": "Saritha Ganne",
+      "caEmail": "saritha.ganne@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-36116": {
+      "caId": "928ec368-a690-45e5-b9ee-dd04c838115c",
+      "caName": "Saritha Ganne",
+      "caEmail": "saritha.ganne@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-29612": {
+      "caId": "aae784eb-f821-44f8-889a-bca30eae7812",
+      "caName": "Kiran Reddy Pappula",
+      "caEmail": "kiranreddypappula@applywizz.ai",
+      "assignmentType": "permanent"
+    },
+    "AWL-32635": {
+      "caId": "aae784eb-f821-44f8-889a-bca30eae7812",
+      "caName": "Kiran Reddy Pappula",
+      "caEmail": "kiranreddypappula@applywizz.ai",
+      "assignmentType": "permanent"
+    },
+    "AWL-32840": {
+      "caId": "aae784eb-f821-44f8-889a-bca30eae7812",
+      "caName": "Kiran Reddy Pappula",
+      "caEmail": "kiranreddypappula@applywizz.ai",
+      "assignmentType": "permanent"
+    },
+    "AWL-32557": {
+      "caId": "aae784eb-f821-44f8-889a-bca30eae7812",
+      "caName": "Kiran Reddy Pappula",
+      "caEmail": "kiranreddypappula@applywizz.ai",
+      "assignmentType": "permanent"
+    },
+    "AWL-25400": {
+      "caId": "eec9bdf2-ceb8-453c-8f7a-133ecfa659bb",
+      "caName": "Shivani Pentham",
+      "caEmail": "shivani@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-27613": {
+      "caId": "eec9bdf2-ceb8-453c-8f7a-133ecfa659bb",
+      "caName": "Shivani Pentham",
+      "caEmail": "shivani@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-38650": {
+      "caId": "eec9bdf2-ceb8-453c-8f7a-133ecfa659bb",
+      "caName": "Shivani Pentham",
+      "caEmail": "shivani@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-30415": {
+      "caId": "eec9bdf2-ceb8-453c-8f7a-133ecfa659bb",
+      "caName": "Shivani Pentham",
+      "caEmail": "shivani@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-39777": {
+      "caId": "b723dbbb-9ddf-4364-a755-c2ac7448ae62",
+      "caName": "Prasanna LaxmiKapuraboina",
+      "caEmail": "prasannalaxmikapuraboina@applywizz.ai",
+      "assignmentType": "permanent"
+    },
+    "AWL-33085": {
+      "caId": "adffca8f-1746-4fc1-8ae4-309138ceca63",
+      "caName": "Nagaraju Diviti",
+      "caEmail": "nagarajudiviti@applywizz.ai",
+      "assignmentType": "permanent"
+    },
+    "AWL-28684": {
+      "caId": "adffca8f-1746-4fc1-8ae4-309138ceca63",
+      "caName": "Nagaraju Diviti",
+      "caEmail": "nagarajudiviti@applywizz.ai",
+      "assignmentType": "permanent"
+    },
+    "AWL-45422": {
+      "caId": "adffca8f-1746-4fc1-8ae4-309138ceca63",
+      "caName": "Nagaraju Diviti",
+      "caEmail": "nagarajudiviti@applywizz.ai",
+      "assignmentType": "permanent"
+    },
+    "AWL-45416": {
+      "caId": "76e3d5eb-be04-43f9-a993-08ace888b666",
+      "caName": "Sahithi",
+      "caEmail": "sahithi@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-35262": {
+      "caId": "76e3d5eb-be04-43f9-a993-08ace888b666",
+      "caName": "Sahithi",
+      "caEmail": "sahithi@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-26538": {
+      "caId": "76e3d5eb-be04-43f9-a993-08ace888b666",
+      "caName": "Sahithi",
+      "caEmail": "sahithi@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-26257": {
+      "caId": "753e0ab8-7c0c-4715-b37b-867041acfdd4",
+      "caName": "Maskuri Rathnamala",
+      "caEmail": "RathnamalaM@Applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-2452": {
+      "caId": "753e0ab8-7c0c-4715-b37b-867041acfdd4",
+      "caName": "Maskuri Rathnamala",
+      "caEmail": "RathnamalaM@Applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-42671": {
+      "caId": "753e0ab8-7c0c-4715-b37b-867041acfdd4",
+      "caName": "Maskuri Rathnamala",
+      "caEmail": "RathnamalaM@Applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-584": {
+      "caId": "753e0ab8-7c0c-4715-b37b-867041acfdd4",
+      "caName": "Maskuri Rathnamala",
+      "caEmail": "RathnamalaM@Applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-31134": {
+      "caId": "6b5686ed-8ae8-4481-9f50-17475a02be64",
+      "caName": "Ramyasri",
+      "caEmail": "ramyasri@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-44801": {
+      "caId": "6b5686ed-8ae8-4481-9f50-17475a02be64",
+      "caName": "Ramyasri",
+      "caEmail": "ramyasri@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-36028": {
+      "caId": "6b5686ed-8ae8-4481-9f50-17475a02be64",
+      "caName": "Ramyasri",
+      "caEmail": "ramyasri@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-2211": {
+      "caId": "5815fd7e-da56-4455-a96d-406093288b39",
+      "caName": "Kavya",
+      "caEmail": "kavya@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-35215": {
+      "caId": "5815fd7e-da56-4455-a96d-406093288b39",
+      "caName": "Kavya",
+      "caEmail": "kavya@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-4220": {
+      "caId": "5815fd7e-da56-4455-a96d-406093288b39",
+      "caName": "Kavya",
+      "caEmail": "kavya@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-32042": {
+      "caId": "5815fd7e-da56-4455-a96d-406093288b39",
+      "caName": "Kavya",
+      "caEmail": "kavya@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-45417": {
+      "caId": "4bb5e4c1-7274-41fa-8925-449399335853",
+      "caName": "shivani kola",
+      "caEmail": "kolashivani@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-44790": {
+      "caId": "4bb5e4c1-7274-41fa-8925-449399335853",
+      "caName": "shivani kola",
+      "caEmail": "kolashivani@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-33083": {
+      "caId": "300006ca-a057-4d03-8992-f3aff75fb53e",
+      "caName": "Sai Pavan Bhoompally",
+      "caEmail": "saipavan@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-36100": {
+      "caId": "0441e046-058c-4162-b50f-b6203e89b6de",
+      "caName": "Sai Prasanna",
+      "caEmail": "saiprasanna@applywizz.com",
+      "assignmentType": "permanent"
+    },
+    "AWL-36105": {
+      "caId": "2480a4db-67df-4d90-990a-03e5dc67308f",
+      "caName": "Gummadidala Kaveri",
+      "caEmail": "kaverigummadidala@applywizz.com",
+      "assignmentType": "permanent"
+    }
+  }
+}

@@ -108,22 +108,29 @@ export class Phase4ApplyReviewSubmit {
 
     this.sessions.set(applicationId, session);
     const fillTemplate = { ...template, fields: flattenTemplateFields(template).filter(field => !field.repeatableGroupId) };
-    const fillResults = await this.oracle.fillApplication({
+    const fillOutput = await this.oracle.fillApplication({
       session,
       template: fillTemplate,
       values: effectiveValues,
       files,
-      context: { jobId: application.jobId, userId: applywizzId }
+      context: { jobId: application.jobId, userId: applywizzId, applicationId }
     });
 
+    const fillResults = Array.isArray(fillOutput) ? fillOutput : (fillOutput.results || []);
+    const screenshots = fillOutput.screenshots || [];
+    const logs = fillOutput.logs || [];
     const failures = fillResults.filter(result => result.status === 'failed');
+
     const updated = await this.#patch(applicationId, {
-      status: failures.length ? 'fill_failed' : 'needs_review',
-      reviewStatus: failures.length ? 'not_ready' : 'pending',
+      status: failures.length ? 'fill_failed' : 'filled_verified',
+      reviewStatus: failures.length ? 'not_ready' : 'audited',
       fillResults,
+      screenshots,
+      fillLogs: logs,
+      fillCompletedAt: nowIso(),
       updatedAt: nowIso()
     });
-    await this.runLog.append('phase4.fill_complete', { applicationId, failures: failures.length });
+    await this.runLog.append('phase4.fill_complete', { applicationId, failures: failures.length, screenshotsCount: screenshots.length });
     return updated;
   }
 

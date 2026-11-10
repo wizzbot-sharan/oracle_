@@ -269,6 +269,10 @@ export class Phase3AnswerResolution {
         values,
         unresolvedFields: unresolvedList.map(f => f.id),
         fillResults: current?.fillResults ?? [],
+        screenshots: current?.screenshots ?? [],
+        fillLogs: current?.fillLogs ?? [],
+        fillCompletedAt: current?.fillCompletedAt ?? null,
+        receipt: current?.receipt ?? null,
         updatedAt: nowIso()
       });
     }
@@ -340,6 +344,33 @@ export class Phase3AnswerResolution {
         resumeText
       });
 
+      // If this is a repeatable group, resolve its child fields across each row
+      if (field.type === 'repeatable-group' && Array.isArray(resolved?.rawValue)) {
+        const resolvedRows = [];
+        const childFields = field.children ?? field.fields ?? [];
+        for (const row of resolved.rawValue) {
+          const rowCopy = { ...row };
+          for (const child of childFields) {
+            // If the row doesn't have a value for this child, resolve it
+            if (rowCopy[child.id] === undefined || rowCopy[child.id] === null || rowCopy[child.id] === '') {
+              const childResolved = await this.engine.resolveField({
+                field: child,
+                client,
+                clientHistory,
+                globalHistory,
+                resumeText
+              });
+              if (childResolved?.value !== null && childResolved?.value !== undefined && childResolved?.value !== '') {
+                rowCopy[child.id] = childResolved.value;
+              }
+            }
+          }
+          resolvedRows.push(rowCopy);
+        }
+        resolved.rawValue = resolvedRows;
+        resolved.value = resolvedRows;
+      }
+
       values[field.id] = resolved;
     }
 
@@ -351,18 +382,58 @@ export class Phase3AnswerResolution {
    * Only required visible fields block status; required fields must reach confidence >= 0.80.
    */
   unresolved(template, values) {
-    return flattenTemplateFields(template).filter(field => {
-      if (!field.required || field.repeatableGroupId || !isFieldVisible(field, values)) {
-        return false;
+    const missing = [];
+    const flattened = flattenTemplateFields(template);
+
+    // 1. Check top-level non-repeatable fields
+    for (const field of flattened) {
+      if (!field.required || field.repeatableGroupId || field.type === 'repeatable-group' || !isFieldVisible(field, values)) {
+        continue;
       }
       const entry = values[field.id];
-      if (!entry) return true;
+      if (!entry) {
+        missing.push(field);
+        continue;
+      }
       const val = entry.value;
-      if (val === null || val === undefined || val === '') return true;
-      if (Array.isArray(val) && val.length === 0) return true;
+      if (val === null || val === undefined || val === '') {
+        missing.push(field);
+        continue;
+      }
+      if (Array.isArray(val) && val.length === 0) {
+        missing.push(field);
+        continue;
+      }
       // Confidence cutoff: must be >= 0.80
-      return (entry.confidence ?? 0) < 0.80;
-    });
+      if ((entry.confidence ?? 0) < 0.80) {
+        missing.push(field);
+      }
+    }
+
+    // 2. Check child fields inside repeatable groups
+    for (const group of (template.repeatableGroups ?? [])) {
+      const rowList = values[group.id]?.value;
+      if (!Array.isArray(rowList) || rowList.length === 0) {
+        if (group.required) missing.push(group);
+        continue;
+      }
+      for (const [rowIndex, row] of rowList.entries()) {
+        const childFields = group.children ?? group.fields ?? [];
+        for (const child of childFields) {
+          if (!child.required) continue;
+          const childVal = row[child.id];
+          if (childVal === null || childVal === undefined || childVal === '') {
+            missing.push({
+              id: `${group.id}[${rowIndex}].${child.id}`,
+              label: `${group.label || group.id} #${rowIndex + 1}: ${child.label || child.id}`,
+              required: true
+            });
+          }
+        }
+      }
+    }
+
+    return missing;
   }
 
   /**

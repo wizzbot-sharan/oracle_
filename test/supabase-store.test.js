@@ -387,7 +387,230 @@ test('SupabaseStore gracefully returns fallback on query error', async () => {
     }
   });
 
-  const store = new SupabaseStore({ client });
+  const store = new SupabaseStore({ client, fallbackStore: null });
   const result = await store.read('jobs', { uniqueJobs: ['fallback'] });
   assert.deepEqual(result, { uniqueJobs: ['fallback'] });
 });
+
+function createMockPgPool(handler) {
+  return {
+    async query(sql, params) {
+      if (typeof handler === 'function') {
+        return handler(sql, params);
+      }
+      return { rows: [] };
+    },
+    on() {},
+    async end() {}
+  };
+}
+
+test('SupabaseStore with pg.Pool executes SQL queries for jobs and applications', async () => {
+  const executedQueries = [];
+  const mockPool = createMockPgPool((sql, params) => {
+    executedQueries.push({ sql, params });
+    if (/FROM\s+jobs/i.test(sql)) {
+      return {
+        rows: [{
+          job_key: 'pg_job_1',
+          job_url: 'https://oracle.com/pg/1',
+          tenant_host: 'oracle.com',
+          tenant_key: 'tk_1',
+          metadata: { department: 'Engineering' }
+        }]
+      };
+    }
+    if (/FROM\s+oracle_jobs/i.test(sql)) {
+      return {
+        rows: [{
+          job_key: 'pg_job_1',
+          job_url: 'https://oracle.com/pg/1',
+          company_name: 'Oracle PG',
+          client_name: 'Alice',
+          applywizz_id: 'AWL-PG-1',
+          score: 88
+        }]
+      };
+    }
+    if (/FROM\s+applications/i.test(sql)) {
+      return {
+        rows: [{
+          application_id: 'app_pg_1',
+          applywizz_id: 'AWL-PG-1',
+          job_key: 'pg_job_1',
+          status: 'answers_resolved',
+          review_status: 'approved',
+          values: { first_name: 'Alice' },
+          unresolved_fields: [],
+          fill_results: []
+        }]
+      };
+    }
+    return { rows: [] };
+  });
+
+  const store = new SupabaseStore({ pool: mockPool });
+  assert.equal(store.isAvailable(), true);
+
+  // Read jobs
+  const jobs = await store.read('jobs', { uniqueJobs: [], assignments: [] });
+  assert.equal(jobs.uniqueJobs.length, 1);
+  assert.equal(jobs.uniqueJobs[0].jobKey, 'pg_job_1');
+  assert.equal(jobs.uniqueJobs[0].department, 'Engineering');
+  assert.equal(jobs.assignments.length, 1);
+  assert.equal(jobs.assignments[0].clientName, 'Alice');
+
+  // Read applications
+  const apps = await store.read('applications', []);
+  assert.equal(apps.length, 1);
+  assert.equal(apps[0].applicationId, 'app_pg_1');
+  assert.equal(apps[0].status, 'answers_resolved');
+
+  // Write applications
+  await store.write('applications', [{
+    applicationId: 'app_pg_2',
+    applywizzId: 'AWL-PG-2',
+    jobKey: 'pg_job_2',
+    status: 'needs_review',
+    values: { first_name: 'Bob' }
+  }]);
+
+  const insertAppQuery = executedQueries.find(q => /INSERT INTO applications/i.test(q.sql));
+  assert.ok(insertAppQuery, 'Expected INSERT INTO applications query to be executed');
+  assert.equal(insertAppQuery.params[0], 'app_pg_2');
+});
+
+test('SupabaseStore with pg.Pool handles loadQuestionBank and upsertQuestionBank', async () => {
+  const executedQueries = [];
+  const mockPool = createMockPgPool((sql, params) => {
+    executedQueries.push({ sql, params });
+    if (/FROM\s+question_bank/i.test(sql)) {
+      return {
+        rows: [
+          {
+            id: 'qb-1',
+            applywizz_id: 'AWL-PG-1',
+            question_label: 'Years of Experience',
+            field_type: 'text',
+            value: '5',
+            source: 'manual',
+            confidence: 1.0
+          },
+          {
+            id: 'qb-2',
+            applywizz_id: 'AWL-PG-1',
+            question_label: 'Section Header',
+            value: 'Professional Experience' // noisy row to be filtered
+          }
+        ]
+      };
+    }
+    return { rows: [] };
+  });
+
+  const store = new SupabaseStore({ pool: mockPool });
+  const { clientHistoryMap, globalHistory } = await store.loadQuestionBank();
+  assert.equal(globalHistory.length, 1);
+  assert.equal(globalHistory[0].question_label, 'Years of Experience');
+  assert.ok(clientHistoryMap.has('AWL-PG-1'));
+
+  // Upsert
+  await store.upsertQuestionBank([{
+    applywizz_id: 'AWL-PG-1',
+    question_label: 'Preferred Location',
+    value: 'Remote',
+    source: 'ai',
+    confidence: 0.95
+  }]);
+
+  const insertQbQuery = executedQueries.find(q => /INSERT INTO question_bank/i.test(q.sql));
+  assert.ok(insertQbQuery, 'Expected INSERT INTO question_bank query');
+  assert.equal(insertQbQuery.params[1], 'Preferred Location');
+  assert.equal(insertQbQuery.params[3], 'Remote');
+});
+
+test('SupabaseStore with pg.Pool falls back to fallbackStore on query error', async () => {
+  const mockFallbackStore = {
+    async read(name, fallback) {
+      return { fromFallback: true, name };
+    },
+    async write(name, value) {
+      return value;
+    }
+  };
+
+  const failingPool = createMockPgPool(() => {
+    throw new Error('Supavisor connection timeout');
+  });
+
+  const store = new SupabaseStore({ pool: failingPool, fallbackStore: mockFallbackStore });
+  const res = await store.read('jobs', { fallback: true });
+  assert.deepEqual(res, { fromFallback: true, name: 'jobs' });
+});
+
+test('SupabaseStore with pg.Pool handles cas, ca-mappings, and reference-metadata', async () => {
+  const executedQueries = [];
+  const mockPool = createMockPgPool((sql, params) => {
+    executedQueries.push({ sql, params });
+    if (/FROM\s+career_associates/i.test(sql)) {
+      return {
+        rows: [{
+          id: 'ca-uuid-1',
+          name: 'Sharanya Peddi',
+          email: 'sharanyapeddi@applywizz.ai',
+          role: 'Junior CA'
+        }]
+      };
+    }
+    if (/FROM\s+ca_client_mappings/i.test(sql)) {
+      return {
+        rows: [{
+          id: 1,
+          ca_id: 'ca-uuid-1',
+          applywizz_id: 'AWL-26974',
+          client_email: 'aakanksha@example.com',
+          full_name: 'Aakanksha Rangdal',
+          assignment_type: 'permanent'
+        }]
+      };
+    }
+    if (/FROM\s+reference_metadata/i.test(sql)) {
+      return {
+        rows: [{
+          payload: { states: ['TX', 'CA'], countries: ['United States'] }
+        }]
+      };
+    }
+    return { rows: [] };
+  });
+
+  const store = new SupabaseStore({ pool: mockPool });
+
+  // Read CAs
+  const cas = await store.read('cas', []);
+  assert.equal(cas.length, 1);
+  assert.equal(cas[0].name, 'Sharanya Peddi');
+
+  // Read mappings
+  const mappings = await store.read('ca-mappings', {});
+  assert.ok(mappings.clientToCaMap['AWL-26974']);
+  assert.equal(mappings.clientToCaMap['AWL-26974'].caId, 'ca-uuid-1');
+
+  // Read reference metadata
+  const locs = await store.read('reference-metadata', {});
+  assert.deepEqual(locs.states, ['TX', 'CA']);
+
+  // Write CAs
+  await store.write('cas', [{ id: 'ca-uuid-2', name: 'Amulya Ravula', email: 'amulya@applywizz.com', role: 'CA' }]);
+  const insertCa = executedQueries.find(q => /INSERT INTO career_associates/i.test(q.sql));
+  assert.ok(insertCa);
+  assert.equal(insertCa.params[1], 'Amulya Ravula');
+
+  // Write Mappings
+  await store.write('ca-mappings', [{ ca_id: 'ca-uuid-2', applywizz_id: 'AWL-41700', client_email: 'harini@example.com' }]);
+  const insertMap = executedQueries.find(q => /INSERT INTO ca_client_mappings/i.test(q.sql));
+  assert.ok(insertMap);
+  assert.equal(insertMap.params[0], 'ca-uuid-2');
+});
+
+
