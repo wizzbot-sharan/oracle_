@@ -39,7 +39,7 @@ export const config = Object.freeze({
   dataDir: path.resolve(rootDir, 'data'),
   runtimeDir: path.resolve(rootDir, 'data/runtime'),
   llmDelayMs: numberEnv('LLM_DELAY_MS', 2000),
-  llmBatchMaxQuestions: numberEnv('LLM_BATCH_MAX_QUESTIONS', 20),
+  llmBatchMaxQuestions: numberEnv('LLM_BATCH_MAX_QUESTIONS', 10),
   scanner: {
     concurrency: numberEnv('SCANNER_CONCURRENCY', 3),
     launchThrottleMs: numberEnv('SCANNER_LAUNCH_THROTTLE_MS', 30000),

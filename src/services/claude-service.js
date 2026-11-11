@@ -6,6 +6,57 @@ import { matchBestOption } from '../domain/option-matcher.js';
  * Supports single-field resolution and unified candidate-level multi-question batching.
  */
 
+/**
+ * Robustly parses batch answer JSON from LLM text responses.
+ * Handles markdown fences, preambles, and salvages completed questions from truncated responses.
+ *
+ * @param {string} rawText
+ * @returns {Object|null}
+ */
+export function parseBatchJson(rawText) {
+  if (!rawText || typeof rawText !== 'string') return null;
+
+  let cleaned = rawText.trim();
+  // Strip markdown code fences if present (```json ... ``` or ``` ...)
+  cleaned = cleaned.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
+
+  // 1. Direct JSON parse
+  try {
+    return JSON.parse(cleaned);
+  } catch {}
+
+  // 2. Extract outermost { ... }
+  const firstBrace = cleaned.indexOf('{');
+  const lastBrace = cleaned.lastIndexOf('}');
+  if (firstBrace !== -1 && lastBrace > firstBrace) {
+    try {
+      return JSON.parse(cleaned.slice(firstBrace, lastBrace + 1));
+    } catch {}
+  }
+
+  // 3. Fallback salvage for truncated responses (e.g. cut off mid-stream by token limit)
+  if (firstBrace !== -1) {
+    const qMatches = [...cleaned.matchAll(/"([^"]+)":\s*(\{[^{}]*"answer"[^{}]*\})/gs)];
+    if (qMatches.length > 0) {
+      const answers = {};
+      for (const [, qId, jsonStr] of qMatches) {
+        if (qId === 'answers') continue;
+        try {
+          const parsedObj = JSON.parse(jsonStr);
+          if (parsedObj && typeof parsedObj === 'object') {
+            answers[qId] = parsedObj;
+          }
+        } catch {}
+      }
+      if (Object.keys(answers).length > 0) {
+        return { answers };
+      }
+    }
+  }
+
+  return null;
+}
+
 export class ClaudeService {
   constructor({ apiKey, model, fetchFn } = {}) {
     this.apiKey = apiKey ?? process.env.ANTHROPIC_API_KEY ?? null;
@@ -125,7 +176,7 @@ Instructions:
         },
         body: JSON.stringify({
           model: this.model,
-          max_tokens: 2048,
+          max_tokens: 4096,
           messages: [{ role: 'user', content: prompt }]
         })
       });
@@ -137,15 +188,20 @@ Instructions:
       }
 
       const data = await response.json();
-      const rawText = data.content?.[0]?.text?.trim() || '';
+      const rawText = Array.isArray(data.content)
+        ? data.content
+            .filter(b => (b.type === 'text' || !b.type) && typeof b.text === 'string')
+            .map(b => b.text)
+            .join('\n')
+            .trim()
+        : (typeof data.content === 'string' ? data.content.trim() : '');
 
-      const jsonMatch = rawText.match(/\{[\s\S]*\}/);
-      if (!jsonMatch) {
-        console.warn('[ClaudeService] Failed to locate JSON in LLM batch response');
+      const parsed = parseBatchJson(rawText);
+      if (!parsed) {
+        console.warn(`[ClaudeService] Failed to parse JSON from batch response (stop_reason: ${data.stop_reason || 'unknown'}). Raw preview:`, rawText.slice(0, 200));
         return {};
       }
 
-      const parsed = JSON.parse(jsonMatch[0]);
       const rawAnswers = parsed.answers || parsed;
       const validatedAnswers = {};
 
@@ -261,9 +317,16 @@ Instructions:
       }
 
       const data = await response.json();
-      const rawText = data.content?.[0]?.text?.trim() || '';
+      const rawText = Array.isArray(data.content)
+        ? data.content
+            .filter(b => (b.type === 'text' || !b.type) && typeof b.text === 'string')
+            .map(b => b.text)
+            .join('\n')
+            .trim()
+        : (typeof data.content === 'string' ? data.content.trim() : '');
 
-      const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+      let cleaned = rawText.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
+      const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
       if (!jsonMatch) {
         return null;
       }

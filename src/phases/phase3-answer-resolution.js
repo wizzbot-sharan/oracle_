@@ -309,7 +309,7 @@ export class Phase3AnswerResolution {
       // Pass 3: Unified LLM Batch Execution (if questions exist & Claude is available)
       if (uniqueQuestionsMap.size > 0 && this.engine.claudeService?.isAvailable()) {
         const allQuestions = [...uniqueQuestionsMap.values()];
-        const batchMax = this.config?.llmBatchMaxQuestions ?? 20;
+        const batchMax = this.config?.llmBatchMaxQuestions ?? 10;
         const newlyAnswered = [];
         let didCallLlm = false;
 
