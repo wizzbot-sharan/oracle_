@@ -23,7 +23,7 @@ export class SupabaseStore {
       this.pool = this.connectionString ? new Pool({
         connectionString: this.connectionString,
         ssl: { rejectUnauthorized: false },
-        max: 20,
+        max: 8,
         idleTimeoutMillis: 30000,
         connectionTimeoutMillis: 5000
       }) : null;
@@ -35,7 +35,7 @@ export class SupabaseStore {
       this.pool = new Pool({
         connectionString: this.connectionString,
         ssl: { rejectUnauthorized: false },
-        max: 20,
+        max: 8,
         idleTimeoutMillis: 30000,
         connectionTimeoutMillis: 5000
       });
