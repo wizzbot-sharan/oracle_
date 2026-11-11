@@ -168,14 +168,14 @@ export class Phase1IngestAuth {
       if (this.store.pool) {
         const [jobsRes, oracleJobsRes] = await Promise.all([
           this.store.query('SELECT job_key, job_url FROM jobs'),
-          this.store.query('SELECT id, job_key, job_url FROM oracle_jobs')
+          this.store.query('SELECT id, job_key, job_url, applywizz_id, score FROM oracle_jobs ORDER BY score DESC, id ASC')
         ]);
         existingJobs = jobsRes.rows || [];
         oracleJobs = oracleJobsRes.rows || [];
       } else if (this.store.client) {
         const [jobsRes, oracleJobsRes] = await Promise.all([
           this.store.client.from('jobs').select('job_key, job_url'),
-          this.store.client.from('oracle_jobs').select('id, job_key, job_url')
+          this.store.client.from('oracle_jobs').select('id, job_key, job_url, applywizz_id, score').order('score', { ascending: false }).order('id', { ascending: true })
         ]);
         if (jobsRes.error) throw jobsRes.error;
         if (oracleJobsRes.error) throw oracleJobsRes.error;
@@ -198,6 +198,8 @@ export class Phase1IngestAuth {
 
       const newJobsToInsert = [];
       const oracleUpdates = [];
+      const seenAssignments = new Set();
+      const duplicateIdsToDelete = [];
 
       for (const row of oracleJobs) {
         const rawUrl = row.job_url;
@@ -224,11 +226,34 @@ export class Phase1IngestAuth {
           });
         }
 
+        const applywizzId = row.applywizz_id;
+        const assignmentKey = `${jobKey}::${applywizzId}`;
+
+        if (seenAssignments.has(assignmentKey)) {
+          // Candidate already assigned to this job; prune the lower-scored duplicate row
+          duplicateIdsToDelete.push(row.id);
+          continue;
+        }
+        seenAssignments.add(assignmentKey);
+
         if (row.job_key !== jobKey) {
           oracleUpdates.push({
             id: row.id,
             job_key: jobKey
           });
+        }
+      }
+
+      if (duplicateIdsToDelete.length > 0) {
+        console.log(`[Phase 1 Sync] Pruning ${duplicateIdsToDelete.length} duplicate assignments for candidate-job pairs...`);
+        if (this.store.pool) {
+          for (const id of duplicateIdsToDelete) {
+            await this.store.query('DELETE FROM oracle_jobs WHERE id = $1', [id]);
+          }
+        } else if (this.store.client) {
+          for (const id of duplicateIdsToDelete) {
+            await this.store.client.from('oracle_jobs').delete().eq('id', id);
+          }
         }
       }
 

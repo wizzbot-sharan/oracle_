@@ -26,6 +26,23 @@ async function main() {
     return;
   }
 
+  // Deduplicate by (applywizz_id + job_url) keeping highest score
+  const dedupedMap = new Map();
+  for (const r of rows) {
+    const applywizzId = (r.applywizz_id || '').trim();
+    const url = (r.job_url || '').trim();
+    const key = `${applywizzId}::${url}`;
+    const score = Number(r.score) || 0;
+    const existing = dedupedMap.get(key);
+    if (!existing || score > (Number(existing.score) || 0)) {
+      dedupedMap.set(key, r);
+    }
+  }
+  const cleanRows = [...dedupedMap.values()];
+  if (cleanRows.length < rows.length) {
+    console.log(`[Upload Oracle Jobs] Pruned ${rows.length - cleanRows.length} duplicate assignments. Unique rows: ${cleanRows.length}`);
+  }
+
   const connectionString = process.env.DATABASE_URL;
   const supabaseUrl = process.env.SUPABASE_URL;
   const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_KEY;
@@ -47,7 +64,7 @@ async function main() {
 
       // 2. Ensure referenced job_keys exist in jobs table to satisfy any foreign keys
       const uniqueJobsMap = new Map();
-      for (const r of rows) {
+      for (const r of cleanRows) {
         const k = (r.job_key || '').trim();
         const u = (r.job_url || '').trim();
         if (k && u && !uniqueJobsMap.has(k)) {
@@ -65,12 +82,12 @@ async function main() {
         }
       }
 
-      // 3. Batch insert rows into oracle_jobs
+      // 3. Batch insert cleanRows into oracle_jobs
       const BATCH_SIZE = 100;
       let inserted = 0;
 
-      for (let i = 0; i < rows.length; i += BATCH_SIZE) {
-        const chunk = rows.slice(i, i + BATCH_SIZE);
+      for (let i = 0; i < cleanRows.length; i += BATCH_SIZE) {
+        const chunk = cleanRows.slice(i, i + BATCH_SIZE);
         const values = [];
         const placeholders = [];
 
@@ -99,7 +116,7 @@ async function main() {
 
         await pool.query(query, values);
         inserted += chunk.length;
-        process.stdout.write(`\r[Upload Oracle Jobs] Progress: [${inserted} / ${rows.length}] uploaded...`);
+        process.stdout.write(`\r[Upload Oracle Jobs] Progress: [${inserted} / ${cleanRows.length}] uploaded...`);
       }
 
       console.log(`\n✓ Successfully uploaded ${inserted} records into Supabase oracle_jobs table!`);
@@ -122,8 +139,8 @@ async function main() {
     const BATCH_SIZE = 100;
     let inserted = 0;
 
-    for (let i = 0; i < rows.length; i += BATCH_SIZE) {
-      const chunk = rows.slice(i, i + BATCH_SIZE).map(r => ({
+    for (let i = 0; i < cleanRows.length; i += BATCH_SIZE) {
+      const chunk = cleanRows.slice(i, i + BATCH_SIZE).map(r => ({
         job_key: r.job_key?.trim() || null,
         job_url: r.job_url?.trim() || '',
         company_name: r.company_name?.trim() || '',
@@ -137,7 +154,7 @@ async function main() {
         throw new Error(`Failed to insert batch: ${insErr.message}`);
       }
       inserted += chunk.length;
-      process.stdout.write(`\r[Upload Oracle Jobs] Progress: [${inserted} / ${rows.length}] uploaded...`);
+      process.stdout.write(`\r[Upload Oracle Jobs] Progress: [${inserted} / ${cleanRows.length}] uploaded...`);
     }
 
     console.log(`\n✓ Successfully uploaded ${inserted} records into Supabase oracle_jobs table!`);
