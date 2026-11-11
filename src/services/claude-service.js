@@ -63,13 +63,14 @@ Field Type: "${field.type || field.role || 'text'}"
 Section: "${field.sectionLabel || 'General'}"${optionsPrompt}
 
 Instructions:
-1. Provide a direct, professional, truthful answer grounded strictly in the candidate's data.
-2. If allowed options are provided, select the single best matching option.
-3. For short text or textarea questions, write a concise, compelling answer.
-4. Provide a confidence score between 0.0 and 1.0 (where 0.80+ indicates high confidence).
-5. Respond strictly with a JSON object:
+1. Provide a direct, professional, truthful answer grounded strictly in the candidate's data. Never guess, assume, or hallucinate qualifications not present in the candidate facts or resume.
+2. If allowed options are provided, your answer MUST be one of the exact strings from "Allowed Options". Do NOT alter or rephrase the option text.
+3. If the candidate's profile and resume do NOT contain sufficient information to answer with confidence, respond with "answer": null and "confidence": 0.0 so an operator can review.
+4. For short text or textarea questions, write a concise, professional answer.
+5. Provide a confidence score between 0.0 and 1.0 (where 0.85+ indicates high confidence).
+6. Respond strictly with a JSON object:
 {
-  "answer": "your answer here",
+  "answer": "exact option or text answer (or null if uncertain)",
   "confidence": 0.85,
   "rationale": "one sentence explaining why this matches the candidate background"
 }`;

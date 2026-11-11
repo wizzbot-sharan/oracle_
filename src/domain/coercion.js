@@ -168,8 +168,10 @@ export function coerceToRadio(value, availableOptions = []) {
   if (availableOptions.length > 0) {
     const exactCaseInsensitive = availableOptions.find(opt => String(opt).trim().toLowerCase() === str.toLowerCase());
     if (exactCaseInsensitive) return exactCaseInsensitive;
-    const match = findBestOptionMatch([str], availableOptions);
+    const match = findBestOptionMatch([str], availableOptions, 60);
     if (match) return match;
+    // Strict Option Enforcement: Radio choices must strictly match an available option
+    return null;
   }
 
   return str;
@@ -252,8 +254,10 @@ export function coerceToString(value, availableOptions = []) {
   if (options.length > 0) {
     const exactCaseInsensitive = options.find(opt => String(opt).trim().toLowerCase() === str.toLowerCase());
     if (exactCaseInsensitive) return exactCaseInsensitive;
-    const match = findBestOptionMatch([str], options, 50);
+    const match = findBestOptionMatch([str], options, 60);
     if (match) return match;
+    // Strict Option Enforcement: Dropdown/Combobox must match an available option
+    return null;
   }
 
   return str;

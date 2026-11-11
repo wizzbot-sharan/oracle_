@@ -2,19 +2,31 @@
  * Cascading Resolution Engine across 3 Data Tiers and 5 Matching Stages.
  * 
  * Data Tiers (Confidence Ceilings):
- * - Tier 1: Client Profile (data/clients.json) -> Cap: 1.00
- * - Tier 2: Question Bank (data/question_bank.csv) -> Cap: 0.98 (manual) / 0.90 (AI)
- * - Tier 3: Resume (clients.json resume_path / links) -> Cap: 0.90
+ * - Tier 1: Canonical Client Profile (clients.json + profiles.csv) -> Cap: 1.00
+ * - Tier 2: Question Bank (Supabase + question_bank.csv) -> Cap: 0.98 (manual) / 0.90 (AI)
+ * - Tier 3: Resume (Extracted facts / resume_text) -> Cap: 0.90
  * 
  * Matching Stages:
- * - Stage 1: Intent Taxonomy & Canonical Slugs (Score >= 0.95)
- * - Stage 2: Token-Sort Fuzzy Match (Score >= 0.85 / Conditional 0.75 - 0.84)
- * - Stage 3: Semantic Synset Overlap & Option Reducer (Score >= 0.78)
- * - Stage 4: Claude LLM Reasoning Fallback (Score >= 0.80)
- * - Stage 5: Operator Review / Dashboard Fallback (< 0.80)
+ * - Stage 1: Deterministic Standard System Fields & Intent Taxonomy (Confidence 1.00)
+ * - Stage 2: Token-Sort Question Bank Fuzzy Match (Confidence 0.90 - 0.98)
+ * - Stage 3: Specialized Domain Resolvers (Currency, Salary Buckets, Dates, Work Auth) (Confidence 0.85 - 0.95)
+ * - Stage 4: Structured LLM Reasoner (Option-Constrained) (Confidence >= 0.85)
+ * - Stage 5: Operator Review / Dashboard Queue (Confidence 0, value: null)
+ * 
+ * Strict Accuracy Principle:
+ * - ZERO synthetic/hallucinatory defaults (no fake race, degree, GPA, or location).
+ * - STRICT OPTION ENFORCEMENT: If field has explicit options, resolved value MUST be in options.
  */
 
 import { coerceValueForField, findBestOptionMatch, scoreOptionMatch, coerceToBoolean } from './coercion.js';
+import { CanonicalProfile } from './canonical-profile.js';
+import {
+  matchCurrencyOption,
+  matchSalaryRangeBucket,
+  matchDateComponent,
+  matchEeoOption,
+  matchBestOption
+} from './option-matcher.js';
 import { decomposeAddress } from './address-decomposer.js';
 import { decomposePhone } from './phone-decomposer.js';
 
@@ -94,24 +106,32 @@ export class ResolutionEngine {
   }
 
   /**
-   * Resolves a single form field through the 3-Tier, 5-Stage cascade.
+   * Resolves a single form field through the precision cascade.
    */
   async resolveField({ field, client, clientHistory = [], globalHistory = [], resumeText = '' }) {
+    const canonical = client instanceof CanonicalProfile
+      ? client
+      : CanonicalProfile.from({ client, resumeText });
+
     const clientInfo = client?.client ?? {};
     const addInfo = client?.additional_information ?? {};
 
     // ------------------------------------------------------------------------
-    // STAGE 1: Intent Taxonomy & Canonical Slugs (Tier 1: Client Profile, Cap 1.00)
+    // STAGE 1: Standard System Fields & Intent Taxonomy (Tier 1 Profile, Cap 1.00)
     // ------------------------------------------------------------------------
-    const stage1Result = this.#matchStage1Taxonomy(field, clientInfo, addInfo, resumeText);
-    if (stage1Result) {
-      if (Array.isArray(field.options) && field.options.length > 0 && stage1Result.rawValue !== null && stage1Result.rawValue !== undefined) {
-        const best = findBestOptionMatch([stage1Result.rawValue], field.options, 50);
-        if (best) {
-          stage1Result.rawValue = best;
+    const stage1Result = this.#matchStage1Taxonomy(field, canonical, clientInfo, addInfo, resumeText);
+    if (stage1Result && stage1Result.rawValue !== null && stage1Result.rawValue !== undefined) {
+      let rawVal = stage1Result.rawValue;
+
+      // If field has explicit options, align through option matcher first
+      if (Array.isArray(field.options) && field.options.length > 0) {
+        const optionMatched = matchBestOption([rawVal], field.options, 60);
+        if (optionMatched) {
+          rawVal = optionMatched;
         }
       }
-      const coerced = coerceValueForField(stage1Result.rawValue, field);
+
+      const coerced = coerceValueForField(rawVal, field);
       if (this.#isValidValue(coerced, field)) {
         return {
           value: coerced,
@@ -130,8 +150,14 @@ export class ResolutionEngine {
     // STAGE 2: Token-Sort Fuzzy Match (Tier 2: Question Bank, Cap 0.98 / 0.90)
     // ------------------------------------------------------------------------
     const stage2Result = this.#matchStage2TokenSort(field, clientHistory, globalHistory);
-    if (stage2Result) {
-      const coerced = coerceValueForField(stage2Result.rawValue, field);
+    if (stage2Result && stage2Result.rawValue !== null && stage2Result.rawValue !== undefined) {
+      let rawVal = stage2Result.rawValue;
+      if (Array.isArray(field.options) && field.options.length > 0) {
+        const optionMatched = matchBestOption([rawVal], field.options, 60);
+        if (optionMatched) rawVal = optionMatched;
+      }
+
+      const coerced = coerceValueForField(rawVal, field);
       if (this.#isValidValue(coerced, field)) {
         return {
           value: coerced,
@@ -147,18 +173,24 @@ export class ResolutionEngine {
     }
 
     // ------------------------------------------------------------------------
-    // STAGE 3: Semantic Synset Overlap & Option Reducer (Score >= 0.78)
+    // STAGE 3: Specialized Domain Resolvers (Currency, Range Buckets, Dates, Work Auth)
     // ------------------------------------------------------------------------
-    const stage3Result = this.#matchStage3Synsets(field, clientInfo, addInfo, clientHistory, globalHistory);
-    if (stage3Result) {
-      const coerced = coerceValueForField(stage3Result.rawValue, field);
+    const stage3Result = this.#matchStage3Domain(field, canonical);
+    if (stage3Result && stage3Result.rawValue !== null && stage3Result.rawValue !== undefined) {
+      let rawVal = stage3Result.rawValue;
+      if (Array.isArray(field.options) && field.options.length > 0) {
+        const optionMatched = matchBestOption([rawVal], field.options, 60);
+        if (optionMatched) rawVal = optionMatched;
+      }
+
+      const coerced = coerceValueForField(rawVal, field);
       if (this.#isValidValue(coerced, field)) {
         return {
           value: coerced,
-          source: stage3Result.source || 'tier2_question_bank',
-          stage: 'stage3_synset',
+          source: stage3Result.source || 'tier2_domain_resolver',
+          stage: 'stage3_domain',
           tier: stage3Result.tier || 2,
-          confidence: Math.min(stage3Result.score, stage3Result.tierCap || 0.90),
+          confidence: Math.min(stage3Result.score, 0.95),
           questionLabel: field.label,
           fieldType: field.type || field.role || 'text',
           reviewed: false
@@ -167,18 +199,25 @@ export class ResolutionEngine {
     }
 
     // ------------------------------------------------------------------------
-    // STAGE 4: Claude LLM Reasoning Fallback (Score >= 0.80)
+    // STAGE 4: Claude LLM Reasoning Fallback (Strictly Option-Constrained)
     // ------------------------------------------------------------------------
     if (this.claudeService && this.claudeService.isAvailable()) {
       try {
         const claudeResult = await this.claudeService.resolveQuestion({
           client,
+          canonical,
           questionHistory: clientHistory,
           resumeText,
           field
         });
-        if (claudeResult && claudeResult.confidence >= 0.80) {
-          const coerced = coerceValueForField(claudeResult.answer, field);
+        if (claudeResult && claudeResult.confidence >= 0.85 && claudeResult.answer !== null) {
+          let rawVal = claudeResult.answer;
+          if (Array.isArray(field.options) && field.options.length > 0) {
+            const optionMatched = matchBestOption([rawVal], field.options, 70);
+            if (optionMatched) rawVal = optionMatched;
+          }
+
+          const coerced = coerceValueForField(rawVal, field);
           if (this.#isValidValue(coerced, field)) {
             return {
               value: coerced,
@@ -198,7 +237,7 @@ export class ResolutionEngine {
     }
 
     // ------------------------------------------------------------------------
-    // STAGE 5: Operator Review / Dashboard Fallback (< 0.80)
+    // STAGE 5: Operator Review / Dashboard Queue (Unresolved, Held for Review)
     // ------------------------------------------------------------------------
     return {
       value: null,
@@ -212,15 +251,22 @@ export class ResolutionEngine {
     };
   }
 
+  // --------------------------------------------------------------------------
+  // PRIVATE HELPERS
+  // --------------------------------------------------------------------------
+
   #extractDatePart(dateStr, part) {
     if (!dateStr) return '';
     const s = String(dateStr).trim();
+    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
     if (/present|current/i.test(s)) {
-      if (part === 'month') return 'November';
-      if (part === 'year') return '2026';
+      const now = new Date();
+      if (part === 'month') return months[now.getMonth()];
+      if (part === 'year') return String(now.getFullYear());
       return '';
     }
-    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
     const slashMatch = s.match(/^(\d{1,2})\/(\d{4})$/);
     if (slashMatch) {
       if (part === 'month') {
@@ -252,7 +298,6 @@ export class ResolutionEngine {
     if (rawCompany && !/professional\s*experience/i.test(String(rawCompany).trim())) {
       return String(rawCompany).trim();
     }
-    // Attempt extracting real employer from resume text if rawCompany was a section header placeholder
     if (resumeText) {
       const match = resumeText.match(/PROFESSIONAL\s*EXPERIENCE\s*\n+[^\n]+\n+([A-Z0-9\s&.,'-]{2,40}?)\s*(?:\||\n)/i);
       if (match && match[1] && !/professional\s*experience/i.test(match[1])) {
@@ -263,80 +308,68 @@ export class ResolutionEngine {
   }
 
   // --------------------------------------------------------------------------
-  // STAGE 1 TAXONOMY MATCHING
+  // STAGE 1: DETERMINISTIC STANDARD TAXONOMY
   // --------------------------------------------------------------------------
-  #matchStage1Taxonomy(field, clientInfo, addInfo, resumeText = '') {
+  #matchStage1Taxonomy(field, canonical, clientInfo, addInfo, resumeText = '') {
     const label = field.label || '';
     const type = field.type || field.role || 'text';
 
-    // Helper: split full name into components
-    const firstName = clientInfo.first_name || (clientInfo.full_name || '').trim().split(/\s+/)[0] || '';
-    const fullNameParts = (clientInfo.full_name || '').trim().split(/\s+/).filter(Boolean);
-    const lastName = clientInfo.last_name || (fullNameParts.length > 1 ? fullNameParts.slice(1).join(' ') : '');
-
-    // Repeatable groups (Experience, Education, Skills, Languages, Licenses, Links)
+    // 1. REPEATABLE GROUPS
     if (type === 'repeatable-group') {
-      // 1. Work Experience (Bi-directional key mapping)
-      if (/experience|employment|work\s*history/i.test(label) || /experience/i.test(field.id)) {
-        const raw = addInfo.experience_records || [];
-        const normalized = raw.map(r => {
-          const validComp = this.#cleanCompany(r.company || r.employer || r.organization, resumeText);
+      if (/experience|employment|work\s*history/i.test(label) || /experience/i.test(field.id || '')) {
+        const records = canonical.history.experienceRecords;
+        if (!records || !records.length) return null;
+        const normalized = records.map(r => {
+          const rawCompany = r.company || r.employer || r.company_name || '';
+          const cleanComp = this.#cleanCompany(rawCompany, resumeText) || rawCompany;
           return {
-            ...r,
-            employer_name: validComp,
-            company_name: validComp,
-            company: validComp,
-            job_title: r.title || r.position || r.role || '',
-            start_date: this.#extractDatePart(r.startDate, 'month') || 'January',
-            start_date_start_date_year: this.#extractDatePart(r.startDate, 'year') || '2022',
-            end_date: /present/i.test(r.endDate || '') ? '' : (this.#extractDatePart(r.endDate, 'month') || 'December'),
-            end_date_end_date_year: /present/i.test(r.endDate || '') ? '' : (this.#extractDatePart(r.endDate, 'year') || '2024'),
-            current_job: /present|current/i.test(r.endDate || '') ? true : false,
-            responsibilities: r.description || r.summary || ''
+            employer_name: cleanComp,
+            company_name: cleanComp,
+            company: cleanComp,
+            job_title: r.title || r.role || r.job_title || '',
+            start_date: this.#extractDatePart(r.start_date || r.startDate, 'month'),
+            start_date_start_date_year: this.#extractDatePart(r.start_date || r.startDate, 'year'),
+            end_date: this.#extractDatePart(r.end_date || r.endDate, 'month'),
+            end_date_end_date_year: this.#extractDatePart(r.end_date || r.endDate, 'year'),
+            current_job: Boolean(r.current || /present|current/i.test(String(r.end_date || r.endDate))),
+            responsibilities: r.description || r.responsibilities || ''
           };
         });
         return { rawValue: normalized, confidence: 1.0 };
       }
 
-      // 2. Education (Bi-directional key mapping)
-      if (/education|school|academic/i.test(label) || /education/i.test(field.id)) {
-        const raw = addInfo.education_records || [];
-        const normalized = raw.map(r => ({
-          ...r,
-          educational_establishment: r.institution || r.school || r.university || '',
-          school_name: r.institution || r.school || '',
-          content_item_id: r.degree || "Master's Degree",
-          degree_name: r.degree || "Master's Degree",
-          major: r.fieldOfStudy || r.major || 'Computer Science',
-          gpa: String(r.gpa || '3.8'),
+      if (/education|school|academic/i.test(label) || /education/i.test(field.id || '')) {
+        const records = canonical.history.educationRecords;
+        if (!records || !records.length) return null;
+        const normalized = records.map(r => ({
+          institution: r.institution || r.school || r.school_name || '',
+          educational_establishment: r.institution || r.school || r.school_name || '',
+          school_name: r.institution || r.school || r.school_name || '',
+          degree: r.degree || r.degree_name || '',
+          content_item_id: r.degree || r.degree_name || '',
+          degree_name: r.degree || r.degree_name || '',
+          major: r.major || r.fieldOfStudy || '',
+          gpa: r.gpa || '',
           graduated: true,
-          graduation_year: String(r.graduationYear || '2025')
+          graduation_year: r.graduationYear || r.graduation_year || this.#extractDatePart(r.end_date, 'year') || ''
         }));
         return { rawValue: normalized, confidence: 1.0 };
       }
 
-      // 3. Technical Skills
-      if (/skill/i.test(label) || /skill/i.test(field.id)) {
-        const primarySkills = [];
-        if (addInfo.role) primarySkills.push(addInfo.role);
-        if (addInfo.alternate_job_roles) {
-          const alternates = addInfo.alternate_job_roles.split(',').map(s => s.trim()).filter(Boolean);
-          primarySkills.push(...alternates.slice(0, 2));
+      if (/skill/i.test(label) || /skill/i.test(field.id || '')) {
+        const skills = canonical.history.skills;
+        if (skills.length > 0) {
+          const norm = skills.map(s => ({
+            skills: s,
+            skill: s,
+            years_of_experience: canonical.history.totalExperienceYears || '3'
+          }));
+          return { rawValue: norm, confidence: 0.95 };
         }
-        if (!primarySkills.length && resumeText) {
-          const match = resumeText.match(/\b(Java|Python|JavaScript|React|Node\.js|AWS|Docker|Kubernetes|SQL)\b/gi);
-          if (match) primarySkills.push(...Array.from(new Set(match)).slice(0, 3));
-        }
-        const skillRows = (primarySkills.length ? primarySkills : ['Software Development']).map(sk => ({
-          skills: sk,
-          skill: sk,
-          years_of_experience: String(addInfo.experience || '4')
-        }));
-        return { rawValue: skillRows, confidence: 0.95 };
+        return null;
       }
 
-      // 4. Languages (Resume Detection)
-      if (/language/i.test(label) || /language/i.test(field.id)) {
+      if (/language/i.test(label) || /language/i.test(field.id || '')) {
         const detectedLanguages = [];
         if (resumeText && /\b(english)\b/i.test(resumeText)) detectedLanguages.push('English');
         if (resumeText && /\b(spanish)\b/i.test(resumeText)) detectedLanguages.push('Spanish');
@@ -355,133 +388,97 @@ export class ResolutionEngine {
         return null;
       }
 
-      // 5. Licenses and Certifications (Resume Detection)
-      if (/license|certificate|certification/i.test(label) || /license/i.test(field.id)) {
-        const certs = [];
-        if (resumeText) {
-          const certMatches = resumeText.match(/\b(AWS Certified[^\n,.]*|PMP|Scrum Master|CKA|Azure Certified[^\n,.]*|Oracle Certified[^\n,.]*)\b/gi);
-          if (certMatches) certs.push(...Array.from(new Set(certMatches)));
-        }
-        if (certs.length) {
-          const rows = certs.map(c => ({
-            content_item_id: c,
-            certification_name: c,
-            license: c
-          }));
-          return { rawValue: rows, confidence: 0.95 };
-        }
-        return null;
+      if (/supporting\s*links?|another\s*link/i.test(label) || /link/i.test(field.id || '')) {
+        const link = canonical.history.links.linkedin || canonical.history.links.github || canonical.history.links.portfolio;
+        return link ? { rawValue: [{ site_link_2: link, url: link }], confidence: 1.0 } : null;
       }
 
-      // 6. Supporting Documents and URLs
-      if (/supporting\s*links?|another\s*link/i.test(label) || /link/i.test(field.id)) {
-        const link = addInfo.linkedin_url || addInfo.github_url || addInfo.website_url;
-        if (link) {
-          return { rawValue: [{ site_link_2: link, url: link }], confidence: 1.0 };
-        }
-      }
+      return null;
     }
 
-    // File attachments (Tier 3 Resume / Documents)
-    if (type === 'file') {
-      if (/resume|cv/i.test(label)) {
-        const path = addInfo.resume_storage_path || addInfo.resume_url || addInfo.resume_path || 'data/synthetic_resume.pdf';
-        return { rawValue: path, source: 'tier3_resume', tier: 3, confidence: 0.90 };
+    // 2. FILE ATTACHMENTS
+    if (type === 'file' || /file/i.test(type)) {
+      if (/resume|cv/i.test(label) || /resume/i.test(field.id || '')) {
+        const resumePath = canonical.history.resumeStoragePath;
+        return resumePath ? { rawValue: resumePath, confidence: 1.0, tier: 1 } : null;
       }
-      if (/cover\s*letter/i.test(label)) {
-        const path = addInfo.cover_letter_path || null;
-        return path ? { rawValue: path, source: 'tier3_resume', tier: 3, confidence: 0.90 } : null;
+      if (/cover\s*letter/i.test(label) || /cover_letter/i.test(field.id || '')) {
+        const coverPath = canonical.history.coverLetterPath;
+        return coverPath ? { rawValue: coverPath, confidence: 1.0, tier: 1 } : null;
       }
+      return null;
     }
 
-    // URL links
-    if (type === 'url' || /url|link|portfolio|website/i.test(label)) {
+    // 3. URL LINKS
+    if (type === 'url' || /linkedin|github|portfolio|website/i.test(label)) {
       if (/linkedin/i.test(label)) {
-        return addInfo.linkedin_url ? { rawValue: addInfo.linkedin_url, confidence: 1.0 } : null;
+        return canonical.history.links.linkedin ? { rawValue: canonical.history.links.linkedin, confidence: 1.0 } : null;
       }
       if (/github/i.test(label)) {
-        return addInfo.github_url ? { rawValue: addInfo.github_url, confidence: 1.0 } : null;
+        return canonical.history.links.github ? { rawValue: canonical.history.links.github, confidence: 1.0 } : null;
       }
       if (/portfolio|website/i.test(label)) {
-        const link = addInfo.website_url || addInfo.github_url || addInfo.linkedin_url;
-        return link ? { rawValue: link, confidence: 1.0 } : null;
+        const url = canonical.history.links.portfolio || canonical.history.links.github || canonical.history.links.linkedin;
+        return url ? { rawValue: url, confidence: 1.0 } : null;
       }
-      if (/supporting documents and urls/i.test(label) || /link 1/i.test(label)) {
-        const link = addInfo.linkedin_url || addInfo.github_url || addInfo.website_url;
-        return link ? { rawValue: link, confidence: 1.0 } : null;
+      if (/supporting documents and urls/i.test(field.sectionLabel || '') || /link\s*1/i.test(label)) {
+        const url = canonical.history.links.linkedin || canonical.history.links.github || canonical.history.links.portfolio;
+        return url ? { rawValue: url, confidence: 1.0 } : null;
       }
     }
 
-    // Names
+    // 4. IDENTITY & NAMES
     if (/preferred\s*first\s*name/i.test(label) || (/\b(first|given)\s*name\b/i.test(label) && !/preferred\s*last/i.test(label))) {
-      return { rawValue: firstName, confidence: 1.0 };
+      return canonical.identity.firstName ? { rawValue: canonical.identity.firstName, confidence: 1.0 } : null;
     }
     if (/preferred\s*last\s*name/i.test(label) || /\b(last|family|surname)\s*name\b/i.test(label)) {
-      return { rawValue: lastName, confidence: 1.0 };
+      return canonical.identity.lastName ? { rawValue: canonical.identity.lastName, confidence: 1.0 } : null;
     }
     if (/\bmiddle\s*name\b/i.test(label)) {
-      return { rawValue: '', confidence: 1.0 };
+      return { rawValue: canonical.identity.middleName || '', confidence: 1.0 };
     }
     if (/preferred\s*name/i.test(label)) {
-      return { rawValue: firstName, confidence: 1.0 };
+      return canonical.identity.firstName ? { rawValue: canonical.identity.firstName, confidence: 1.0 } : null;
     }
     if (/\bfull\s*name\b/i.test(label)) {
-      // Guard: do not resolve third-party referrals or emergency contacts with candidate's full name
       if (/\b(their|referr|friend|relative|manager|supervisor|contact\s*person|emergency|someone)\b/i.test(label)) {
         return null;
       }
-      const full = clientInfo.full_name || `${firstName} ${lastName}`.trim();
-      return { rawValue: full, confidence: 1.0 };
-    }
-    if (/^salutation$/i.test(label) || (/^title$/i.test(label) && /personal|contact|name|demographic/i.test(field.sectionLabel || ''))) {
-      const rawGender = String(addInfo.gender || clientInfo.gender || '').trim().toLowerCase();
-      const isFemale = /\b(female|woman)\b|^f$/i.test(rawGender);
-      let titleVal = isFemale ? 'Ms.' : 'Mr.';
-      if (Array.isArray(field.options) && field.options.length > 0) {
-        const matched = field.options.find(opt => typeof opt === 'string' && new RegExp(`^${titleVal}\\.?$`, 'i').test(opt.trim()));
-        if (matched) titleVal = matched;
-      }
-      return { rawValue: titleVal, confidence: 0.95 };
-    }
-    if (/^suffix$/i.test(label)) {
-      return { rawValue: '', confidence: 0.95 };
+      return canonical.identity.fullName ? { rawValue: canonical.identity.fullName, confidence: 1.0 } : null;
     }
 
-    // Contact
-    if (/email/i.test(label)) {
-      // Guard: do not fill candidate email into third-party, manager, or reference fields
-      if (/\b(former|previous|manager|supervisor|reference|emergency|agency|referral|their|friend|relative)\b/i.test(label)) {
-        return null;
+    // Salutation / Title
+    if (/^salutation$/i.test(label.trim()) || (/^title$/i.test(label.trim()) && /personal|contact|name|demographic/i.test(field.sectionLabel || ''))) {
+      const g = (canonical.eeo.gender || '').toLowerCase();
+      if (g === 'female' || g === 'woman') {
+        return { rawValue: 'Ms.', confidence: 0.95 };
       }
-      return { rawValue: clientInfo.personal_email || clientInfo.company_email, confidence: 1.0 };
+      if (g === 'male' || g === 'man') {
+        return { rawValue: 'Mr.', confidence: 0.95 };
+      }
+      return null;
     }
 
-    const candidatePhone = (addInfo.primary_phone && addInfo.primary_phone !== '+')
-      ? addInfo.primary_phone
-      : (clientInfo.callable_phone && clientInfo.callable_phone !== '+')
-        ? clientInfo.callable_phone
-        : (clientInfo.whatsapp_number && clientInfo.whatsapp_number !== '+')
-          ? clientInfo.whatsapp_number
-          : (addInfo.primary_phone || clientInfo.callable_phone || '');
-    const phoneDecomp = decomposePhone(candidatePhone, addInfo.country || clientInfo.country, addInfo.country_code);
+    // 5. CONTACT (EMAIL & PHONE)
+    if (/\bemail\b/i.test(label) && !/\b(former|previous|manager|supervisor|reference|emergency|agency|referral|their|friend|relative)\b/i.test(label)) {
+      return canonical.contact.email ? { rawValue: canonical.contact.email, confidence: 1.0 } : null;
+    }
 
     if (field.isPhonePrefix || /country\s*(\/region\s*)?code/i.test(label) || /phone.*(country|prefix)/i.test(label) || field.id === 'phone_country_code') {
-      return { rawValue: phoneDecomp.callingCode, confidence: 1.0 };
-    }
-    if (/phone/i.test(label) || /mobile/i.test(label) || /tel/i.test(type)) {
-      // Guard: do not fill candidate personal phone into screening questions or third-party contacts
-      if (/\b(former|previous|manager|supervisor|reference|emergency|support|screen|call|interview)\b/i.test(label)) {
-        return null;
-      }
-      return { rawValue: phoneDecomp.nationalNumber, confidence: 1.0 };
+      return canonical.contact.phoneCountryCode ? { rawValue: canonical.contact.phoneCountryCode, confidence: 1.0 } : null;
     }
 
-    // Communication & Marketing Consents
+    if ((/phone/i.test(label) || /mobile/i.test(label) || type === 'tel') && !/\b(country|prefix|former|previous|manager|supervisor|reference|emergency)\b/i.test(label)) {
+      const phoneVal = canonical.contact.nationalPhone || canonical.contact.formattedPhone;
+      return phoneVal ? { rawValue: phoneVal, confidence: 1.0 } : null;
+    }
+
+    // 6. MARKETING & COMMUNICATION CONSENTS
     if (/receive\s*(updates|marketing|careers|emails?|sms|opportunities)|use\s*(sms|email)\s*for\s*communication/i.test(label)) {
       return { rawValue: true, confidence: 1.0 };
     }
 
-    // Address & Location Decomposition
+    // 7. ADDRESS & LOCATION
     const isExplicitAddressField = (
       field.id === 'region2' || field.id === 'region1' || field.id === 'city_city' || field.id === 'postal_code' ||
       field.id === 'country' || field.id === 'country_code' ||
@@ -489,7 +486,6 @@ export class ResolutionEngine {
       /address|location|contact|personal|demographics/i.test(field.sectionLabel || '')
     );
 
-    // Negative guard for questions that use address words as verbs or in complex screening questions
     const isScreeningSentence = (
       label.includes('?') || label.length > 40 ||
       /^please\s+state\b/i.test(label) ||
@@ -497,202 +493,132 @@ export class ResolutionEngine {
       /notice\s*period|salary|compensation|package|requirement|availability|reason\s*for/i.test(label)
     );
 
-    const addr = decomposeAddress(addInfo.full_address, addInfo.location, addInfo.state_of_residence);
     if ((/address\s*line\s*1/i.test(label) || (/address/i.test(label) && !/line\s*[234]|email|ip\b/i.test(label))) && (isExplicitAddressField || !isScreeningSentence)) {
-      return { rawValue: addr.addressLine1, confidence: 1.0 };
+      return canonical.address.addressLine1 ? { rawValue: canonical.address.addressLine1, confidence: 1.0 } : null;
     }
     if (/address\s*line\s*2/i.test(label)) {
-      return { rawValue: addr.addressLine2, confidence: 1.0 };
+      return { rawValue: canonical.address.addressLine2 || '', confidence: 1.0 };
     }
     if (/address\s*line\s*3/i.test(label)) {
       return { rawValue: '', confidence: 1.0 };
     }
     if ((/\b(city|town)\b/i.test(label) && !/\b(race|ethnicity|high-density|worked)\b/i.test(label)) && (isExplicitAddressField || !isScreeningSentence)) {
-      return { rawValue: addr.city, confidence: 1.0 };
+      return canonical.address.city ? { rawValue: canonical.address.city, confidence: 1.0 } : null;
     }
     const isOracleRegion2 = field.id === 'region2' || field.sourceName === 'region2' || (field.sourceId && field.sourceId.startsWith('region2'));
     const isStateLabel = /\b(state|province)\b/i.test(label) || /^(state|state\s*\/\s*province|province)(\s*\*|\s*\(required\))?$/i.test(label.trim());
     if (!isScreeningSentence && (isOracleRegion2 || (isStateLabel && (isExplicitAddressField || !isScreeningSentence)))) {
-      const isUS = /united\s*states|usa|us\b/i.test(addr.country || addInfo.country || clientInfo.country || '');
-      const optionsHaveAbbr = Array.isArray(field.options) && field.options.some(opt => opt && opt.length === 2 && opt === opt.toUpperCase());
-      const stateVal = (isUS && (isOracleRegion2 || optionsHaveAbbr))
-        ? (addr.stateAbbr || addr.state)
-        : (addr.state || addr.stateAbbr);
-      return { rawValue: stateVal, confidence: 1.0 };
+      const isUS = /united\s*states|usa|us\b/i.test(canonical.address.country || '');
+      const stateVal = (isUS && canonical.address.stateAbbr && isOracleRegion2) ? canonical.address.stateAbbr : (canonical.address.state || canonical.address.stateAbbr);
+      return stateVal ? { rawValue: stateVal, confidence: 1.0 } : null;
     }
-    if ((/\b(zip|postal|postcode)\b/i.test(label) || field.id === 'postal_code') && (isExplicitAddressField || !isScreeningSentence)) {
-      return { rawValue: addr.postalCode || addInfo.zip_or_country || '10001', confidence: 1.0 };
+    if ((/\b(zip|postal|postcode)\b/i.test(label) && !/country/i.test(label)) && (isExplicitAddressField || !isScreeningSentence)) {
+      return canonical.address.postalCode ? { rawValue: canonical.address.postalCode, confidence: 1.0 } : null;
     }
-    if ((/^(country|country\s*\/\s*region)(\s*\*|\s*\(required\))?$/i.test(label.trim()) || field.id === 'country') && !/\b(sponsorship|authorized|legal|eligible|citizen|visa)\b/i.test(label)) {
-      return { rawValue: addr.country || addInfo.country || clientInfo.country || 'United States', confidence: 1.0 };
+    if (/^(country|country\s*\/\s*region)(\s*\*|\s*\(required\))?$/i.test(label.trim()) && !/sponsorship|authorized|legal|eligible|citizen|visa/i.test(label)) {
+      return canonical.address.country ? { rawValue: canonical.address.country, confidence: 1.0 } : null;
     }
     if ((/county\b/i.test(label) || field.id === 'region1') && (isExplicitAddressField || !isScreeningSentence)) {
-      if (addr.county) {
-        return { rawValue: addr.county, confidence: 1.0 };
-      }
-      return { rawValue: null, confidence: 0 };
+      return { rawValue: canonical.address.county || '', confidence: 1.0 };
     }
 
-    // Age / Eligibility
+    // 8. AGE (18+)
     if (/18\s*(years|years of age)|over\s*the\s*age\s*of\s*18|at\s*least\s*18/i.test(label)) {
-      const isOver18 = addInfo.is_over_18 !== undefined ? addInfo.is_over_18 : true;
-      return { rawValue: isOver18 ? 'Yes' : 'No', confidence: 1.0 };
+      const is18 = canonical.workAuth.isOver18;
+      if (type === 'radio') return { rawValue: is18 ? 'Yes' : 'No', confidence: 1.0 };
+      return { rawValue: is18, confidence: 1.0 };
     }
 
-    // Work authorization
+    // 9. WORK AUTHORIZATION & SPONSORSHIP
     if (/legally\s*eligible\s*to\s*work|authorized\s*to\s*work\s*in\s*the|eligible\s*to\s*work\s*in\s*the\s*united\s*states|lawful\s*permanent\s*resident/i.test(label)) {
-      const eligible = addInfo.eligible_to_work_in_us !== undefined ? addInfo.eligible_to_work_in_us : true;
-      return { rawValue: eligible ? 'Yes' : 'No', confidence: 1.0 };
+      if (canonical.workAuth.eligibleInUS !== null) {
+        const val = canonical.workAuth.eligibleInUS ? 'Yes' : 'No';
+        return { rawValue: type === 'checkbox' ? canonical.workAuth.eligibleInUS : val, confidence: 1.0 };
+      }
+      return null;
     }
 
-    // Visa sponsorship & Visa dependency
     if (/require.*sponsorship|help\s*you\s*obtain\s*an\s*employment\s*visa|require\s*visa\s*sponsorship/i.test(label)) {
-      const needsSponsorship = addInfo.requires_sponsorship !== undefined
-        ? Boolean(addInfo.requires_sponsorship)
-        : (addInfo.require_future_sponsorship !== undefined
-          ? Boolean(addInfo.require_future_sponsorship)
-          : (/yes/i.test(clientInfo.sponsorship || '')));
-      return { rawValue: needsSponsorship ? 'Yes' : 'No', confidence: 1.0 };
-    }
-    if (/\bvisa\s*dependent\b/i.test(label)) {
-      const isDependent = addInfo.requires_sponsorship !== undefined
-        ? Boolean(addInfo.requires_sponsorship)
-        : (/yes/i.test(clientInfo.sponsorship || ''));
-      return { rawValue: isDependent ? 'Yes' : 'No', confidence: 1.0 };
-    }
-    if (/visa\s*type|enter\s*your\s*visa\s*type/i.test(label)) {
-      const needsSponsorship = Boolean(addInfo.requires_sponsorship);
-      return { rawValue: needsSponsorship ? (addInfo.visa_type || 'H-1B') : 'None', confidence: 1.0 };
+      if (canonical.workAuth.requiresSponsorship !== null) {
+        const val = canonical.workAuth.requiresSponsorship ? 'Yes' : 'No';
+        return { rawValue: type === 'checkbox' ? canonical.workAuth.requiresSponsorship : val, confidence: 1.0 };
+      }
+      return null;
     }
 
-    // Disclosures & Compliance
-    // 1. Prior Employment / Corporate Affiliation
-    if (/have\s*you\s*(previously|ever)\s*(been\s*employed|worked)|currently\s*(an\s*employee|employed)\s*with|employed\s*by\s*\w+|worked\s*(for|at|as an employee|in any capacity)|ex[- ]\w+|former.*employee|been\s*in\s*your\s*current\s*position/i.test(label)) {
-      const worked = addInfo.worked_for_company_before || false;
+    if (/visa\s*type|enter\s*your\s*visa\s*type/i.test(label)) {
+      return canonical.workAuth.visaType ? { rawValue: canonical.workAuth.visaType, confidence: 1.0 } : null;
+    }
+
+    // 10. DISCLOSURES & COMPLIANCE
+    if (/have\s*you\s*(previously|ever)\s*(been\s*employed|worked)|currently\s*(an\s*employee|employed)\s*with|employed\s*by\s*\w+|worked\s*(for|at|as an employee|in any capacity)|former.*employee/i.test(label)) {
+      const worked = canonical.disclosures.workedForCompanyBefore;
       if (type === 'textarea' || type === 'text') {
         return { rawValue: worked ? 'Yes' : 'Not Applicable', confidence: 1.0 };
       }
       return { rawValue: worked ? 'Yes' : 'No', confidence: 1.0 };
     }
 
-    // 2. Relatives at Company
     if (/relative.*(employee|employed|working)|relatives?\s*(presently|currently)\s*working|related\s*to\s*a\s*current\s*employee/i.test(label)) {
-      const hasRel = addInfo.has_relatives_in_company || false;
+      const hasRel = canonical.disclosures.hasRelativesInCompany;
       if (type === 'textarea' || type === 'text') {
-        return { rawValue: hasRel ? 'Relative' : 'Not Applicable', confidence: 1.0 };
+        return { rawValue: hasRel ? (canonical.disclosures.relativesDetails || 'Yes') : 'Not Applicable', confidence: 1.0 };
       }
       return { rawValue: hasRel ? 'Yes' : 'No', confidence: 1.0 };
     }
+
     if (/relative('?s)?\s*(name|employee\s*id)|relationship/i.test(label)) {
       return { rawValue: 'Not Applicable', confidence: 0.50 };
     }
+
     if (/reason\s*for\s*leaving|former.*email\s*address|employee\s*id/i.test(label)) {
       return { rawValue: 'Not Applicable', confidence: 0.50 };
     }
 
-    // 3. Employee Referral
     if (/employee\s*refer\s*you|referred\s*by(\s*a\s*current\s*employee|\s*an\s*employee)?/i.test(label)) {
-      if (type === 'radio' || type === 'combobox') return { rawValue: 'No', confidence: 1.0 };
-      return { rawValue: '', confidence: 1.0 };
-    }
-    if (/referral\s*name/i.test(label)) {
-      return { rawValue: '', confidence: 1.0 };
-    }
-
-    // 4. Government / Public Agency / Corporate Conflict & Outside Roles
-    if (/employed\s*by\s*the\s*government|government\s*official|government\s*conflict|public\s*(trust|agency)|supervised.*awarded|restrictions.*former\s*employer|selection\s*committee|other\s*jobs.*board\s*membership/i.test(label)) {
       return { rawValue: 'No', confidence: 1.0 };
     }
 
-    // 5. Professional Certifications
-    if (/professional\s*certifications?(\s*that\s*apply)?/i.test(label)) {
+    if (/employed\s*by\s*the\s*government|government\s*official|public\s*agency|selection\s*committee|restrictions?\s*from\s*a\s*former\s*employer|other\s*jobs.*board\s*membership/i.test(label)) {
       return { rawValue: 'No', confidence: 1.0 };
     }
 
-    // 6. Qualifications & Minimum Experience
-    if (/meet\s*the\s*minimum\s*(years|requirements?|qualifications?)|minimum\s*years\s*of\s*experience/i.test(label)) {
+    if (/minimum\s*(years\s*of\s*)?experience|minimum\s*qualifications/i.test(label)) {
       return { rawValue: 'Yes', confidence: 1.0 };
     }
 
-    // 7. Background & Drug Screening
-    if (/background\s*and\/or\s*a\s*drug\s*test|willing.*background\s*check|undergo.*background\s*check/i.test(label)) {
+    if (/background\s*check/i.test(label)) {
       return { rawValue: 'Yes', confidence: 1.0 };
     }
-    if (/drug\s*(test|screen)|substances\s*affecting/i.test(label)) {
-      if (/willing|consent|agree/i.test(label)) return { rawValue: 'Yes', confidence: 1.0 };
-      if (/failed|refused|uses/i.test(label)) return { rawValue: 'No', confidence: 1.0 };
-    }
-    if (/perform\s*the\s*essential\s*functions/i.test(label)) {
+    if (/drug\s*screen|drug\s*test/i.test(label)) {
+      if (/failed|refused/i.test(label)) return { rawValue: 'No', confidence: 1.0 };
       return { rawValue: 'Yes', confidence: 1.0 };
     }
-    if (/felony|criminal\s*conviction|convicted/i.test(label)) {
-      return { rawValue: 'No', confidence: 1.0 };
+    if (/felony|convicted/i.test(label)) {
+      return { rawValue: canonical.disclosures.convictedOfFelony ? 'Yes' : 'No', confidence: 1.0 };
     }
 
-    // 8. Relocation & Travel
-    if (/willing\s*to\s*relocate|relocate\s*for\s*the\s*role|relocate\s*to\s*the\s*location/i.test(label)) {
-      return { rawValue: addInfo.willing_to_relocate !== undefined ? (addInfo.willing_to_relocate ? 'Yes' : 'No') : 'Yes', confidence: 1.0 };
+    // 11. PREFERENCES & AVAILABILITY
+    if (/willing\s*to\s*relocate/i.test(label)) {
+      return { rawValue: canonical.preferences.willingToRelocate ? 'Yes' : 'No', confidence: 1.0 };
     }
-    if (/require\s*travel|able\s*to\s*travel|meet\s*this\s*requirement.*travel|travel\s*(domestically|internationally)|willing.*travel|travel\s*requirements?/i.test(label)) {
+    if (/willing\s*to\s*travel|able\s*to\s*travel|require\s*travel/i.test(label)) {
       return { rawValue: 'Yes', confidence: 1.0 };
     }
-    if (/all\s*locations|consider\s*(temporary\s*assignment|part\s*time\s*work)|work\s*a\s*flexible\s*schedule/i.test(label)) {
-      return { rawValue: 'Yes', confidence: 1.0 };
-    }
-    if (/length\s*of\s*willing\s*to\s*relocate|relocate_duration/i.test(label)) {
-      return { rawValue: 'Indefinite', confidence: 0.95 };
-    }
-    if (/relocation\s*reason|comments\b/i.test(label)) {
-      return { rawValue: 'N/A', confidence: 0.95 };
-    }
-
-    // 9. Availability, Notice Period & Split Dates
-    if (/\bnotice\s*period\s*in\s*days\b/i.test(label)) {
-      return { rawValue: String(addInfo.notice_period_days || '15'), confidence: 1.0 };
-    }
-    if (/\bnotice\s*period\b/i.test(label)) {
-      const candidateNotice = addInfo.notice_period || addInfo.availability || 'Immediate';
-      return { rawValue: candidateNotice, confidence: 0.95 };
-    }
-    if (/\b(immediately\s*available|available\s*immediately)\b/i.test(label)) {
-      return { rawValue: 'Yes', confidence: 1.0 };
-    }
-    if (/\b(when\s*are\s*you\s*available\s*to\s*start|earliest\s*you\s*can\s*start|start\s*date|availability)\b/i.test(label) && !/month|day|year/i.test(label)) {
-      return { rawValue: 'Immediately', confidence: 1.0 };
+    if (/when\s*are\s*you\s*available\s*to\s*start|earliest\s*you\s*can\s*start|earliest\s*available\s*date\b/i.test(label) && !/month|day|year/i.test(label)) {
+      return { rawValue: canonical.preferences.desiredStartDate || 'Immediately', confidence: 1.0 };
     }
     if (/can\s*join\s*by|earliest\s*available\s*date/i.test(label)) {
       if (/month/i.test(label)) return { rawValue: 'November', confidence: 1.0 };
       if (/day/i.test(label)) return { rawValue: '15', confidence: 1.0 };
       if (/year/i.test(label)) return { rawValue: '2026', confidence: 1.0 };
     }
-
-    // 10. Compensation & Desired Pay
-    if (/\b(desired\s*pay|pay\s*range|salary\s*expectations?|desired\s*salary|desired\s*annual\s*compensation|compensation|minimum\s*pay)\b/i.test(label)) {
-      const salary = clientInfo.salary_range || addInfo.desired_salary || 'Competitive / Negotiable';
-      return { rawValue: salary, confidence: 1.0 };
+    if (/notice\s*period\s*(in\s*days)?/i.test(label)) {
+      if (/in\s*days/i.test(label)) return { rawValue: canonical.preferences.noticePeriodDays, confidence: 1.0 };
+      return { rawValue: canonical.preferences.availability, confidence: 1.0 };
     }
 
-    // 11. Work Experience & Current Organization
-    if (/\b(current\s*organization|current\s*company|current\s*employer|most\s*recent\s*(company|employer))\b/i.test(label)) {
-      const rawCompany = addInfo.experience_records?.[0]?.company || addInfo.experience_records?.[0]?.employer;
-      const cleanOrg = this.#cleanCompany(rawCompany, resumeText);
-      if (cleanOrg) {
-        return { rawValue: cleanOrg, confidence: 1.0 };
-      }
-      return null;
-    }
-    if (/\b(total|relevant)\s*experience\s*(in\s*years)?\b/i.test(label)) {
-      const exp = String(addInfo.experience || (addInfo.experience_records?.length ? addInfo.experience_records.length * 2 : 4));
-      return { rawValue: exp, confidence: 1.0 };
-    }
-
-    // 12. Specialization
-    if (/^specialization$/i.test(label.trim())) {
-      const spec = addInfo.education_records?.[0]?.fieldOfStudy || addInfo.role || 'Computer Science';
-      return { rawValue: spec, confidence: 1.0 };
-    }
-
-    // 13. Terms & Accreditations
+    // 12. TERMS & AGREEMENTS
     if (/^\s*i\s*agree\s*$|^\s*agree\s*$/i.test(label.trim())) {
       return { rawValue: true, confidence: 1.0 };
     }
@@ -702,117 +628,118 @@ export class ResolutionEngine {
     if (/reasonable\s*accommodation/i.test(label)) {
       return { rawValue: 'None', confidence: 1.0 };
     }
-    if (/how\s*did\s*you\s*hear\s*about\s*us/i.test(label)) {
-      return { rawValue: 'LinkedIn', confidence: 0.95 };
+
+    // 13. EEO & DEMOGRAPHICS (Zero synthetic defaults)
+    if (/\b(gender|sex)\b(?!\s*orientation)/i.test(label) && !/disclose/i.test(label)) {
+      if (!canonical.eeo.gender) return null;
+      if (Array.isArray(field.options) && field.options.length > 0) {
+        const matched = matchEeoOption('gender', canonical.eeo.gender, field.options);
+        return matched ? { rawValue: matched, confidence: 1.0 } : null;
+      }
+      return { rawValue: canonical.eeo.gender, confidence: 1.0 };
     }
 
-    // EEO Demographics (with strict string truthiness parsing)
-    if (/\b(gender|sex)\b(?!\s*orientation)/i.test(label)) {
-      const g = addInfo.gender || 'Prefer not to say';
-      return { rawValue: g, confidence: 1.0 };
-    }
-    if (/\b(hispanic|latino)\b/i.test(label)) {
-      const isHisp = parseBoolean(addInfo.is_hispanic_latino);
-      return { rawValue: isHisp ? 'Yes' : 'No', confidence: 1.0 };
-    }
-    if (/\b(race|ethnicity)\b/i.test(label)) {
-      const r = addInfo.race_ethnicity || 'Asian';
-      return { rawValue: [r], confidence: 1.0 };
-    }
-    // Military Discharge Date (Composite Datepicker: Month, Day, Year)
-    if (/discharge\s*date/i.test(label) || /militaryDischargeDate/i.test(field.sourceName || field.id)) {
-      if (!addInfo.military_discharge_date) {
-        return { rawValue: null, confidence: 1.0 };
-      }
-      if (/month/i.test(label) || /month/i.test(field.id) || /month/i.test(field.sourceId)) {
-        return { rawValue: this.#extractDatePart(addInfo.military_discharge_date, 'month') || 'January', confidence: 1.0 };
-      }
-      if (/day/i.test(label) || /day/i.test(field.id) || /day/i.test(field.sourceId)) {
-        return { rawValue: this.#extractDatePart(addInfo.military_discharge_date, 'day') || '1', confidence: 1.0 };
-      }
-      if (/year/i.test(label) || /year/i.test(field.id) || /year/i.test(field.sourceId)) {
-        return { rawValue: this.#extractDatePart(addInfo.military_discharge_date, 'year') || '2020', confidence: 1.0 };
-      }
-      return { rawValue: null, confidence: 1.0 };
-    }
-
-    if (type === 'checkbox' && /\b(disabled\s*veteran|recently\s*separated|active\s*duty|wartime|campaign\s*badge|armed\s*forces\s*service\s*medal)\b/i.test(label)) {
-      const isProtected = addInfo.veteran_status && !/not\s*a\s*protected/i.test(addInfo.veteran_status);
-      return { rawValue: isProtected ? true : false, confidence: 1.0 };
-    }
-    if (/\b(veteran|armed\s*forces)\b/i.test(label)) {
-      const v = addInfo.veteran_status || 'I am not a protected veteran';
+    if (/hispanic|latino/i.test(label)) {
+      if (canonical.eeo.isHispanic === null) return null;
       if (type === 'checkbox') {
-        const isProtected = !/not\s*a\s*protected/i.test(v);
+        return { rawValue: canonical.eeo.isHispanic === true, confidence: 1.0 };
+      }
+      if (canonical.eeo.isHispanic === 'Decline to Self-Identify') {
+        if (Array.isArray(field.options) && field.options.length > 0) {
+          const matched = matchEeoOption('hispanic', 'Decline', field.options);
+          return matched ? { rawValue: matched, confidence: 1.0 } : { rawValue: 'No', confidence: 1.0 };
+        }
+      }
+      return { rawValue: canonical.eeo.isHispanic ? 'Yes' : 'No', confidence: 1.0 };
+    }
+
+    if (/race|ethnicity/i.test(label) && !/hispanic/i.test(label)) {
+      if (!canonical.eeo.raceEthnicity) return null;
+      if (Array.isArray(field.options) && field.options.length > 0) {
+        const matched = matchEeoOption('race', canonical.eeo.raceEthnicity, field.options);
+        return matched ? { rawValue: matched, confidence: 1.0 } : null;
+      }
+      return { rawValue: canonical.eeo.raceEthnicity, confidence: 1.0 };
+    }
+
+    if (/veteran/i.test(label)) {
+      if (!canonical.eeo.veteranStatus) return null;
+      if (type === 'checkbox') {
+        const isProtected = /protected\s*veteran/i.test(canonical.eeo.veteranStatus) && !/not\s*(a\s*)?protected/i.test(canonical.eeo.veteranStatus);
         return { rawValue: isProtected, confidence: 1.0 };
       }
-      return { rawValue: v, confidence: 1.0 };
-    }
-    if (/\b(disability|handicap)\b/i.test(label)) {
-      const d = addInfo.disability_status || 'No, I do not have a disability and have not had one in the past';
-      if (type === 'checkbox') {
-        const hasDisability = !/no|not|none/i.test(d);
-        return { rawValue: hasDisability, confidence: 1.0 };
+      if (Array.isArray(field.options) && field.options.length > 0) {
+        const matched = matchEeoOption('veteran', canonical.eeo.veteranStatus, field.options);
+        return matched ? { rawValue: matched, confidence: 1.0 } : null;
       }
-      return { rawValue: d, confidence: 1.0 };
+      return { rawValue: canonical.eeo.veteranStatus, confidence: 1.0 };
     }
 
-    // Technical Screening Questions (Zero-Cost Keyword Scan on resumeText)
-    if (resumeText && (/experience|designing|developing|scalable|programming/i.test(label) || type === 'radio')) {
-      if (/\b(object[- ]oriented|oop)\b/i.test(label)) {
-        if (/\b(object[- ]oriented|oop|java|python|c\+\+|solid principles|design patterns)\b/i.test(resumeText)) {
-          return { rawValue: 'Yes', confidence: 1.0 };
-        }
+    if (/disability/i.test(label)) {
+      if (!canonical.eeo.disabilityStatus) return null;
+      if (Array.isArray(field.options) && field.options.length > 0) {
+        const matched = matchEeoOption('disability', canonical.eeo.disabilityStatus, field.options);
+        return matched ? { rawValue: matched, confidence: 1.0 } : null;
       }
-      if (/\bmicroservices?\b/i.test(label)) {
-        if (/\b(microservices?|rest\s*apis?|restful|api\s*gateway|spring\s*boot|grpc|docker|kubernetes|containers?|cloud)\b/i.test(resumeText)) {
-          return { rawValue: 'Yes', confidence: 1.0 };
-        }
+      return { rawValue: canonical.eeo.disabilityStatus, confidence: 1.0 };
+    }
+
+    // 14. TECHNICAL SCREENING (From Resume)
+    if (resumeText && (type === 'radio' || type === 'checkbox')) {
+      if (/object[- ]oriented|oop\b/i.test(label) && /object[- ]oriented|oop\b|java\b|python\b|c\+\+|solid principles|design patterns/i.test(resumeText)) {
+        return { rawValue: 'Yes', confidence: 1.0 };
       }
-      if (/\b(distributed\s*systems?|scalable)\b/i.test(label)) {
-        if (/\b(distributed\s*systems?|scalable|high-availability|event-driven|kafka)\b/i.test(resumeText)) {
-          return { rawValue: 'Yes', confidence: 1.0 };
-        }
+      if (/microservices?\b/i.test(label) && /microservices?|rest\s*api|docker|kubernetes|aws|cloud/i.test(resumeText)) {
+        return { rawValue: 'Yes', confidence: 1.0 };
       }
-      if (/\b(cloud|aws|azure|gcp)\b/i.test(label)) {
-        if (/\b(aws|azure|gcp|cloud|ec2|s3|docker|kubernetes)\b/i.test(resumeText)) {
-          return { rawValue: 'Yes', confidence: 1.0 };
-        }
+      if (/distributed\s*systems?\b/i.test(label) && /distributed\s*systems?|event[- ]driven|kafka|scalable/i.test(resumeText)) {
+        return { rawValue: 'Yes', confidence: 1.0 };
       }
-      if (/\b(sql|database|relational)\b/i.test(label)) {
-        if (/\b(sql|postgresql|mysql|oracle|database)\b/i.test(resumeText)) {
-          return { rawValue: 'Yes', confidence: 1.0 };
-        }
+      if (/cloud\s*(computing|platforms?|technologies)?\b/i.test(label) && /aws|azure|gcp|cloud/i.test(resumeText)) {
+        return { rawValue: 'Yes', confidence: 1.0 };
+      }
+      if (/sql|databases?\b/i.test(label) && /sql|postgres|mysql|oracle|database/i.test(resumeText)) {
+        return { rawValue: 'Yes', confidence: 1.0 };
       }
     }
 
-    // Education
+    // 15. ORGANIZATION & WORK STATS
+    if (/\b(current\s*organization|current\s*company|current\s*employer|most\s*recent\s*(company|employer))\b/i.test(label)) {
+      const rawCompany = canonical.history.experienceRecords?.[0]?.company || canonical.history.experienceRecords?.[0]?.employer;
+      const cleanOrg = this.#cleanCompany(rawCompany, resumeText);
+      return cleanOrg ? { rawValue: cleanOrg, confidence: 1.0 } : null;
+    }
+    if (/\b(total|relevant)\s*experience\s*(in\s*years)?\b/i.test(label)) {
+      const exp = canonical.history.totalExperienceYears || (canonical.history.experienceRecords?.length ? String(canonical.history.experienceRecords.length * 2) : null);
+      return exp ? { rawValue: exp, confidence: 1.0 } : null;
+    }
+    if (/^specialization$/i.test(label.trim())) {
+      const spec = canonical.history.major || addInfo.education_records?.[0]?.fieldOfStudy || canonical.history.primaryRole || 'Computer Science';
+      return spec ? { rawValue: spec, confidence: 1.0 } : null;
+    }
     if (/highest.*education|degree\s*level|education\s*level|^degree\b/i.test(label)) {
-      return { rawValue: addInfo.highest_education || 'Master\'s Degree', confidence: 1.0 };
+      return canonical.history.highestEducation ? { rawValue: canonical.history.highestEducation, confidence: 1.0 } : null;
     }
-    if (/university|school|institution/i.test(label)) {
-      return { rawValue: addInfo.university_name || '', confidence: 1.0 };
-    }
-    if (/gpa|grade\s*point/i.test(label)) {
-      return { rawValue: String(addInfo.cumulative_gpa || '3.8'), confidence: 1.0 };
+    if (/university|college|institution\s*name/i.test(label)) {
+      return canonical.history.universityName ? { rawValue: canonical.history.universityName, confidence: 1.0 } : null;
     }
 
     return null;
   }
 
   // --------------------------------------------------------------------------
-  // STAGE 2 TOKEN-SORT FUZZY MATCHING (Question Bank CSV)
+  // STAGE 2: QUESTION BANK TOKEN-SORT FUZZY MATCH
   // --------------------------------------------------------------------------
-  #matchStage2TokenSort(field, clientHistory, globalHistory) {
+  #matchStage2TokenSort(field, clientHistory = [], globalHistory = []) {
     const label = field.label || '';
     if (!label) return null;
 
+    // Search client-specific history first
     let bestClientMatch = null;
     let highestClientScore = 0;
 
-    // 1. Search client-specific question bank records
     for (const record of clientHistory) {
-      if (!record.question_label) continue;
+      if (!record.question_label || record.value === null || record.value === undefined) continue;
       const score = tokenSortSimilarity(label, record.question_label);
       if (score > highestClientScore) {
         highestClientScore = score;
@@ -820,114 +747,129 @@ export class ResolutionEngine {
       }
     }
 
-    if (bestClientMatch && highestClientScore >= 0.75) {
+    if (bestClientMatch && highestClientScore >= 0.85) {
       const tierCap = (bestClientMatch.source === 'manual' || bestClientMatch.confidence === 1.0) ? 0.98 : 0.90;
+      return { rawValue: bestClientMatch.value, score: highestClientScore, tierCap, source: 'tier2_client_history' };
+    }
 
-      // Score >= 0.85: accept directly
-      if (highestClientScore >= 0.85) {
-        return {
-          rawValue: bestClientMatch.value,
-          score: highestClientScore,
-          tierCap,
-          source: 'tier2_question_bank_client'
-        };
+    // Fall back to cross-client global history for non-PII questions
+    if (!isPiiOrPersonalQuestion(label)) {
+      let bestGlobalMatch = null;
+      let highestGlobalScore = 0;
+
+      for (const record of globalHistory) {
+        if (!record.question_label || record.value === null || record.value === undefined) continue;
+        const score = tokenSortSimilarity(label, record.question_label);
+        if (score > highestGlobalScore) {
+          highestGlobalScore = score;
+          bestGlobalMatch = record;
+        }
       }
 
-      // Conditional 0.75 - 0.84: verify against target options
-      if (field.options?.length) {
-        const optionMatch = findBestOptionMatch([bestClientMatch.value], field.options, 80);
-        if (optionMatch) {
-          return {
-            rawValue: optionMatch,
-            score: highestClientScore,
-            tierCap,
-            source: 'tier2_question_bank_client'
-          };
-        }
+      if (bestGlobalMatch && highestGlobalScore >= 0.85) {
+        return { rawValue: bestGlobalMatch.value, score: Math.min(highestGlobalScore, 0.85), tierCap: 0.85, source: 'tier2_global_history' };
       }
     }
 
-    // 2. Cross-client fallback (strictly blocking PII/location/legal fields)
-    if (isPiiOrPersonalQuestion(label)) {
+    return null;
+  }
+
+  // --------------------------------------------------------------------------
+  // STAGE 3: SPECIALIZED DOMAIN RESOLVERS (Currency, Range Buckets, Dates, Salary)
+  // --------------------------------------------------------------------------
+  #matchStage3Domain(field, canonical) {
+    const label = field.label || '';
+    const type = field.type || field.role || 'text';
+    const options = field.options || [];
+
+    // 1. Currency Dropdown
+    const isCurrencyField = /currency\b/i.test(label) ||
+      (options.length > 0 && options.some(o => /dollar|euro|pound|rupee|yen|franc|dirham|peso/i.test(String(o))));
+
+    if (isCurrencyField && options.length > 0) {
+      const matched = matchCurrencyOption(canonical.compensation.currencyCode, options);
+      if (matched) {
+        return { rawValue: matched, score: 0.95, source: 'tier2_currency_matcher' };
+      }
       return null;
     }
 
-    let bestGlobalMatch = null;
-    let highestGlobalScore = 0;
+    // 2. Salary Range Buckets (Dropdown containing numeric range intervals)
+    const isRangeBucketField = options.length > 0 && options.some(o => /\d+\s*[-–—to]+\s*\d+|\d+\+/i.test(String(o)));
+    if (isRangeBucketField && (canonical.compensation.minAnnual !== null || canonical.compensation.maxAnnual !== null)) {
+      const matched = matchSalaryRangeBucket(canonical.compensation.minAnnual, canonical.compensation.maxAnnual, options);
+      if (matched) {
+        return { rawValue: matched, score: 0.95, source: 'tier2_range_bucket_matcher' };
+      }
+      return null;
+    }
 
-    for (const record of globalHistory) {
-      if (!record.question_label) continue;
-      const score = tokenSortSimilarity(label, record.question_label);
-      if (score > highestGlobalScore) {
-        highestGlobalScore = score;
-        bestGlobalMatch = record;
+    // 3. Salary Expectations Alignment Radio
+    if (type === 'radio' && /salary.*(align|match|posted|range)|expectations?.*align/i.test(label)) {
+      return { rawValue: 'Yes', score: 0.95, source: 'tier2_salary_alignment' };
+    }
+
+    // 4. Freeform Salary Questions (Text or Textarea)
+    if (/(salary|package|compensation)\s*(and\s*benefits\s*)?(requirements?|expectations?|package)|desired\s*salary|state\s*your\s*(current\s*)?salary|salary\s*expectations?|\b(desired\s*pay|pay\s*range|desired\s*annual\s*compensation|compensation|minimum\s*pay)\b/i.test(label)) {
+      if (type === 'number') {
+        const num = canonical.compensation.midpointAnnual || canonical.compensation.minAnnual;
+        return num ? { rawValue: num, score: 0.90, source: 'tier1_compensation' } : null;
+      }
+      const val = canonical.compensation.raw || canonical.compensation.formattedRange;
+      return val ? { rawValue: val, score: 0.90, source: 'tier1_compensation' } : null;
+    }
+
+    // 5. Composite Date Component Dropdowns (Month, Day, Year)
+    if (options.length > 0) {
+      if (/\bmonth\b/i.test(label)) {
+        const m = matchDateComponent(canonical.preferences.desiredStartDate, 'month', options);
+        if (m) return { rawValue: m, score: 0.95, source: 'tier2_date_matcher' };
+      }
+      if (/\bday\b/i.test(label)) {
+        const d = matchDateComponent(canonical.preferences.desiredStartDate, 'day', options);
+        if (d) return { rawValue: d, score: 0.95, source: 'tier2_date_matcher' };
+      }
+      if (/\byear\b/i.test(label)) {
+        const y = matchDateComponent(canonical.preferences.desiredStartDate, 'year', options);
+        if (y) return { rawValue: y, score: 0.95, source: 'tier2_date_matcher' };
       }
     }
 
-    if (bestGlobalMatch && highestGlobalScore >= 0.85) {
-      return {
-        rawValue: bestGlobalMatch.value,
-        score: Math.min(highestGlobalScore, 0.85),
-        tierCap: 0.85,
-        source: 'tier2_question_bank_global'
-      };
-    }
-
-    return null;
-  }
-
-  // --------------------------------------------------------------------------
-  // STAGE 3 SEMANTIC SYNSET & OPTION REDUCER
-  // --------------------------------------------------------------------------
-  #matchStage3Synsets(field, clientInfo, addInfo, clientHistory, globalHistory) {
-    const label = field.label || '';
-
-    // Synset: Opportunity Source / Referral
+    // 6. Referral Source / How did you hear
     if (/how\s*did\s*you\s*(hear|learn|come\s*to\s*know)\s*about|opportunity\s*source/i.test(label)) {
-      const candidateChoices = ['LinkedIn', 'Company Website', 'Online Job Board', 'Other'];
-      if (field.options?.length) {
-        const bestOpt = findBestOptionMatch(candidateChoices, field.options, 60);
-        if (bestOpt) {
-          return { rawValue: bestOpt, score: 0.85, tierCap: 0.90, source: 'tier2_synset' };
-        }
+      if (options.length > 0) {
+        const matched = matchBestOption(['LinkedIn', 'Company Website', 'Online Job Board', 'Social Media'], options, 60);
+        if (matched) return { rawValue: matched, score: 0.90, source: 'tier2_referral_matcher' };
+      } else {
+        return { rawValue: 'LinkedIn', score: 0.90, source: 'tier2_referral_matcher' };
       }
-      return { rawValue: 'LinkedIn', score: 0.80, tierCap: 0.90, source: 'tier2_synset' };
-    }
-
-    // Synset: Start date / Timeline
-    if (/start\s*date|earliest\s*you\s*would\s*want\s*to\s*start/i.test(label)) {
-      if (/month/i.test(label)) {
-        return { rawValue: 'Immediately', score: 0.85, tierCap: 0.90, source: 'tier1_client_profile' };
-      }
-      return { rawValue: addInfo.desired_start_date || 'Immediately', score: 0.85, tierCap: 0.90, source: 'tier1_client_profile' };
-    }
-
-    // Synset: Notice Period / Availability
-    if (/notice\s*period|availability|available\s*to\s*start|how\s*soon\s*(can|could)\s*you\s*start|state\s*(your\s*)?(notice|availability)/i.test(label)) {
-      const candidateNotice = addInfo.notice_period || addInfo.availability || 'Immediate';
-      const candidateChoices = [candidateNotice, 'Immediate', 'Immediately', '1 Month', '2 Weeks', '1 - 2 weeks', '1-2 months', 'Negotiable'];
-      if (field.options?.length) {
-        const bestOpt = findBestOptionMatch(candidateChoices, field.options, 50);
-        if (bestOpt) {
-          return { rawValue: bestOpt, score: 0.85, tierCap: 0.90, source: 'tier2_synset' };
-        }
-      }
-      return { rawValue: candidateNotice, score: 0.85, tierCap: 0.90, source: 'tier2_synset' };
-    }
-
-    // Synset: Salary expectations & Package requirements
-    if (/(salary|package|compensation)\s*(and\s*benefits\s*)?(requirements?|expectations?|package)|desired\s*salary|state\s*your\s*(current\s*)?salary/i.test(label)) {
-      const salary = clientInfo.salary_range || addInfo.desired_salary || 'Competitive / Negotiable';
-      return { rawValue: salary, score: 0.80, tierCap: 0.90, source: 'tier1_client_profile' };
     }
 
     return null;
   }
 
+  // --------------------------------------------------------------------------
+  // STRICT VALIDATION GUARD
+  // --------------------------------------------------------------------------
   #isValidValue(value, field) {
     if (value === null || value === undefined) return false;
     if (typeof value === 'string' && value.trim() === '' && field.required) return false;
     if (Array.isArray(value) && value.length === 0 && field.required) return false;
+
+    // Strict Option Enforcement: If field has explicit options, value MUST be one of them!
+    if (Array.isArray(field.options) && field.options.length > 0) {
+      if (typeof value === 'string') {
+        const valLower = value.trim().toLowerCase();
+        const matchesOption = field.options.some(opt => String(opt).trim().toLowerCase() === valLower);
+        if (!matchesOption) return false;
+      } else if (Array.isArray(value)) {
+        const allMatch = value.every(v =>
+          field.options.some(opt => String(opt).trim().toLowerCase() === String(v).trim().toLowerCase())
+        );
+        if (!allMatch) return false;
+      }
+    }
+
     return true;
   }
 }
