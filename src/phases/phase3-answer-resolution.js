@@ -9,6 +9,7 @@ import { parseCsv, formatCsv, formatCsvRow } from '../shared/csv.js';
 import { ResolutionEngine } from '../domain/resolution-engine.js';
 import { ClaudeService } from '../services/claude-service.js';
 import { parseJobSelector, isAssignmentSelected } from '../shared/job-filter.js';
+import { config } from '../config.js';
 
 const QB_HEADERS = [
   'id',
@@ -26,6 +27,7 @@ export class Phase3AnswerResolution {
   constructor({ store, runLog, engine, config: cfg } = {}) {
     this.store = store;
     this.runLog = runLog;
+    this.config = cfg ?? config;
     this.engine = engine ?? new ResolutionEngine({
       claudeService: new ClaudeService()
     });
@@ -200,15 +202,22 @@ export class Phase3AnswerResolution {
     let needsInputCount = 0;
     const candidateResumeCache = new Map();
 
+    // 1. Group assignments by candidate for unified processing
+    const assignmentsByCandidate = new Map();
     for (const assignment of toProcess) {
-      const template = templates[assignment.jobKey] || templates[assignment.jobId];
-
       const applywizzId = assignment.applywizzId || assignment.userId;
+      if (!assignmentsByCandidate.has(applywizzId)) {
+        assignmentsByCandidate.set(applywizzId, []);
+      }
+      assignmentsByCandidate.get(applywizzId).push(assignment);
+    }
+
+    for (const [applywizzId, candidateAssignments] of assignmentsByCandidate.entries()) {
       const client = clients[applywizzId];
       
       // Gatekeeper: Enforce clients.json presence
       if (!client || !client.client || Object.keys(client.client).length === 0) {
-        console.log(`[Phase 3] Skipping Job ${assignment.jobKey || assignment.jobId} for ${applywizzId}: candidate not found or incomplete in clients.json`);
+        console.log(`[Phase 3] Skipping candidate ${applywizzId}: candidate not found or incomplete in clients.json`);
         continue;
       }
 
@@ -238,43 +247,176 @@ export class Phase3AnswerResolution {
         candidateResumeCache.set(applywizzId, resumeText);
       }
 
-      const applicationId = stableId('app', `${applywizzId}|${assignment.jobKey || assignment.jobId}`);
-      const current = byId.get(applicationId);
+      // Pass 1: Resolve deterministic & Question Bank answers across candidate applications (Tiers 1-3)
+      const candidateApps = [];
+      for (const assignment of candidateAssignments) {
+        const template = templates[assignment.jobKey] || templates[assignment.jobId];
+        if (!template) continue;
 
-      const values = await this.resolveValues(template, client, clientHistory, globalHistory, current?.values ?? {}, resumeText, force);
-      const unresolvedList = this.unresolved(template, values);
+        const applicationId = stableId('app', `${applywizzId}|${assignment.jobKey || assignment.jobId}`);
+        const current = byId.get(applicationId);
 
-      // Status rule: Only required visible fields block status.
-      // Every required visible field must have confidence >= 0.80.
-      const status = unresolvedList.length === 0 ? 'answers_resolved' : 'needs_input';
-      if (status === 'answers_resolved') resolvedCount++;
-      else needsInputCount++;
+        // Run Tiers 1-3 with skipLlm: true
+        const values = await this.resolveValues(template, client, clientHistory, globalHistory, current?.values ?? {}, resumeText, force, true);
 
-      console.error(`[Phase 3] [Job ${assignment.jobKey || assignment.jobId} | Client ${applywizzId}] Status: ${status} (${unresolvedList.length === 0 ? 'all required fields resolved >= 0.80' : `${unresolvedList.length} required fields missing/low confidence`})`);
+        candidateApps.push({
+          assignment,
+          template,
+          applicationId,
+          current,
+          values
+        });
+      }
 
-      byId.set(applicationId, {
-        applicationId,
-        userId: applywizzId,
-        applywizzId,
-        clientName: assignment.clientName || client?.client?.full_name,
-        companyName: assignment.companyName,
-        jobId: assignment.jobId,
-        jobKey: assignment.jobKey || assignment.jobId,
-        templateId: template.templateId,
-        canonicalUrl: assignment.canonicalUrl,
-        tenantHost: assignment.tenantHost,
-        tenantKey: assignment.tenantKey,
-        status,
-        reviewStatus: current?.reviewStatus ?? 'not_ready',
-        values,
-        unresolvedFields: unresolvedList.map(f => f.id),
-        fillResults: current?.fillResults ?? [],
-        screenshots: current?.screenshots ?? [],
-        fillLogs: current?.fillLogs ?? [],
-        fillCompletedAt: current?.fillCompletedAt ?? null,
-        receipt: current?.receipt ?? null,
-        updatedAt: nowIso()
-      });
+      // Pass 2: Identify Unresolved Required Fields & Deduplicate Across Jobs
+      const uniqueQuestionsMap = new Map();
+
+      for (const app of candidateApps) {
+        const flatFields = flattenTemplateFields(app.template);
+        for (const field of flatFields) {
+          if (field.repeatableGroupId) continue;
+          // Strictly required unresolved fields only
+          if (!field.required) continue;
+          if (field.type === 'file' || field.type === 'signature') continue;
+
+          const currentVal = app.values[field.id];
+          if (!currentVal || currentVal.value === null || currentVal.value === undefined || currentVal.value === '') {
+            const normLabel = (field.label || '').toLowerCase().trim().replace(/\s+/g, ' ');
+            const sortedOptions = Array.isArray(field.options) ? field.options.slice().sort().join('|') : '';
+            const questionKey = `${normLabel}::${sortedOptions}`;
+
+            if (!uniqueQuestionsMap.has(questionKey)) {
+              uniqueQuestionsMap.set(questionKey, {
+                questionId: `q_${uniqueQuestionsMap.size + 1}`,
+                key: questionKey,
+                label: field.label,
+                type: field.type || field.role || 'text',
+                options: field.options || null,
+                sectionLabel: field.sectionLabel || null,
+                company: app.assignment.companyName || null,
+                jobTitle: app.assignment.jobTitle || app.assignment.metadata?.jobTitle || null,
+                targets: []
+              });
+            }
+            uniqueQuestionsMap.get(questionKey).targets.push({
+              app,
+              field
+            });
+          }
+        }
+      }
+
+      // Pass 3: Unified LLM Batch Execution (if questions exist & Claude is available)
+      if (uniqueQuestionsMap.size > 0 && this.engine.claudeService?.isAvailable()) {
+        const allQuestions = [...uniqueQuestionsMap.values()];
+        const batchMax = this.config?.llmBatchMaxQuestions ?? 20;
+        const newlyAnswered = [];
+        let didCallLlm = false;
+
+        for (let i = 0; i < allQuestions.length; i += batchMax) {
+          const chunk = allQuestions.slice(i, i + batchMax);
+          console.log(`[Phase 3] [Candidate ${applywizzId}] Resolving ${chunk.length} unique questions via Claude Batch LLM...`);
+
+          const batchAnswers = await this.engine.claudeService.resolveCandidateBatch({
+            client,
+            resumeText,
+            questions: chunk
+          });
+          didCallLlm = true;
+
+          for (const q of chunk) {
+            const ans = batchAnswers[q.questionId];
+            if (ans && ans.answer !== null && ans.confidence >= 0.80) {
+              for (const target of q.targets) {
+                const validated = this.engine.validateAndCoerceAnswer(ans.answer, target.field);
+                if (validated !== null) {
+                  target.app.values[target.field.id] = {
+                    value: validated,
+                    source: 'tier2_claude_llm',
+                    stage: 'stage4_llm',
+                    tier: 2,
+                    confidence: ans.confidence,
+                    questionLabel: target.field.label,
+                    fieldType: target.field.type || 'text',
+                    reviewed: false
+                  };
+                }
+              }
+
+              const historyRecord = {
+                id: randomUUID(),
+                applywizz_id: applywizzId,
+                question_label: q.label,
+                field_type: q.type,
+                value: ans.answer,
+                source: 'tier2_claude_llm',
+                confidence: ans.confidence,
+                created_at: nowIso(),
+                updated_at: nowIso()
+              };
+              clientHistory.push(historyRecord);
+              newlyAnswered.push(historyRecord);
+            }
+          }
+        }
+
+        // Persist newly answered questions to question bank
+        if (newlyAnswered.length > 0) {
+          if (typeof this.store?.upsertQuestionBank === 'function' && this.store?.isAvailable?.()) {
+            try {
+              await this.store.upsertQuestionBank(newlyAnswered);
+            } catch (err) {
+              console.warn('[Phase 3] Warning: Failed to persist batch answers to question_bank in store:', err.message);
+            }
+          }
+          if (fs.existsSync(this.questionBankCsvPath)) {
+            try {
+              const rows = newlyAnswered.map(r => formatCsvRow(QB_HEADERS.map(h => r[h] ?? '')));
+              fs.appendFileSync(this.questionBankCsvPath, '\n' + rows.join('\n'));
+            } catch {}
+          }
+        }
+
+        // Pacing delay between candidates if an LLM call was executed
+        const delayMs = this.config?.llmDelayMs ?? 2000;
+        if (didCallLlm && delayMs > 0) {
+          await new Promise(r => setTimeout(r, delayMs));
+        }
+      }
+
+      // Pass 4: Finalize Application Records
+      for (const app of candidateApps) {
+        const unresolvedList = this.unresolved(app.template, app.values);
+        const status = unresolvedList.length === 0 ? 'answers_resolved' : 'needs_input';
+        if (status === 'answers_resolved') resolvedCount++;
+        else needsInputCount++;
+
+        console.error(`[Phase 3] [Job ${app.assignment.jobKey || app.assignment.jobId} | Client ${applywizzId}] Status: ${status} (${unresolvedList.length === 0 ? 'all required fields resolved >= 0.80' : `${unresolvedList.length} required fields missing/low confidence`})`);
+
+        byId.set(app.applicationId, {
+          applicationId: app.applicationId,
+          userId: applywizzId,
+          applywizzId,
+          clientName: app.assignment.clientName || client?.client?.full_name,
+          companyName: app.assignment.companyName,
+          jobId: app.assignment.jobId,
+          jobKey: app.assignment.jobKey || app.assignment.jobId,
+          templateId: app.template.templateId,
+          canonicalUrl: app.assignment.canonicalUrl,
+          tenantHost: app.assignment.tenantHost,
+          tenantKey: app.assignment.tenantKey,
+          status,
+          reviewStatus: app.current?.reviewStatus ?? 'not_ready',
+          values: app.values,
+          unresolvedFields: unresolvedList.map(f => f.id),
+          fillResults: app.current?.fillResults ?? [],
+          screenshots: app.current?.screenshots ?? [],
+          fillLogs: app.current?.fillLogs ?? [],
+          fillCompletedAt: app.current?.fillCompletedAt ?? null,
+          receipt: app.current?.receipt ?? null,
+          updatedAt: nowIso()
+        });
+      }
     }
 
     const applications = [...byId.values()];
@@ -320,7 +462,7 @@ export class Phase3AnswerResolution {
   /**
    * Resolves values for all fields in a template using the cascading resolution engine.
    */
-  async resolveValues(template, client, clientHistory = [], globalHistory = [], existingValues = {}, customResumeText = null, force = false) {
+  async resolveValues(template, client, clientHistory = [], globalHistory = [], existingValues = {}, customResumeText = null, force = false, skipLlm = false) {
     const values = {};
     const resumeText = customResumeText || client?.additional_information?.experience || client?.additional_information?.role || '';
 
@@ -341,7 +483,8 @@ export class Phase3AnswerResolution {
         client,
         clientHistory,
         globalHistory,
-        resumeText
+        resumeText,
+        skipLlm
       });
 
       // If this is a repeatable group, resolve its child fields across each row
@@ -358,7 +501,8 @@ export class Phase3AnswerResolution {
                 client,
                 clientHistory,
                 globalHistory,
-                resumeText
+                resumeText,
+                skipLlm
               });
               if (childResolved?.value !== null && childResolved?.value !== undefined && childResolved?.value !== '') {
                 rowCopy[child.id] = childResolved.value;

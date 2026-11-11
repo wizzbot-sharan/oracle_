@@ -38,6 +38,8 @@ export const config = Object.freeze({
   questionBankCsvPath: path.resolve(rootDir, process.env.QUESTION_BANK_CSV_PATH ?? 'data/question_bank.csv'),
   dataDir: path.resolve(rootDir, 'data'),
   runtimeDir: path.resolve(rootDir, 'data/runtime'),
+  llmDelayMs: numberEnv('LLM_DELAY_MS', 2000),
+  llmBatchMaxQuestions: numberEnv('LLM_BATCH_MAX_QUESTIONS', 20),
   scanner: {
     concurrency: numberEnv('SCANNER_CONCURRENCY', 3),
     launchThrottleMs: numberEnv('SCANNER_LAUNCH_THROTTLE_MS', 30000),

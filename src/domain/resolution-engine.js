@@ -108,7 +108,7 @@ export class ResolutionEngine {
   /**
    * Resolves a single form field through the precision cascade.
    */
-  async resolveField({ field, client, clientHistory = [], globalHistory = [], resumeText = '' }) {
+  async resolveField({ field, client, clientHistory = [], globalHistory = [], resumeText = '', skipLlm = false }) {
     const canonical = client instanceof CanonicalProfile
       ? client
       : CanonicalProfile.from({ client, resumeText });
@@ -201,7 +201,7 @@ export class ResolutionEngine {
     // ------------------------------------------------------------------------
     // STAGE 4: Claude LLM Reasoning Fallback (Strictly Option-Constrained)
     // ------------------------------------------------------------------------
-    if (this.claudeService && this.claudeService.isAvailable()) {
+    if (!skipLlm && this.claudeService && this.claudeService.isAvailable()) {
       try {
         const claudeResult = await this.claudeService.resolveQuestion({
           client,
@@ -846,6 +846,21 @@ export class ResolutionEngine {
     }
 
     return null;
+  }
+
+  isValidValue(value, field) {
+    return this.#isValidValue(value, field);
+  }
+
+  validateAndCoerceAnswer(rawVal, field) {
+    if (rawVal === null || rawVal === undefined) return null;
+    let val = rawVal;
+    if (Array.isArray(field.options) && field.options.length > 0) {
+      const optionMatched = matchBestOption([String(val)], field.options, 70);
+      if (optionMatched) val = optionMatched;
+    }
+    const coerced = coerceValueForField(val, field);
+    return this.#isValidValue(coerced, field) ? coerced : null;
   }
 
   // --------------------------------------------------------------------------
