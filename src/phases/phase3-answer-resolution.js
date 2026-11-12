@@ -421,6 +421,13 @@ export class Phase3AnswerResolution {
 
         console.log(`[Phase 3] [Job ${app.assignment.jobKey || app.assignment.jobId} | Client ${applywizzId}] Status: ${status} (${unresolvedList.length === 0 ? 'all required fields resolved >= 0.80' : `${unresolvedList.length} required fields missing/low confidence`})`);
 
+        const isNew = !app.current;
+        const statusChanged = app.current && app.current.status !== status;
+        const valuesChanged = app.current && JSON.stringify(app.current.values || {}) !== JSON.stringify(app.values || {});
+        const hasChanged = isNew || statusChanged || valuesChanged;
+        const existingUpdatedAt = app.current?.updatedAt || app.current?.updated_at;
+        const updatedAt = hasChanged || !existingUpdatedAt ? nowIso() : existingUpdatedAt;
+
         byId.set(app.applicationId, {
           applicationId: app.applicationId,
           userId: applywizzId,
@@ -442,7 +449,7 @@ export class Phase3AnswerResolution {
           fillLogs: app.current?.fillLogs ?? [],
           fillCompletedAt: app.current?.fillCompletedAt ?? null,
           receipt: app.current?.receipt ?? null,
-          updatedAt: nowIso()
+          updatedAt
         });
       }
     }

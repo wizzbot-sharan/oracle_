@@ -605,6 +605,7 @@ export class SupabaseStore {
         const fillLogsJson = this.toJson(app.fillLogs || []);
         const fillCompletedAt = app.fillCompletedAt || null;
         const receiptJson = this.toJson(app.receipt || null);
+        const updatedAt = app.updatedAt || app.updated_at || null;
 
         await this.query(`
           INSERT INTO applications (
@@ -612,7 +613,7 @@ export class SupabaseStore {
             canonical_url, tenant_host, tenant_key, status, review_status, "values",
             unresolved_fields, fill_results, submission_result, screenshots, fill_logs,
             fill_completed_at, receipt, updated_at
-          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12::jsonb, $13::jsonb, $14::jsonb, $15::jsonb, $16::jsonb, $17::jsonb, $18, $19::jsonb, NOW())
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12::jsonb, $13::jsonb, $14::jsonb, $15::jsonb, $16::jsonb, $17::jsonb, $18, $19::jsonb, COALESCE($20, NOW()))
           ON CONFLICT (application_id) DO UPDATE SET
             applywizz_id = EXCLUDED.applywizz_id,
             job_key = EXCLUDED.job_key,
@@ -632,12 +633,12 @@ export class SupabaseStore {
             fill_logs = EXCLUDED.fill_logs,
             fill_completed_at = EXCLUDED.fill_completed_at,
             receipt = EXCLUDED.receipt,
-            updated_at = NOW()
+            updated_at = COALESCE(EXCLUDED.updated_at, applications.updated_at, NOW())
         `, [
           appId, applywizzId, jobKey, clientName, companyName, templateId,
           canonicalUrl, tenantHost, tenantKey, status, reviewStatus, valuesJson,
           unresolvedJson, fillResultsJson, submissionResultJson,
-          screenshotsJson, fillLogsJson, fillCompletedAt, receiptJson
+          screenshotsJson, fillLogsJson, fillCompletedAt, receiptJson, updatedAt
         ]);
       }
       return;
@@ -849,7 +850,7 @@ export class SupabaseStore {
           fill_logs: app.fillLogs || [],
           fill_completed_at: app.fillCompletedAt || null,
           receipt: app.receipt || null,
-          updated_at: new Date().toISOString()
+          updated_at: app.updatedAt || app.updated_at || new Date().toISOString()
         }));
 
         const { error } = await this.client.from('applications').upsert(rows, { onConflict: 'application_id' });
