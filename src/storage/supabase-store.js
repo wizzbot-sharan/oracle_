@@ -307,6 +307,15 @@ export class SupabaseStore {
       return structuredClone(fallback);
     }
 
+    if (name === 'resume_parsed') {
+      const res = await this.query('SELECT * FROM resume_parsed');
+      const map = {};
+      for (const row of res.rows || []) {
+        map[row.applywizz_id] = this._normalizeResumeParsedRow(row);
+      }
+      return map;
+    }
+
     return structuredClone(fallback);
   }
 
@@ -451,6 +460,16 @@ export class SupabaseStore {
         at: row.at,
         ...(row.payload || {})
       }));
+    }
+
+    if (name === 'resume_parsed') {
+      const { data, error } = await this.client.from('resume_parsed').select('*');
+      if (error) throw error;
+      const map = {};
+      for (const row of data || []) {
+        map[row.applywizz_id] = this._normalizeResumeParsedRow(row);
+      }
+      return map;
     }
 
     return structuredClone(fallback);
@@ -744,6 +763,12 @@ export class SupabaseStore {
       `, [key, this.toJson(payload, {})]);
       return;
     }
+
+    if (name === 'resume_parsed') {
+      const records = Array.isArray(value) ? value : Object.values(value || {});
+      await this.upsertResumeParsed(records);
+      return;
+    }
   }
 
   async _writeToRest(name, value) {
@@ -887,6 +912,13 @@ export class SupabaseStore {
           if (error) throw error;
         }
       }
+      return;
+    }
+
+    if (name === 'resume_parsed') {
+      const records = Array.isArray(value) ? value : Object.values(value || {});
+      await this.upsertResumeParsed(records);
+      return;
     }
   }
 
@@ -1044,6 +1076,221 @@ export class SupabaseStore {
     } catch (err) {
       console.warn('[SupabaseStore] Error upserting question_bank to PostgreSQL:', err.message);
       return records;
+    }
+  }
+
+  /**
+   * Normalizes a raw SQL/REST row from resume_parsed into structured JSON
+   */
+  _normalizeResumeParsedRow(row) {
+    if (!row) return null;
+    return {
+      applywizz_id: row.applywizz_id,
+      full_name: row.full_name || '',
+      first_name: row.first_name || '',
+      last_name: row.last_name || '',
+      email: row.email || '',
+      phone: row.phone || '',
+      city: row.city || '',
+      state: row.state || '',
+      country: row.country || '',
+      current_title: row.current_title || '',
+      years_of_experience: (row.years_of_experience !== null && row.years_of_experience !== undefined) ? Number(row.years_of_experience) : null,
+      highest_education_level: row.highest_education_level || '',
+      linkedin_url: row.linkedin_url || '',
+      portfolio_url: row.portfolio_url || '',
+      professional_summary: row.professional_summary || '',
+      domain_expertise: this.fromJson(row.domain_expertise, []),
+      technical_skills: this.fromJson(row.technical_skills, {}),
+      skills: this.fromJson(row.skills, []),
+      work_experience: this.fromJson(row.work_experience, []),
+      education: this.fromJson(row.education, []),
+      projects: this.fromJson(row.projects, []),
+      certifications: this.fromJson(row.certifications, []),
+      raw_resume_text: row.raw_resume_text || '',
+      parsed_at: row.parsed_at,
+      updated_at: row.updated_at
+    };
+  }
+
+  /**
+   * Fetches parsed resume data for a specific candidate from Supabase resume_parsed table
+   * @param {string} applywizzId
+   * @returns {Promise<Object|null>}
+   */
+  async loadResumeParsed(applywizzId) {
+    if (!applywizzId) return null;
+    if (!this.isAvailable()) return null;
+
+    try {
+      if (this.pool) {
+        const res = await this.query('SELECT * FROM resume_parsed WHERE applywizz_id = $1 LIMIT 1', [applywizzId]);
+        if (res.rows && res.rows.length > 0) {
+          return this._normalizeResumeParsedRow(res.rows[0]);
+        }
+        return null;
+      }
+      if (this.client) {
+        const { data, error } = await this.client.from('resume_parsed').select('*').eq('applywizz_id', applywizzId).maybeSingle();
+        if (error) throw error;
+        return data ? this._normalizeResumeParsedRow(data) : null;
+      }
+      return null;
+    } catch (err) {
+      console.warn(`[SupabaseStore] Error loading resume_parsed for ${applywizzId}:`, err.message);
+      return null;
+    }
+  }
+
+  /**
+   * Fetches all parsed resumes as a Map<applywizzId, parsedData>
+   * @returns {Promise<Map<string, Object>>}
+   */
+  async loadAllResumeParsed() {
+    const map = new Map();
+    if (!this.isAvailable()) return map;
+
+    try {
+      let rows = [];
+      if (this.pool) {
+        const res = await this.query('SELECT * FROM resume_parsed');
+        rows = res.rows || [];
+      } else if (this.client) {
+        const { data, error } = await this.client.from('resume_parsed').select('*');
+        if (error) throw error;
+        rows = data || [];
+      }
+
+      for (const row of rows) {
+        const normalized = this._normalizeResumeParsedRow(row);
+        if (normalized?.applywizz_id) {
+          map.set(normalized.applywizz_id, normalized);
+        }
+      }
+      return map;
+    } catch (err) {
+      console.warn('[SupabaseStore] Error loading all resume_parsed:', err.message);
+      return map;
+    }
+  }
+
+  /**
+   * Upserts one or more parsed resume records into Supabase resume_parsed table
+   * @param {Object|Array<Object>} records
+   * @returns {Promise<Array<Object>>}
+   */
+  async upsertResumeParsed(records) {
+    const list = Array.isArray(records) ? records : (records ? [records] : []);
+    if (list.length === 0) return [];
+    if (!this.isAvailable()) return list;
+
+    try {
+      if (this.pool) {
+        for (const r of list) {
+          if (!r.applywizz_id) continue;
+          await this.query(`
+            INSERT INTO resume_parsed (
+              applywizz_id, full_name, first_name, last_name, email, phone,
+              city, state, country, current_title, years_of_experience,
+              highest_education_level, linkedin_url, portfolio_url, professional_summary,
+              domain_expertise, technical_skills, skills, work_experience, education,
+              projects, certifications, raw_resume_text, parsed_at, updated_at
+            ) VALUES (
+              $1, $2, $3, $4, $5, $6,
+              $7, $8, $9, $10, $11,
+              $12, $13, $14, $15,
+              $16::jsonb, $17::jsonb, $18::jsonb, $19::jsonb, $20::jsonb,
+              $21::jsonb, $22::jsonb, $23, NOW(), NOW()
+            )
+            ON CONFLICT (applywizz_id) DO UPDATE SET
+              full_name = EXCLUDED.full_name,
+              first_name = EXCLUDED.first_name,
+              last_name = EXCLUDED.last_name,
+              email = EXCLUDED.email,
+              phone = EXCLUDED.phone,
+              city = EXCLUDED.city,
+              state = EXCLUDED.state,
+              country = EXCLUDED.country,
+              current_title = EXCLUDED.current_title,
+              years_of_experience = EXCLUDED.years_of_experience,
+              highest_education_level = EXCLUDED.highest_education_level,
+              linkedin_url = EXCLUDED.linkedin_url,
+              portfolio_url = EXCLUDED.portfolio_url,
+              professional_summary = EXCLUDED.professional_summary,
+              domain_expertise = EXCLUDED.domain_expertise,
+              technical_skills = EXCLUDED.technical_skills,
+              skills = EXCLUDED.skills,
+              work_experience = EXCLUDED.work_experience,
+              education = EXCLUDED.education,
+              projects = EXCLUDED.projects,
+              certifications = EXCLUDED.certifications,
+              raw_resume_text = EXCLUDED.raw_resume_text,
+              updated_at = NOW()
+          `, [
+            r.applywizz_id,
+            r.full_name || null,
+            r.first_name || null,
+            r.last_name || null,
+            r.email || null,
+            r.phone || null,
+            r.city || null,
+            r.state || null,
+            r.country || null,
+            r.current_title || null,
+            (r.years_of_experience !== null && r.years_of_experience !== undefined) ? Number(r.years_of_experience) : null,
+            r.highest_education_level || null,
+            r.linkedin_url || null,
+            r.portfolio_url || null,
+            r.professional_summary || null,
+            this.toJson(r.domain_expertise, []),
+            this.toJson(r.technical_skills, {}),
+            this.toJson(r.skills, []),
+            this.toJson(r.work_experience, []),
+            this.toJson(r.education, []),
+            this.toJson(r.projects, []),
+            this.toJson(r.certifications, []),
+            r.raw_resume_text || null
+          ]);
+        }
+        return list;
+      }
+
+      if (this.client) {
+        const rows = list.map(r => ({
+          applywizz_id: r.applywizz_id,
+          full_name: r.full_name || null,
+          first_name: r.first_name || null,
+          last_name: r.last_name || null,
+          email: r.email || null,
+          phone: r.phone || null,
+          city: r.city || null,
+          state: r.state || null,
+          country: r.country || null,
+          current_title: r.current_title || null,
+          years_of_experience: (r.years_of_experience !== null && r.years_of_experience !== undefined) ? Number(r.years_of_experience) : null,
+          highest_education_level: r.highest_education_level || null,
+          linkedin_url: r.linkedin_url || null,
+          portfolio_url: r.portfolio_url || null,
+          professional_summary: r.professional_summary || null,
+          domain_expertise: r.domain_expertise || [],
+          technical_skills: r.technical_skills || {},
+          skills: r.skills || [],
+          work_experience: r.work_experience || [],
+          education: r.education || [],
+          projects: r.projects || [],
+          certifications: r.certifications || [],
+          raw_resume_text: r.raw_resume_text || null,
+          updated_at: new Date().toISOString()
+        }));
+        const { data, error } = await this.client.from('resume_parsed').upsert(rows, { onConflict: 'applywizz_id' });
+        if (error) throw error;
+        return data || list;
+      }
+
+      return list;
+    } catch (err) {
+      console.warn('[SupabaseStore] Error upserting resume_parsed to PostgreSQL:', err.message);
+      return list;
     }
   }
 

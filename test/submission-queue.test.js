@@ -51,7 +51,7 @@ test('ResumeService downloads and caches candidate resume or uses fallback', asy
   };
 
   const cached = await service.resolveCandidateResume(client, 'AWL-999');
-  assert.ok(cached.endsWith('AWL-999_resume.pdf'));
+  assert.ok(cached.endsWith('Resume_AWL-999.pdf') || cached.endsWith('AWL-999_resume.pdf'));
   const exists = await fs.stat(cached);
   assert.ok(exists.size > 0);
 

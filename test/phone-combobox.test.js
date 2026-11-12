@@ -289,11 +289,12 @@ test('repeatable group clicks Add Education and saves row to collapse drawer', a
 
   const page = {
     getByRole: (role, opts) => {
-      if (role === 'button' && opts?.name?.test?.('ADD EDUCATION')) return mockAddBtn;
+      if (role === 'button' && (opts?.name?.test?.('ADD EDUCATION') || opts?.name === 'ADD EDUCATION')) return mockAddBtn;
       return { count: async () => 0, first: () => ({ count: async () => 0 }) };
     },
     locator: (selector) => {
-      if (selector.includes('Add Education') || selector.includes('Save')) return mockSaveBtn;
+      if (selector.includes('ADD EDUCATION') && !selector.includes('apply-flow-drawer__save')) return mockAddBtn;
+      if (selector.includes('apply-flow-drawer__save') || selector.includes('Save') || selector.includes('Done')) return mockSaveBtn;
       return mockFieldInput;
     },
     getByLabel: () => mockFieldInput,

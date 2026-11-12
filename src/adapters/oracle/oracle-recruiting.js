@@ -244,7 +244,7 @@ export class OracleRecruitingAdapter {
 
       const isVisible = await visible(manualLink);
       if (isEasyApply || isVisible) {
-        console.error('[Oracle Adapter] Detected /easy-apply splash screen. Clicking "manually" to open application form...');
+        console.log('[Oracle Adapter] Detected /easy-apply splash screen. Clicking "manually" to open application form...');
         await manualLink.click({ timeout: 5000 }).catch(() => {});
         await Promise.race([
           page.waitForURL(url => url.pathname.includes('/apply/section') || url.pathname.includes('/apply/application') || url.pathname.includes('/apply/flow'), { timeout: 15_000 }),
@@ -260,10 +260,10 @@ export class OracleRecruitingAdapter {
 
   async authenticate({ session, job, email, mailReader, companyDomains = [] }) {
     const { page } = session;
-    console.error(`[Phase 1] Navigating to: ${job.canonicalUrl}`);
+    console.log(`[Phase 1] Navigating to: ${job.canonicalUrl}`);
     await page.goto(job.canonicalUrl, { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('domcontentloaded').catch(() => { });
-    console.error(`[Phase 1] Waiting for initial page to load...`);
+    console.log(`[Phase 1] Waiting for initial page to load...`);
     await delay(this.initialWait);
     await humanPause(this.actionGap);
 
@@ -278,17 +278,17 @@ export class OracleRecruitingAdapter {
     const hasApplyButton = await applyButton.waitFor({ state: 'visible', timeout: 15_000 }).then(() => true).catch(() => false);
     if (!hasApplyButton) {
       if (await this.#isAlreadyApplied(page)) {
-        console.error(`[Phase 1] ⚠ Job already applied (indicated on job page). Skipping.`);
+        console.warn(`[Phase 1] ⚠ Job already applied (indicated on job page). Skipping.`);
         return { status: 'skipped', reason: 'ALREADY_APPLIED', message: 'Candidate has already applied to this job' };
       }
-      console.error(`[Phase 1] ⚠ No Apply button found after wait. Skipping.`);
+      console.warn(`[Phase 1] ⚠ No Apply button found after wait. Skipping.`);
       return { status: 'skipped', reason: 'NO_APPLY_BUTTON', message: 'No Apply button found on job page' };
     }
 
-    console.error(`[Phase 1] Scrolling to Apply Now button...`);
+    console.log(`[Phase 1] Scrolling to Apply Now button...`);
     await applyButton.scrollIntoViewIfNeeded().catch(() => { });
     await humanPause(this.actionGap);
-    console.error(`[Phase 1] Clicking Apply button (attempt 1)...`);
+    console.log(`[Phase 1] Clicking Apply button (attempt 1)...`);
     await applyButton.click();
     await page.waitForLoadState('domcontentloaded').catch(() => { });
 
@@ -327,7 +327,7 @@ export class OracleRecruitingAdapter {
 
     let screenOpened = await waitForEntryScreen(10_000);
     if (!screenOpened) {
-      console.error(`[Phase 1] ⚠ Email/entry page did not open within 10 seconds after first click. Scrolling and retrying Apply button click (attempt 2)...`);
+      console.warn(`[Phase 1] ⚠ Email/entry page did not open within 10 seconds after first click. Scrolling and retrying Apply button click (attempt 2)...`);
       await applyButton.scrollIntoViewIfNeeded().catch(() => { });
       await humanPause(this.actionGap);
       await applyButton.click({ force: true }).catch(() => applyButton.click().catch(() => { }));
@@ -339,9 +339,9 @@ export class OracleRecruitingAdapter {
         console.error(errorMsg);
         throw new WorkflowError('APPLY_BUTTON_FAILED', errorMsg);
       }
-      console.error(`[Phase 1] ✓ Email/entry page opened on attempt 2.`);
+      console.log(`[Phase 1] ✓ Email/entry page opened on attempt 2.`);
     } else {
-      console.error(`[Phase 1] ✓ Email/entry page opened on attempt 1.`);
+      console.log(`[Phase 1] ✓ Email/entry page opened on attempt 1.`);
     }
 
     const switchToEmail = page.locator([
@@ -360,7 +360,7 @@ export class OracleRecruitingAdapter {
 
     if (await visible(switchToEmail) || await visible(phoneIndicator)) {
       if (await visible(switchToEmail)) {
-        console.error(`[Phase 1] Detected phone screen; switching to email...`);
+        console.log(`[Phase 1] Detected phone screen; switching to email...`);
         await humanPause(this.actionGap);
         await switchToEmail.click();
         await page.locator('input[type="email"], input[name="primary-email"]').first().waitFor({ state: 'visible', timeout: 10_000 });
@@ -374,7 +374,7 @@ export class OracleRecruitingAdapter {
       'input[aria-label*="email" i]:visible'
     ].join(', ')).first();
     await emailField.waitFor({ state: 'visible', timeout: 10_000 });
-    console.error(`[Phase 1] Entering email address: ${email}`);
+    console.log(`[Phase 1] Entering email address: ${email}`);
     await humanPause(this.actionGap);
     await humanType(emailField, email, this.humanDelay);
     await humanPause(this.actionGap);
@@ -384,7 +384,7 @@ export class OracleRecruitingAdapter {
     if (await disclaimerInput.count() > 0) {
       const isChecked = await disclaimerInput.isChecked().catch(() => false);
       if (!isChecked) {
-        console.error(`[Phase 1] Checking terms & conditions checkbox...`);
+        console.log(`[Phase 1] Checking terms & conditions checkbox...`);
         await humanPause(this.actionGap);
         // In Oracle HCM, click specifically the square checkbox button inside label[for="legal-disclaimer-checkbox"].
         // Never click the label or text container, because <a id="legal-disclaimer-link"> opens the full-page terms modal.
@@ -405,7 +405,7 @@ export class OracleRecruitingAdapter {
       const checkbox = otherRequiredCheckboxes.nth(index);
       const isChecked = await checkbox.isChecked().catch(() => false);
       if (!isChecked) {
-        console.error(`[Phase 1] Checking required checkbox ${index + 1}...`);
+        console.log(`[Phase 1] Checking required checkbox ${index + 1}...`);
         await humanPause(this.actionGap);
         await checkbox.click();
         await humanPause(this.actionGap);
@@ -421,18 +421,18 @@ export class OracleRecruitingAdapter {
     ].join(', ')).first();
 
     await nextButton.waitFor({ state: 'visible', timeout: 10_000 });
-    console.error(`[Phase 1] Clicking Next button...`);
+    console.log(`[Phase 1] Clicking Next button...`);
     await humanPause(this.actionGap);
 
     const requestedAt = Date.now();
     await nextButton.click();
 
     // Configurable wait time after clicking Next before proceeding to OTP or next phase
-    console.error(`[Phase 1] Pausing for post-Next settle...`);
+    console.log(`[Phase 1] Pausing for post-Next settle...`);
     await humanPause(this.postNextWait);
 
     if (await this.detectCaptcha(page)) {
-      console.error(`[Phase 1] ⚠ CAPTCHA challenge detected after email submission on ${job.tenantHost}.`);
+      console.warn(`[Phase 1] ⚠ CAPTCHA challenge detected after email submission on ${job.tenantHost}.`);
       return {
         status: 'skipped',
         reason: 'captcha_required',
@@ -440,7 +440,7 @@ export class OracleRecruitingAdapter {
       };
     }
 
-    console.error(`[Phase 1] Waiting for OTP prompt or application flow...`);
+    console.log(`[Phase 1] Waiting for OTP prompt or application flow...`);
     const otpMarker = page.getByRole('heading', { name: /confirm your identity|verify/i }).or(
       page.locator('input[aria-label*="digit" i], input[name*="verificationCode" i]')
     );
@@ -450,7 +450,7 @@ export class OracleRecruitingAdapter {
     ]).catch(() => { });
 
     if (await this.detectCaptcha(page)) {
-      console.error(`[Phase 1] ⚠ CAPTCHA challenge detected during verification flow on ${job.tenantHost}.`);
+      console.warn(`[Phase 1] ⚠ CAPTCHA challenge detected during verification flow on ${job.tenantHost}.`);
       return {
         status: 'skipped',
         reason: 'captcha_required',
@@ -459,7 +459,7 @@ export class OracleRecruitingAdapter {
     }
 
     if (await visible(otpMarker.first())) {
-      console.error(`[Phase 1] OTP screen presented. Polling mailbox for 6-digit code...`);
+      console.log(`[Phase 1] OTP screen presented. Polling mailbox for 6-digit code...`);
       let code;
       try {
         code = await mailReader.waitForOtp({
@@ -479,7 +479,7 @@ export class OracleRecruitingAdapter {
         };
       }
 
-      console.error(`[Phase 1] OTP received. Entering code...`);
+      console.log(`[Phase 1] OTP received. Entering code...`);
       await humanPause(this.actionGap);
       await this.#fillOtp(page, code);
       await humanPause(this.actionGap);
@@ -489,12 +489,12 @@ export class OracleRecruitingAdapter {
         'button[aria-label*="Verify" i]:visible',
         'button.theme-color-1:has-text("Verify"):visible'
       ].join(', ')).first();
-      console.error(`[Phase 1] Clicking Verify button...`);
+      console.log(`[Phase 1] Clicking Verify button...`);
       await verifyButton.click();
       await humanPause(this.postNextWait);
     }
 
-    console.error(`[Phase 1] Waiting for application flow or already applied notice...`);
+    console.log(`[Phase 1] Waiting for application flow or already applied notice...`);
     const alreadyAppliedIndicator = page.locator([
       'text=/applied to this job/i',
       'text=/already applied/i',
@@ -505,17 +505,17 @@ export class OracleRecruitingAdapter {
       '.quick-apply-flow-error'
     ].join(', ')).first();
 
-    console.error(`[Phase 1] Waiting for URL to exit /apply/email or already applied notice...`);
+    console.log(`[Phase 1] Waiting for URL to exit /apply/email or already applied notice...`);
     await Promise.race([
       page.waitForURL(url => !url.pathname.endsWith('/apply/email'), { timeout: 30_000 }),
       alreadyAppliedIndicator.waitFor({ state: 'visible', timeout: 30_000 })
     ]).catch(() => { });
 
-    console.error(`[Phase 1] Waiting for page to settle and checking application state...`);
+    console.log(`[Phase 1] Waiting for page to settle and checking application state...`);
     await delay(this.initialWait);
 
     if (await this.#isAlreadyApplied(page)) {
-      console.error(`[Phase 1] ⚠ 'Already applied' message detected after login. Skipping.`);
+      console.warn(`[Phase 1] ⚠ 'Already applied' message detected after login. Skipping.`);
       return { status: 'skipped', reason: 'ALREADY_APPLIED', message: 'Candidate has already applied to this job', url: page.url() };
     }
 
@@ -586,7 +586,7 @@ export class OracleRecruitingAdapter {
     let finalUrl = page.url();
 
     while (pageNumber <= maxPages) {
-      console.error(`[Phase 2] Scanning application page/step ${pageNumber}...`);
+      console.log(`[Phase 2] Scanning application page/step ${pageNumber}...`);
       await page.waitForLoadState('domcontentloaded').catch(() => { });
       await humanPause(this.actionGap);
 
@@ -602,13 +602,13 @@ export class OracleRecruitingAdapter {
         if (!seenFieldKeys.has(key)) {
           seenFieldKeys.add(key);
           allFields.push(field);
-          console.error(`[Phase 2] [Job ${job.jobId}] Detected field: "${field.label}" (${field.type}${field.required ? ', required' : ''})`);
+          console.log(`[Phase 2] [Job ${job.jobId}] Detected field: "${field.label}" (${field.type}${field.required ? ', required' : ''})`);
         }
       }
 
       const branches = await this.#scanDirectBranches(page, baseline);
       for (const branch of branches) {
-        console.error(`[Phase 2] [Job ${job.jobId}] Discovered branch: when "${branch.triggerLabel}" = "${branch.triggerValue}" -> reveals ${branch.revealed.length} fields`);
+        console.log(`[Phase 2] [Job ${job.jobId}] Discovered branch: when "${branch.triggerLabel}" = "${branch.triggerValue}" -> reveals ${branch.revealed.length} fields`);
         for (const rf of branch.revealed ?? []) {
           rf.pageNumber = pageNumber;
           const key = this.#fieldIdentity(rf);
@@ -625,7 +625,7 @@ export class OracleRecruitingAdapter {
         if (!seenGroupIds.has(group.id)) {
           seenGroupIds.add(group.id);
           allGroups.push(group);
-          console.error(`[Phase 2] [Job ${job.jobId}] Discovered repeatable section: "${group.label}" (add button: "${group.addButton}")`);
+          console.log(`[Phase 2] [Job ${job.jobId}] Discovered repeatable section: "${group.label}" (add button: "${group.addButton}")`);
         }
       }
 
@@ -633,7 +633,7 @@ export class OracleRecruitingAdapter {
       const submitButton = page.getByRole('button', { name: SUBMIT_PATTERN }).first();
       const isSubmitVisible = (await visible(submitButton)) && (await submitButton.isVisible().catch(() => false));
       if (isSubmitVisible) {
-        console.error(`[Phase 2] Submit button detected on page ${pageNumber}; stopping multi-page traversal.`);
+        console.log(`[Phase 2] Submit button detected on page ${pageNumber}; stopping multi-page traversal.`);
         submitPresent = true;
         finalUrl = page.url();
         break;
@@ -642,14 +642,14 @@ export class OracleRecruitingAdapter {
       // Check if a safe Next button is available to advance
       const nextButton = this.#nextButtonLocator(page);
       if (!(await visible(nextButton))) {
-        console.error(`[Phase 2] No further Next button on page ${pageNumber}; scan complete.`);
+        console.log(`[Phase 2] No further Next button on page ${pageNumber}; scan complete.`);
         finalUrl = page.url();
         break;
       }
 
       const currentUrl = page.url();
       const currentSectionHeaders = [...allSections].join('|');
-      console.error(`[Phase 2] Advancing to next application page...`);
+      console.log(`[Phase 2] Advancing to next application page...`);
       await humanPause(this.actionGap);
       await nextButton.click();
       await humanPause(this.postNextWait);
@@ -662,7 +662,7 @@ export class OracleRecruitingAdapter {
       const newSectionHeaders = newPageSections.join('|');
 
       if (newUrl === currentUrl && newSectionHeaders === currentSectionHeaders) {
-        console.error(`[Phase 2] Page did not advance after clicking Next (URL and visible sections unchanged). Navigation concluded on page ${pageNumber}.`);
+        console.log(`[Phase 2] Page did not advance after clicking Next (URL and visible sections unchanged). Navigation concluded on page ${pageNumber}.`);
         if (await visible(submitButton)) {
           submitPresent = true;
         }
@@ -1084,7 +1084,7 @@ export class OracleRecruitingAdapter {
             path: conditionPath,
             revealed
           });
-          console.error(`[Phase 2] Discovered multi-checkbox branch: when "${group.label}" includes "${option}" -> reveals ${revealed.length} fields`);
+          console.log(`[Phase 2] Discovered multi-checkbox branch: when "${group.label}" includes "${option}" -> reveals ${revealed.length} fields`);
 
           // Deep nested exploration: if any newly revealed control is a radio group, explore its options while holding the parent option active
           const newlyRevealedRadioGroups = (await this.#visibleRadioGroupLabels(page)).filter(label => !beforeGroups.has(label));
@@ -1124,7 +1124,7 @@ export class OracleRecruitingAdapter {
                   path: nestedPath,
                   revealed: subRevealed
                 });
-                console.error(`[Phase 2] Discovered nested branch: when "${group.label}" includes "${option}" AND "${subRadioLabel}" = "${subOption}" -> reveals ${subRevealed.length} fields`);
+                console.log(`[Phase 2] Discovered nested branch: when "${group.label}" includes "${option}" AND "${subRadioLabel}" = "${subOption}" -> reveals ${subRevealed.length} fields`);
               }
             }
           }
@@ -1291,7 +1291,7 @@ export class OracleRecruitingAdapter {
       if (!groupId || seenGroupIds.has(groupId)) continue;
       seenGroupIds.add(groupId);
 
-      console.error(`[Phase 2] Discovered dynamic repeatable group: "${rawText}" (${groupId})`);
+      console.log(`[Phase 2] Discovered dynamic repeatable group: "${rawText}" (${groupId})`);
       const before = await this.#extractControls(page, { extractComboboxOptions: false });
       const beforeKeys = new Set(before.map(field => this.#fieldIdentity(field)));
       await btn.click();
@@ -1390,10 +1390,10 @@ export class OracleRecruitingAdapter {
     const proofDir = path.resolve('data/submit/proofs', applicationId);
     await fs.mkdir(proofDir, { recursive: true }).catch(() => {});
 
-    console.error(`[Phase 4] [Job ${jobId} | User ${userId}] Starting DOM-driven multi-page form fill across ${template.fields?.length ?? 0} fields...`);
+    console.log(`[Phase 4] [Job ${jobId} | User ${userId}] Starting DOM-driven multi-page form fill across ${template.fields?.length ?? 0} fields...`);
 
     while (pageNumber <= maxPages) {
-      console.error(`[Phase 4] [Job ${jobId} | User ${userId}] Inspecting and filling fields on application page/step ${pageNumber}...`);
+      console.log(`[Phase 4] [Job ${jobId} | User ${userId}] Inspecting and filling fields on application page/step ${pageNumber}...`);
       await page.waitForLoadState('domcontentloaded').catch(() => {});
       await humanPause(this.actionGap);
 
@@ -1431,7 +1431,7 @@ export class OracleRecruitingAdapter {
           // Pre-check: is it already filled or locked/readonly?
           const liveState = await this.#inspectLiveControlState(page, effectiveField);
           if (liveState.hasValue || liveState.matchesDesired(answer)) {
-            console.error(`[Phase 4] [Job ${jobId} | User ${userId}] ✓ Already filled (${liveState.matchesDesired(answer) ? 'matches desired' : `current: "${liveState.currentValue}"`}): "${effectiveField.label}"`);
+            console.log(`[Phase 4] [Job ${jobId} | User ${userId}] ✓ Already filled (${liveState.matchesDesired(answer) ? 'matches desired' : `current: "${liveState.currentValue}"`}): "${effectiveField.label}"`);
             filledFieldIds.add(liveControl.id);
             filledFieldIds.add(targetFieldId);
             results.push({ fieldId: targetFieldId, status: 'verified', prefilled: true, currentValue: liveState.currentValue });
@@ -1439,7 +1439,7 @@ export class OracleRecruitingAdapter {
           }
 
           if (liveState.isLocked) {
-            console.error(`[Phase 4] [Job ${jobId} | User ${userId}] ℹ Pre-filled and locked by Oracle: "${effectiveField.label}" (current: "${liveState.currentValue}")`);
+            console.log(`[Phase 4] [Job ${jobId} | User ${userId}] ℹ Pre-filled and locked by Oracle: "${effectiveField.label}" (current: "${liveState.currentValue}")`);
             filledFieldIds.add(liveControl.id);
             filledFieldIds.add(targetFieldId);
             results.push({ fieldId: targetFieldId, status: 'verified', locked: true, currentValue: liveState.currentValue });
@@ -1506,7 +1506,7 @@ export class OracleRecruitingAdapter {
           if (!isActuallyVisible) continue;
 
           const fieldLabel = effectiveField.label || effectiveField.id;
-          console.error(`[Phase 4] [Job ${jobId} | User ${userId}] Applying: "${fieldLabel}"`);
+          console.log(`[Phase 4] [Job ${jobId} | User ${userId}] Applying: "${fieldLabel}"`);
 
           try {
             await humanPause(this.actionGap);
@@ -1519,7 +1519,7 @@ export class OracleRecruitingAdapter {
             filledFieldIds.add(targetFieldId);
             results.push({ fieldId: targetFieldId, status: 'verified' });
             filledAnyOnPass = true;
-            console.error(`[Phase 4] [Job ${jobId} | User ${userId}] ✓ Applied successfully: "${fieldLabel}"`);
+            console.log(`[Phase 4] [Job ${jobId} | User ${userId}] ✓ Applied successfully: "${fieldLabel}"`);
             if (/country|state/i.test(effectiveField.label || '')) {
               await page.waitForLoadState('networkidle').catch(() => {});
               await humanPause({ min: 500, max: 1000 });
@@ -1540,7 +1540,7 @@ export class OracleRecruitingAdapter {
           const answer = values[matchGroup.id]?.value;
           if (!answer || !Array.isArray(answer) || !answer.length) continue;
 
-          console.error(`[Phase 4] [Job ${jobId} | User ${userId}] Filling repeatable group "${matchGroup.label}" (${answer.length} entries)...`);
+          console.log(`[Phase 4] [Job ${jobId} | User ${userId}] Filling repeatable group "${matchGroup.label}" (${answer.length} entries)...`);
           try {
             await this.#fillRepeatableGroup(page, matchGroup, answer, context);
             filledFieldIds.add(matchGroup.id);
@@ -1553,14 +1553,14 @@ export class OracleRecruitingAdapter {
         }
       }
 
-      console.error(`[Phase 4] [Job ${jobId} | User ${userId}] Scrolling to the end of page ${pageNumber}...`);
+      console.log(`[Phase 4] [Job ${jobId} | User ${userId}] Scrolling to the end of page ${pageNumber}...`);
       await this.#smoothScrollToBottom(page);
 
       // Check if Submit is visible on this page
       const submitButton = page.getByRole('button', { name: SUBMIT_PATTERN }).first();
       const isSubmitVisible = (await visible(submitButton)) && (await submitButton.isVisible().catch(() => false));
       if (isSubmitVisible) {
-        console.error(`[Phase 4] [Job ${jobId} | User ${userId}] Submit button detected on page ${pageNumber}. Capturing final proof screenshot.`);
+        console.log(`[Phase 4] [Job ${jobId} | User ${userId}] Submit button detected on page ${pageNumber}. Capturing final proof screenshot.`);
         await this.#smoothScrollIntoView(page, submitButton);
 
         const filename = `page_${pageNumber}_final_submit.png`;
@@ -1581,7 +1581,7 @@ export class OracleRecruitingAdapter {
       // Check if a safe Next button is available to advance
       const nextButton = this.#nextButtonLocator(page);
       if (!(await visible(nextButton))) {
-        console.error(`[Phase 4] [Job ${jobId} | User ${userId}] No further Next button on page ${pageNumber}; fill completed.`);
+        console.log(`[Phase 4] [Job ${jobId} | User ${userId}] No further Next button on page ${pageNumber}; fill completed.`);
         const filename = `page_${pageNumber}_completed.png`;
         const fullPath = path.join(proofDir, filename);
         if (page?.screenshot) {
@@ -1612,7 +1612,7 @@ export class OracleRecruitingAdapter {
       }
 
       const currentUrl = page.url();
-      console.error(`[Phase 4] [Job ${jobId} | User ${userId}] Clicking Next on page ${pageNumber}; advancing to page ${pageNumber + 1}...`);
+      console.log(`[Phase 4] [Job ${jobId} | User ${userId}] Clicking Next on page ${pageNumber}; advancing to page ${pageNumber + 1}...`);
       await this.#smoothScrollIntoView(page, nextButton);
       await humanPause(this.actionGap);
       await nextButton.click();
@@ -1620,7 +1620,7 @@ export class OracleRecruitingAdapter {
       await page.waitForLoadState('domcontentloaded').catch(() => {});
 
       if (page.url() === currentUrl && (await visible(submitButton)) && (await submitButton.isVisible().catch(() => false))) {
-        console.error(`[Phase 4] [Job ${jobId} | User ${userId}] Submit button reached. Capturing final proof screenshot.`);
+        console.log(`[Phase 4] [Job ${jobId} | User ${userId}] Submit button reached. Capturing final proof screenshot.`);
         const filename = `page_${pageNumber + 1}_final_submit.png`;
         const fullPath = path.join(proofDir, filename);
         if (page?.screenshot) {
@@ -1640,7 +1640,7 @@ export class OracleRecruitingAdapter {
 
     const verifiedCount = results.filter(r => r.status === 'verified').length;
     const failedCount = results.filter(r => r.status === 'failed').length;
-    console.error(`[Phase 4] [Job ${jobId} | User ${userId}] Fill completed: ${verifiedCount} verified, ${failedCount} failed (${screenshots.length} audit screenshots captured).`);
+    console.log(`[Phase 4] [Job ${jobId} | User ${userId}] Fill completed: ${verifiedCount} verified, ${failedCount} failed (${screenshots.length} audit screenshots captured).`);
     results.screenshots = screenshots;
     results.logs = logs;
     return results;
@@ -2069,7 +2069,7 @@ export class OracleRecruitingAdapter {
     }
     let locator;
     if (field.id === 'phone_number' || field.type === 'tel' || field.isPhoneNumber) {
-      const phoneInput = page.locator('input.phone-row__input:visible, input[type="tel"]:visible, .phone-row__number input:visible').first();
+      const phoneInput = page.locator('.phone-row__number input[type="tel"]:visible, input.phone-row__input:visible, input[type="tel"]:visible, .phone-row__number input:visible').first();
       if (await visible(phoneInput)) {
         locator = phoneInput;
       }
@@ -2138,12 +2138,16 @@ export class OracleRecruitingAdapter {
   }
 
   async #fillCombobox(page, locator, field, answer, context = {}) {
-    // 1. Phone country code: type dial code + Enter directly and return without dropdown selection
+    // 1. Phone country code: type plain country name -> pause -> ArrowDown -> Enter to commit
     if (field.id === 'phone_country_code' || field.isPhonePrefix || /country.*code/i.test(field.label)) {
+      const countryStr = String(answer || 'United States').trim();
       await locator.fill('').catch(() => {});
-      await humanType(locator, answer, this.humanDelay);
+      await humanType(locator, countryStr, this.humanDelay);
+      await delay(400);
+      await locator.press('ArrowDown').catch(() => {});
+      await delay(200);
       await locator.press('Enter').catch(() => {});
-      console.error(`[Phase 4] [Job ${context.jobId ?? ''} | User ${context.userId ?? ''}] ✓ Phone country code entered: "${answer}"`);
+      console.log(`[Phase 4] [Job ${context.jobId ?? ''} | User ${context.userId ?? ''}] ✓ Phone country code entered: "${countryStr}"`);
       await humanPause(this.actionGap);
       return;
     }
@@ -2289,11 +2293,11 @@ export class OracleRecruitingAdapter {
     const finalExpanded = await locator.getAttribute('aria-expanded').catch(() => 'false');
 
     if (!finalValue || isInvalid || finalExpanded === 'true') {
-      console.error(`[Phase 4] [Job ${context.jobId ?? ''} | User ${context.userId ?? ''}] ⚠ Combobox "${field.label}" was not committed (expanded=${finalExpanded}, value="${finalValue}"). Clearing for manual review.`);
+      console.warn(`[Phase 4] [Job ${context.jobId ?? ''} | User ${context.userId ?? ''}] ⚠ Combobox "${field.label}" was not committed (expanded=${finalExpanded}, value="${finalValue}"). Clearing for manual review.`);
       await locator.fill('').catch(() => {});
       await locator.press('Escape').catch(() => {});
     } else {
-      console.error(`[Phase 4] [Job ${context.jobId ?? ''} | User ${context.userId ?? ''}] ✓ Combobox "${field.label}" committed: "${finalValue}"`);
+      console.log(`[Phase 4] [Job ${context.jobId ?? ''} | User ${context.userId ?? ''}] ✓ Combobox "${field.label}" committed: "${finalValue}"`);
     }
 
     await humanPause(this.actionGap);
@@ -2327,12 +2331,31 @@ export class OracleRecruitingAdapter {
     invariant(Array.isArray(rows), 'INVALID_REPEATABLE_VALUE', `${group.label} must be an array`);
     const isInlineLink = /link/i.test(group.id) || /link/i.test(group.label);
 
-    for (const row of rows) {
-      // 1. Click initial + Add button
-      const addBtn = page.getByRole('button', { name: new RegExp(`^${group.addButton}$`, 'i') }).first();
-      await this.#smoothScrollIntoView(page, addBtn);
-      await addBtn.click();
-      await humanPause({ min: 500, max: 1000 });
+    // Apply safety caps: top 3 for experience, top 2 for education
+    let rowsToFill = rows;
+    if (/experience|work|employment/i.test(group.id || group.label)) {
+      rowsToFill = rows.slice(0, 3);
+    } else if (/education|school|academic/i.test(group.id || group.label)) {
+      rowsToFill = rows.slice(0, 2);
+    }
+
+    for (const row of rowsToFill) {
+      // 1. Click initial + Add button with flexible locator
+      let addBtn = page.locator([
+        `button:has-text("${group.addButton || group.label}"):visible`,
+        `button:has-text("Add ${group.label || ''}"):visible`,
+        'button:has-text("+ Add"):visible'
+      ].join(', ')).first();
+
+      if (!(await visible(addBtn)) && group.addButton) {
+        addBtn = page.getByRole('button', { name: new RegExp(`^${group.addButton}$`, 'i') }).first();
+      }
+
+      if (await visible(addBtn)) {
+        await this.#smoothScrollIntoView(page, addBtn);
+        await addBtn.click();
+        await humanPause({ min: 500, max: 1000 });
+      }
 
       // 2. Fill all inner fields
       let filledAny = false;
@@ -2354,6 +2377,7 @@ export class OracleRecruitingAdapter {
 
         const sectionName = (group.label || group.id).replace(/^add\s+/i, '').trim();
         const saveBtn = page.locator([
+          'button.apply-flow-drawer__save:visible',
           `button:has-text("Add ${sectionName}"):visible`,
           `button:has-text("Save"):visible`,
           `button:has-text("Done"):visible`
@@ -2362,10 +2386,15 @@ export class OracleRecruitingAdapter {
         if (await visible(saveBtn)) {
           await this.#smoothScrollIntoView(page, saveBtn);
           await saveBtn.click();
-          await humanPause({ min: 1000, max: 2000 });
-          console.error(`[Phase 4] [Job ${context.jobId ?? ''} | User ${context.userId ?? ''}] ✓ Saved ${sectionName} record`);
+          // Wait for drawer to close/detach if supported by page locator
+          const drawer = page.locator('.apply-flow-drawer, [role="dialog"]');
+          if (typeof drawer?.waitFor === 'function') {
+            await drawer.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => {});
+          }
+          await humanPause({ min: 500, max: 1000 });
+          console.log(`[Phase 4] [Job ${context.jobId ?? ''} | User ${context.userId ?? ''}] ✓ Saved ${sectionName} record`);
         } else {
-          console.error(`[Phase 4] [Job ${context.jobId ?? ''} | User ${context.userId ?? ''}] ⚠ Save button for ${sectionName} not found, checking Cancel fallback...`);
+          console.warn(`[Phase 4] [Job ${context.jobId ?? ''} | User ${context.userId ?? ''}] ⚠ Save button for ${sectionName} not found, checking Cancel fallback...`);
           const cancelBtn = page.locator('button:has-text("Cancel"):visible').first();
           if (await visible(cancelBtn)) await cancelBtn.click().catch(() => {});
         }

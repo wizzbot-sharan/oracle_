@@ -1,4 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
+import {
+  getTodayIstString,
+  getYesterdayIstString,
+  getIstDateString,
+  formatIstTimestamp
+} from './utils/ist-date.js';
 
 async function api(url, options = {}) {
   const response = await fetch(url, {
@@ -404,8 +410,75 @@ function TemplateForm({ template, application, onSaved }) {
   );
 }
 
+function DashboardDateFilterBar({
+  selectedDate,
+  onDateChange,
+  totalMatchingApps = 0
+}) {
+  const todayIst = getTodayIstString();
+  const yesterdayIst = getYesterdayIstString();
+
+  const getDateLabel = () => {
+    if (selectedDate === 'all') return 'All Time (All Dates)';
+    if (selectedDate === todayIst) return `Today (${todayIst})`;
+    if (selectedDate === yesterdayIst) return `Yesterday (${yesterdayIst})`;
+    return selectedDate;
+  };
+
+  return (
+    <div className="dashboard-date-filter-bar">
+      <div className="date-filter-left">
+        <span className="date-filter-title">
+          <span className="date-filter-icon">📅</span>
+          <span>DATE (IST):</span>
+        </span>
+        <div className="date-filter-buttons">
+          <button
+            type="button"
+            className={`date-filter-btn ${selectedDate === todayIst ? 'active' : ''}`}
+            onClick={() => onDateChange(todayIst)}
+          >
+            Today
+          </button>
+          <button
+            type="button"
+            className={`date-filter-btn ${selectedDate === yesterdayIst ? 'active' : ''}`}
+            onClick={() => onDateChange(yesterdayIst)}
+          >
+            Yesterday
+          </button>
+          <button
+            type="button"
+            className={`date-filter-btn ${selectedDate === 'all' ? 'active' : ''}`}
+            onClick={() => onDateChange('all')}
+          >
+            All Time
+          </button>
+        </div>
+        <div className="date-picker-wrap">
+          <input
+            type="date"
+            className="date-filter-input"
+            value={selectedDate === 'all' ? '' : selectedDate}
+            onChange={(e) => e.target.value && onDateChange(e.target.value)}
+            title="Pick a specific date in IST"
+          />
+        </div>
+      </div>
+
+      <div className="date-filter-right">
+        <span className="date-filter-active-badge">
+          Viewing: <strong>{getDateLabel()}</strong> • {totalMatchingApps} {totalMatchingApps === 1 ? 'application' : 'applications'}
+        </span>
+      </div>
+    </div>
+  );
+}
+
 function ExecutiveMetrics({ metrics }) {
   if (!metrics) return null;
+  const isFiltered = Boolean(metrics.isDateFiltered);
+  const filterLabel = metrics.selectedDateLabel || 'for date';
 
   return (
     <div className="metrics-scroll">
@@ -433,29 +506,32 @@ function ExecutiveMetrics({ metrics }) {
       <div className="metric-card">
         <div className="metric-title">Pre-AI Resolved</div>
         <div className="metric-value">{metrics.resolvedPreAiApps ?? 0} Apps</div>
-        <div className="metric-subbadge">{metrics.resolvedPreAiQuestions ?? 0} Questions</div>
+        <div className="metric-subbadge">{isFiltered ? filterLabel : `${metrics.resolvedPreAiQuestions ?? 0} Questions`}</div>
       </div>
       <div className="metric-card">
         <div className="metric-title">AI Resolved</div>
         <div className="metric-value">{metrics.resolvedWithAiApps ?? 0} Apps</div>
-        <div className="metric-subbadge">{metrics.resolvedWithAiQuestions ?? 0} Questions</div>
+        <div className="metric-subbadge">{isFiltered ? filterLabel : `${metrics.resolvedWithAiQuestions ?? 0} Questions`}</div>
       </div>
       <div className="metric-card">
         <div className="metric-title">Dashboard Review</div>
         <div className="metric-value">{metrics.dashboardReviewApps ?? 0} Apps</div>
-        <div className="metric-subbadge">{metrics.dashboardReviewQuestions ?? 0} Questions</div>
+        <div className="metric-subbadge">{isFiltered ? filterLabel : `${metrics.dashboardReviewQuestions ?? 0} Questions`}</div>
       </div>
       <div className="metric-card">
         <div className="metric-title">Ready To Apply</div>
         <div className="metric-value">{metrics.readyToApply ?? 0}</div>
+        {isFiltered && <div className="metric-subbadge">{filterLabel}</div>}
       </div>
       <div className="metric-card">
         <div className="metric-title">Prepared (Filled)</div>
         <div className="metric-value">{metrics.prepared ?? 0}</div>
+        {isFiltered && <div className="metric-subbadge">{filterLabel}</div>}
       </div>
       <div className="metric-card">
         <div className="metric-title">Submitted</div>
         <div className="metric-value">{metrics.submitted ?? 0}</div>
+        {isFiltered && <div className="metric-subbadge">{filterLabel}</div>}
       </div>
     </div>
   );
@@ -782,6 +858,11 @@ function AssignedApplicationsQueue({
               <div className="app-queue-title" title={item.title}>
                 {item.title}
               </div>
+              {(item.application?.updatedAt || item.application?.updated_at) && (
+                <div className="app-queue-timestamp">
+                  🕒 {formatIstTimestamp(item.application.updatedAt || item.application.updated_at)}
+                </div>
+              )}
             </div>
           );
         })}
@@ -1178,6 +1259,7 @@ export function App() {
   const [data, setData] = useState(null);
   const [selectedId, setSelectedId] = useState(null);
   const [selectedCaId, setSelectedCaId] = useState('');
+  const [selectedDateFilter, setSelectedDateFilter] = useState(() => getTodayIstString());
   const [candidateSearch, setCandidateSearch] = useState('');
   const [selectedClientId, setSelectedClientId] = useState('');
   const [selectedJobKey, setSelectedJobKey] = useState('');
@@ -1218,6 +1300,90 @@ export function App() {
     return () => clearInterval(interval);
   }, []);
 
+  // Filter and sort applications strictly in IST (Newest First)
+  const dateFilteredApplications = useMemo(() => {
+    if (!data?.applications) return [];
+    let apps = [...data.applications];
+
+    if (selectedDateFilter && selectedDateFilter !== 'all') {
+      apps = apps.filter(app => {
+        const appDateIst = getIstDateString(app.updatedAt || app.updated_at || app.fillCompletedAt || app.createdAt);
+        return appDateIst === selectedDateFilter;
+      });
+    }
+
+    // Sort descending by resolution/update time in IST (newest first)
+    apps.sort((a, b) => {
+      const timeA = new Date(a.updatedAt || a.updated_at || a.createdAt || 0).getTime();
+      const timeB = new Date(b.updatedAt || b.updated_at || b.createdAt || 0).getTime();
+      return timeB - timeA;
+    });
+
+    return apps;
+  }, [data?.applications, selectedDateFilter]);
+
+  // Recalculate operational metrics for the selected IST date
+  const activeMetrics = useMemo(() => {
+    if (!data?.metrics) return null;
+    if (selectedDateFilter === 'all') return data.metrics;
+
+    let resolvedPreAiApps = 0;
+    let resolvedPreAiQuestions = 0;
+    let resolvedWithAiApps = 0;
+    let resolvedWithAiQuestions = 0;
+    let dashboardReviewApps = 0;
+    let dashboardReviewQuestions = 0;
+    let readyToApply = 0;
+    let prepared = 0;
+    let submitted = 0;
+
+    for (const app of dateFilteredApplications) {
+      if (app.status === 'submitted') submitted++;
+      else if (app.status === 'needs_review') prepared++;
+      else if (app.status === 'answers_resolved' || app.reviewStatus === 'approved') readyToApply++;
+      else if (app.status === 'needs_input') dashboardReviewApps++;
+
+      let hasAi = false;
+      for (const [, val] of Object.entries(app.values || {})) {
+        if (!val || val.value === null || val.value === '' || (val.confidence ?? 0) < 0.80) {
+          dashboardReviewQuestions++;
+        } else if (val.stage === 'stage4_llm' || val.source === 'tier2_claude_llm') {
+          resolvedWithAiQuestions++;
+          hasAi = true;
+        } else {
+          resolvedPreAiQuestions++;
+        }
+      }
+
+      if (app.status === 'answers_resolved') {
+        if (hasAi) resolvedWithAiApps++;
+        else resolvedPreAiApps++;
+      }
+    }
+
+    const todayIst = getTodayIstString();
+    const yesterdayIst = getYesterdayIstString();
+    let label = selectedDateFilter;
+    if (selectedDateFilter === todayIst) label = 'Today in IST';
+    else if (selectedDateFilter === yesterdayIst) label = 'Yesterday in IST';
+    else label = `${selectedDateFilter} IST`;
+
+    return {
+      ...data.metrics,
+      resolvedPreAiApps,
+      resolvedPreAiQuestions,
+      resolvedWithAiApps,
+      resolvedWithAiQuestions,
+      dashboardReviewApps,
+      dashboardReviewQuestions,
+      readyToApply,
+      prepared,
+      submitted,
+      isDateFiltered: true,
+      selectedDateLabel: label
+    };
+  }, [data?.metrics, dateFilteredApplications, selectedDateFilter]);
+
   // Default to first active CA with dashboard clients
   useEffect(() => {
     if (!data?.cas?.length) return;
@@ -1246,6 +1412,12 @@ export function App() {
       });
     }
 
+    // Filter to candidates who have applications on the selected date (if not 'all')
+    if (selectedDateFilter && selectedDateFilter !== 'all') {
+      const activeClientIdsOnDate = new Set(dateFilteredApplications.map(a => a.userId || a.applywizzId));
+      list = list.filter(c => activeClientIdsOnDate.has(c.applywizzId));
+    }
+
     if (candidateSearch.trim()) {
       const q = candidateSearch.toLowerCase().trim();
       list = list.filter(c =>
@@ -1255,14 +1427,14 @@ export function App() {
       );
     }
     return list;
-  }, [data, selectedCaId, candidateSearch]);
+  }, [data, selectedCaId, selectedDateFilter, dateFilteredApplications, candidateSearch]);
 
   const handleClientSelect = (newClientId) => {
     setSelectedClientId(newClientId);
     if (!data) return;
 
-    // Pick first application instance from data.applications
-    const clientApps = (data.applications || []).filter(
+    // Pick first application instance from dateFilteredApplications
+    const clientApps = dateFilteredApplications.filter(
       a => (a.applywizzId || a.userId) === newClientId
     );
     const firstApp = clientApps[0];
@@ -1275,7 +1447,7 @@ export function App() {
     setSelectedJobKey(newJobKey);
     if (!data) return;
 
-    const matchingApp = data.applications.find(
+    const matchingApp = dateFilteredApplications.find(
       a =>
         (a.userId === selectedClientId || a.applywizzId === selectedClientId) &&
         (a.jobKey === newJobKey || a.jobId === newJobKey)
@@ -1297,10 +1469,10 @@ export function App() {
     }
   }, [filteredCandidates]);
 
-  // Derive active applications strictly from resolved application instances
+  // Derive active applications strictly from date-filtered instances
   const candidateAppsWithJobs = useMemo(() => {
-    if (!selectedClientId || !data?.applications) return [];
-    return data.applications
+    if (!selectedClientId || !dateFilteredApplications) return [];
+    return dateFilteredApplications
       .filter(a => (a.userId === selectedClientId || a.applywizzId === selectedClientId))
       .map(app => {
         const jobKey = app.jobKey || app.jobId;
@@ -1315,7 +1487,7 @@ export function App() {
           reviewStatus: app.reviewStatus || 'not_ready'
         };
       });
-  }, [data, selectedClientId]);
+  }, [dateFilteredApplications, selectedClientId]);
 
   const run = async (label, fn) => {
     setBusy(label);
@@ -1408,7 +1580,8 @@ export function App() {
 
   if (!data) return <main className="loading">Loading workflow…</main>;
 
-  const selected = data.applications.find(item => item.applicationId === selectedId);
+  const selected = dateFilteredApplications.find(item => item.applicationId === selectedId) ||
+    data.applications.find(item => item.applicationId === selectedId);
   const template = selected
     ? (data.templates[selected.jobKey] ||
        data.templates[selected.jobId] ||
@@ -1484,9 +1657,18 @@ export function App() {
         </div>
       )}
 
+      {/* Date Filter Toolbar (IST Timezone) */}
+      <div className="dashboard-date-filter-wrap">
+        <DashboardDateFilterBar
+          selectedDate={selectedDateFilter}
+          onDateChange={setSelectedDateFilter}
+          totalMatchingApps={dateFilteredApplications.length}
+        />
+      </div>
+
       {/* 4. Full Horizontal Stats Scroll Directly Below Top Bar */}
       <div className="metrics-section">
-        <ExecutiveMetrics metrics={data.metrics} />
+        <ExecutiveMetrics metrics={activeMetrics || data.metrics} />
       </div>
 
       {/* 5. Lower Workspace: Two-Column Split (Adjustable) */}
@@ -1497,7 +1679,7 @@ export function App() {
           totalCandidatesCount={data.clients?.length || 0}
           selectedClientId={selectedClientId}
           onSelectClient={handleClientSelect}
-          assignments={data.applications || []}
+          assignments={dateFilteredApplications}
           searchQuery={candidateSearch}
           onSearchChange={setCandidateSearch}
           sidebarWidth={sidebarWidth}
@@ -1554,6 +1736,14 @@ export function App() {
                     >
                       {copiedUrl ? '✓ Copied' : '📋 Copy'}
                     </button>
+                  </div>
+                )}
+                {(selected?.updatedAt || selected?.updated_at) && (
+                  <div className="header-job-link-row" title="Last resolved/updated timestamp in IST">
+                    <span className="url-icon">🕒</span>
+                    <span style={{ fontSize: '12px', fontWeight: '600', color: '#173f37' }}>
+                      {formatIstTimestamp(selected.updatedAt || selected.updated_at)}
+                    </span>
                   </div>
                 )}
               </div>

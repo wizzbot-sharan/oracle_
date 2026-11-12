@@ -19,6 +19,7 @@
     "resolve": "node src/cli.js resolve",
     "resolve:answers": "node src/cli.js resolve",
     "prepare:application": "node src/cli.js prepare",
+    "parse:resumes": "node scripts/parse-resumes.js",
     "fetch:clients": "node scripts/fetch_clients.mjs",
     "sync:cas": "node scripts/fetch_cas.mjs"
   },

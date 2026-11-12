@@ -105,25 +105,121 @@ export class ClaudeService {
     ].filter(Boolean).join('\n');
   }
 
+  #buildStructuredResumeSummary(parsedResume) {
+    if (!parsedResume || typeof parsedResume !== 'object') return '';
+
+    const lines = [];
+    if (parsedResume.current_title) lines.push(`Current Title: ${parsedResume.current_title}`);
+    if (parsedResume.years_of_experience) lines.push(`Total Years of Experience: ${parsedResume.years_of_experience}`);
+    if (parsedResume.highest_education_level) lines.push(`Highest Education Level: ${parsedResume.highest_education_level}`);
+    if (parsedResume.professional_summary) lines.push(`Professional Summary: ${parsedResume.professional_summary}`);
+
+    // Technical skills categories
+    if (parsedResume.technical_skills && typeof parsedResume.technical_skills === 'object') {
+      const catEntries = Object.entries(parsedResume.technical_skills)
+        .filter(([, skills]) => Array.isArray(skills) && skills.length > 0)
+        .map(([cat, skills]) => `  - ${cat.replace(/_/g, ' ')}: ${skills.join(', ')}`);
+      if (catEntries.length > 0) {
+        lines.push('Technical Skills:');
+        lines.push(...catEntries);
+      }
+    } else if (Array.isArray(parsedResume.skills) && parsedResume.skills.length > 0) {
+      lines.push(`Skills: ${parsedResume.skills.join(', ')}`);
+    }
+
+    // Domain expertise
+    if (Array.isArray(parsedResume.domain_expertise) && parsedResume.domain_expertise.length > 0) {
+      lines.push(`Domain Expertise: ${parsedResume.domain_expertise.join(', ')}`);
+    }
+
+    // Work experience timeline
+    if (Array.isArray(parsedResume.work_experience) && parsedResume.work_experience.length > 0) {
+      lines.push('Work Experience Timeline:');
+      for (const exp of parsedResume.work_experience) {
+        const emp = exp.employer || exp.company || 'Unknown Employer';
+        const title = exp.title || exp.job_title || 'Role';
+        const dates = [exp.start_date, exp.end_date || (exp.current ? 'Present' : '')].filter(Boolean).join(' - ');
+        const loc = exp.location ? ` (${exp.location})` : '';
+        lines.push(`  * ${title} at ${emp}${loc} [${dates}]`);
+        if (Array.isArray(exp.highlights) && exp.highlights.length > 0) {
+          for (const h of exp.highlights.slice(0, 3)) {
+            lines.push(`    - ${h}`);
+          }
+        } else if (exp.description) {
+          lines.push(`    - ${exp.description.slice(0, 200)}`);
+        }
+      }
+    }
+
+    // Education
+    if (Array.isArray(parsedResume.education) && parsedResume.education.length > 0) {
+      lines.push('Education:');
+      for (const edu of parsedResume.education) {
+        const inst = edu.institution || edu.school || 'University';
+        const deg = edu.degree || 'Degree';
+        const yr = edu.graduation_year || edu.end_date || '';
+        const gpa = edu.gpa ? ` (GPA: ${edu.gpa})` : '';
+        lines.push(`  * ${deg} from ${inst} ${yr ? `[${yr}]` : ''}${gpa}`);
+      }
+    }
+
+    // Projects
+    if (Array.isArray(parsedResume.projects) && parsedResume.projects.length > 0) {
+      lines.push('Key Projects:');
+      for (const proj of parsedResume.projects.slice(0, 3)) {
+        const techs = Array.isArray(proj.technologies) && proj.technologies.length > 0 ? ` [Tech: ${proj.technologies.join(', ')}]` : '';
+        lines.push(`  * ${proj.name}${techs}`);
+        if (proj.description) lines.push(`    - ${proj.description.slice(0, 150)}`);
+      }
+    }
+
+    // Certifications
+    if (Array.isArray(parsedResume.certifications) && parsedResume.certifications.length > 0) {
+      const certList = parsedResume.certifications
+        .map(c => typeof c === 'string' ? c : `${c.name || 'Cert'}${c.issuer ? ` (${c.issuer})` : ''}`)
+        .join('; ');
+      lines.push(`Certifications: ${certList}`);
+    }
+
+    return lines.join('\n');
+  }
+
+  #buildQuestionBankHistorySummary(clientHistory) {
+    if (!Array.isArray(clientHistory) || clientHistory.length === 0) return '';
+    const seen = new Set();
+    const rows = [];
+    for (const h of clientHistory) {
+      const key = (h.question_label || '').trim().toLowerCase();
+      if (!key || seen.has(key) || h.value === null || h.value === undefined || h.value === '') continue;
+      seen.add(key);
+      rows.push(`  * "${h.question_label}": "${h.value}"`);
+      if (rows.length >= 25) break;
+    }
+    return rows.length > 0 ? rows.join('\n') : '';
+  }
+
   /**
    * Resolves an entire batch of unique questions for a candidate in a single LLM prompt.
-   * Grounded in candidate facts and resume.
+   * Grounded in candidate facts, structured resume, and historical question bank answers.
    *
    * @param {Object} params
    * @param {Object} params.client Candidate profile from clients.json
    * @param {Object} [params.canonical] CanonicalProfile instance
    * @param {string} [params.resumeText] Raw text of candidate resume
+   * @param {Object} [params.parsedResume] Structured resume record from resume_parsed table
+   * @param {Array<Object>} [params.clientHistory] Past approved Q&A from question_bank for this applywizz_id
    * @param {Array<Object>} params.questions List of deduplicated questions:
    *   { questionId, label, type, options, company, jobTitle, sectionLabel }
    * @returns {Promise<Object>} Map of { [questionId]: { answer, confidence, rationale } }
    */
-  async resolveCandidateBatch({ client, canonical, resumeText = '', questions = [] }) {
+  async resolveCandidateBatch({ client, canonical, resumeText = '', parsedResume = null, clientHistory = [], questions = [] }) {
     if (!this.isAvailable() || questions.length === 0) {
       return {};
     }
 
-    const profileSummary = this.#buildCandidateProfileSummary(client);
-    const expContext = resumeText || client?.additional_information?.experience || 'See candidate profile above.';
+    const pillar1 = this.#buildCandidateProfileSummary(client);
+    const pillar2 = this.#buildStructuredResumeSummary(parsedResume) || (resumeText ? `Raw Resume Context:\n${resumeText.slice(0, 3000)}` : '');
+    const pillar3 = this.#buildQuestionBankHistorySummary(clientHistory);
 
     const formattedQuestions = questions.map((q, idx) => {
       const optionsStr = Array.isArray(q.options) && q.options.length > 0
@@ -138,24 +234,25 @@ export class ClaudeService {
       return `[Question ${idx + 1}] ID: "${q.questionId}"\n  Context: ${contextStr || 'General'}\n  Label: "${q.label}"\n  Type: "${q.type || 'text'}"${optionsStr}`;
     }).join('\n\n');
 
-    const prompt = `You are an AI assistant acting on behalf of a job candidate. Your task is to resolve job application screening questions accurately, truthfully, and professionally based on the candidate's real profile and resume.
+    const prompt = `You are an AI assistant acting on behalf of a job candidate. Your task is to resolve job application screening questions accurately, truthfully, and professionally based on the candidate's real profile, structured resume, and past approved answers.
 
-Candidate Profile:
-${profileSummary}
+=== CANDIDATE PROFILE FACTS (Pillar 1) ===
+${pillar1}
 
-Resume / Experience Context:
-${expContext}
+${pillar2 ? `=== STRUCTURED RESUME INTELLIGENCE (Pillar 2) ===\n${pillar2}\n` : ''}
+${pillar3 ? `=== CANDIDATE PAST APPROVED ANSWERS MEMORY (Pillar 3) ===\n${pillar3}\n` : ''}
 
-Questions to Answer:
+=== QUESTIONS TO ANSWER ===
 ${formattedQuestions}
 
 Instructions:
-1. Provide a direct, professional, truthful answer grounded strictly in the candidate's data. Never guess, assume, or hallucinate qualifications not present in the candidate facts or resume.
+1. Provide a direct, professional, truthful answer grounded strictly in the candidate's data and past approved answers. Never guess, assume, or hallucinate qualifications not present in the candidate facts or resume.
 2. If Allowed Options are provided, your answer MUST be one of the exact strings from "Allowed Options". Do NOT alter, summarize, or rephrase the option text.
-3. If the candidate's profile and resume do NOT contain sufficient information to answer with confidence (e.g. unknown personal preference or missing qualification), respond with "answer": null and "confidence": 0.0.
-4. For short text or textarea questions, write a concise, professional answer matching the candidate's voice.
-5. Provide a confidence score between 0.0 and 1.0 (where 0.80+ indicates high confidence).
-6. Return strictly a JSON object with this exact shape:
+3. If Past Approved Answers Memory contains a past answer to a similar question for this candidate, maintain consistency unless explicitly contradicted by the target company/job context.
+4. If the candidate's profile, resume, and history do NOT contain sufficient information to answer with confidence (e.g. unknown personal preference or missing qualification), respond with "answer": null and "confidence": 0.0.
+5. For short text or textarea questions, write a concise, professional answer matching the candidate's voice.
+6. Provide a confidence score between 0.0 and 1.0 (where 0.80+ indicates high confidence).
+7. Return strictly a JSON object with this exact shape:
 {
   "answers": {
     "question_id_here": {
@@ -176,7 +273,7 @@ Instructions:
         },
         body: JSON.stringify({
           model: this.model,
-          max_tokens: 4096,
+          max_tokens: 8192,
           messages: [{ role: 'user', content: prompt }]
         })
       });

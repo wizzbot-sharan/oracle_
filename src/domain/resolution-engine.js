@@ -465,12 +465,17 @@ export class ResolutionEngine {
     }
 
     if (field.isPhonePrefix || /country\s*(\/region\s*)?code/i.test(label) || /phone.*(country|prefix)/i.test(label) || field.id === 'phone_country_code') {
-      return canonical.contact.phoneCountryCode ? { rawValue: canonical.contact.phoneCountryCode, confidence: 1.0 } : null;
+      const countryVal = canonical.address.country || 'United States';
+      return { rawValue: countryVal, confidence: 1.0 };
     }
 
     if ((/phone/i.test(label) || /mobile/i.test(label) || type === 'tel') && !/\b(country|prefix|former|previous|manager|supervisor|reference|emergency)\b/i.test(label)) {
       const phoneVal = canonical.contact.nationalPhone || canonical.contact.formattedPhone;
-      return phoneVal ? { rawValue: phoneVal, confidence: 1.0 } : null;
+      let cleanDigits = phoneVal ? String(phoneVal).replace(/\D/g, '') : '';
+      if (cleanDigits.length === 11 && cleanDigits.startsWith('1')) {
+        cleanDigits = cleanDigits.slice(1);
+      }
+      return cleanDigits ? { rawValue: cleanDigits, confidence: 1.0 } : (phoneVal ? { rawValue: phoneVal, confidence: 1.0 } : null);
     }
 
     // 6. MARKETING & COMMUNICATION CONSENTS

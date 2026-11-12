@@ -13,14 +13,32 @@ export class ResumeService {
    * Resolves a local filesystem path for a candidate's resume.
    * If remote (e.g. S3), caches it locally in `data/runtime/resumes/<applywizzId>_resume.pdf`.
    */
-  async resolveCandidateResume(client, applywizzId) {
+  async resolveCandidateResume(clientOrId, applywizzIdOrClient) {
+    let client = clientOrId;
+    let applywizzId = applywizzIdOrClient;
+
+    if (typeof clientOrId === 'string' && typeof applywizzIdOrClient === 'object') {
+      applywizzId = clientOrId;
+      client = applywizzIdOrClient;
+    } else if (typeof client === 'object' && !applywizzId) {
+      applywizzId = client?.client?.applywizz_id || client?.applywizz_id;
+    }
+
     const rawUrl = client?.additional_information?.resume_url ||
       client?.resume_url ||
       client?.additional_information?.resume_path ||
       client?.resume_path;
 
     await fs.mkdir(this.cacheDir, { recursive: true });
-    const targetFile = path.resolve(this.cacheDir, `${applywizzId || 'candidate'}_resume.pdf`);
+
+    // Format professional resume name: "Resume_Client_full_name.pdf"
+    const rawName = client?.client?.full_name || 
+      `${client?.client?.first_name || ''} ${client?.client?.last_name || ''}`.trim() || 
+      applywizzId || 'Candidate';
+    const fullName = typeof rawName === 'string' ? rawName : String(rawName || 'Candidate');
+    const cleanName = fullName.replace(/[^a-zA-Z0-9_-]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '') || 'Candidate';
+    const professionalFilename = `Resume_${cleanName}.pdf`;
+    const targetFile = path.resolve(this.cacheDir, professionalFilename);
 
     // 1. If already cached and valid, reuse
     if (existsSync(targetFile)) {
@@ -32,7 +50,12 @@ export class ResumeService {
 
     // 2. If it is a local file path that already exists
     if (rawUrl && existsSync(rawUrl)) {
-      return path.resolve(rawUrl);
+      try {
+        await fs.copyFile(path.resolve(rawUrl), targetFile);
+        return targetFile;
+      } catch {
+        return path.resolve(rawUrl);
+      }
     }
 
     // 3. If it is a remote HTTP/S3 URL, download and cache
@@ -47,15 +70,9 @@ export class ResumeService {
           const arrayBuffer = await res.arrayBuffer();
           const buffer = Buffer.from(arrayBuffer);
           if (buffer.length > 0) {
-            // Derive filename from URL slug if possible, else fallback to applywizzId
-            const urlParts = rawUrl.split('/');
-            let filename = urlParts[urlParts.length - 1].split('?')[0];
-            if (!filename.toLowerCase().endsWith('.pdf')) filename = `${applywizzId || 'candidate'}_resume.pdf`;
-            const customTargetFile = path.resolve(this.cacheDir, filename);
-            
-            await fs.writeFile(customTargetFile, buffer);
-            console.error(`[ResumeService] Successfully downloaded and cached resume for ${applywizzId} as ${filename} (${buffer.length} bytes)`);
-            return customTargetFile;
+            await fs.writeFile(targetFile, buffer);
+            console.log(`[ResumeService] Successfully downloaded and cached resume for ${applywizzId} as ${professionalFilename} (${buffer.length} bytes)`);
+            return targetFile;
           }
         } else {
           console.warn(`[ResumeService] S3 resume download returned status ${res.status} for ${applywizzId}`);

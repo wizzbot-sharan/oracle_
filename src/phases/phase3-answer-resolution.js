@@ -89,7 +89,7 @@ export class Phase3AnswerResolution {
 
       return { clientHistoryMap, globalHistory };
     } catch (err) {
-      console.error('[Phase 3] Warning: Failed to load question_bank.csv:', err.message);
+      console.warn('[Phase 3] Warning: Failed to load question_bank.csv:', err.message);
       return { clientHistoryMap: new Map(), globalHistory: [] };
     }
   }
@@ -107,7 +107,7 @@ export class Phase3AnswerResolution {
         clients = await this.store.read('clients', {});
       }
     } catch (err) {
-      console.error('[Phase 3] Warning: Failed to load clients.json:', err.message);
+      console.warn('[Phase 3] Warning: Failed to load clients.json:', err.message);
     }
 
     // Merge profiles.csv if available
@@ -157,7 +157,7 @@ export class Phase3AnswerResolution {
         }
       }
     } catch (err) {
-      console.error('[Phase 3] Warning: Failed to load profiles.csv:', err.message);
+      console.warn('[Phase 3] Warning: Failed to load profiles.csv:', err.message);
     }
 
     return clients;
@@ -202,6 +202,17 @@ export class Phase3AnswerResolution {
     let needsInputCount = 0;
     const candidateResumeCache = new Map();
 
+    // Load structured parsed resumes from Supabase resume_parsed table (Pillar 2)
+    let parsedResumesMap = new Map();
+    if (typeof this.store?.loadAllResumeParsed === 'function' && this.store.isAvailable()) {
+      try {
+        parsedResumesMap = await this.store.loadAllResumeParsed();
+        console.log(`[Phase 3] Loaded ${parsedResumesMap.size} structured candidate resumes from Supabase resume_parsed table`);
+      } catch (err) {
+        console.warn('[Phase 3] Warning: Could not preload resume_parsed table:', err.message);
+      }
+    }
+
     // 1. Group assignments by candidate for unified processing
     const assignmentsByCandidate = new Map();
     for (const assignment of toProcess) {
@@ -221,12 +232,27 @@ export class Phase3AnswerResolution {
         continue;
       }
 
+      // Pillar 2: Structured resume data integration
+      const parsedResume = parsedResumesMap.get(applywizzId) || null;
+      if (parsedResume) {
+        if (Array.isArray(parsedResume.work_experience) && parsedResume.work_experience.length > 0) {
+          client.experience_records = parsedResume.work_experience;
+        }
+        if (Array.isArray(parsedResume.education) && parsedResume.education.length > 0) {
+          client.education_records = parsedResume.education;
+        }
+        if (Array.isArray(parsedResume.skills) && parsedResume.skills.length > 0) {
+          if (!client.additional_information) client.additional_information = {};
+          client.additional_information.skills = parsedResume.skills.join(', ');
+        }
+      }
+
       const clientHistory = clientHistoryMap.get(applywizzId) || [];
 
       // Extract raw resume text from profile (profiles.csv), Supabase storage, or profile summary
       let resumeText = candidateResumeCache.get(applywizzId);
       if (resumeText === undefined) {
-        resumeText = client?.additional_information?.resume_text || '';
+        resumeText = parsedResume?.raw_resume_text || client?.additional_information?.resume_text || '';
         if (!resumeText && this.store?.client?.storage && applywizzId) {
           try {
             const { data: fileData, error: dlErr } = await this.store.client.storage
@@ -315,11 +341,13 @@ export class Phase3AnswerResolution {
 
         for (let i = 0; i < allQuestions.length; i += batchMax) {
           const chunk = allQuestions.slice(i, i + batchMax);
-          console.log(`[Phase 3] [Candidate ${applywizzId}] Resolving ${chunk.length} unique questions via Claude Batch LLM...`);
+          console.log(`[Phase 3] [Candidate ${applywizzId}] Resolving ${chunk.length} unique questions via Claude Batch LLM (3-Pillar Triad)...`);
 
           const batchAnswers = await this.engine.claudeService.resolveCandidateBatch({
             client,
             resumeText,
+            parsedResume,
+            clientHistory,
             questions: chunk
           });
           didCallLlm = true;
@@ -391,7 +419,7 @@ export class Phase3AnswerResolution {
         if (status === 'answers_resolved') resolvedCount++;
         else needsInputCount++;
 
-        console.error(`[Phase 3] [Job ${app.assignment.jobKey || app.assignment.jobId} | Client ${applywizzId}] Status: ${status} (${unresolvedList.length === 0 ? 'all required fields resolved >= 0.80' : `${unresolvedList.length} required fields missing/low confidence`})`);
+        console.log(`[Phase 3] [Job ${app.assignment.jobKey || app.assignment.jobId} | Client ${applywizzId}] Status: ${status} (${unresolvedList.length === 0 ? 'all required fields resolved >= 0.80' : `${unresolvedList.length} required fields missing/low confidence`})`);
 
         byId.set(app.applicationId, {
           applicationId: app.applicationId,
@@ -658,7 +686,7 @@ export class Phase3AnswerResolution {
 
       if (recordsToUpsert.length > 0 && typeof this.store?.upsertQuestionBank === 'function' && this.store?.isAvailable?.()) {
         await this.store.upsertQuestionBank(recordsToUpsert);
-        console.error(`[Phase 3] Question Bank synchronized to Supabase: ${recordsToUpsert.length} records`);
+        console.log(`[Phase 3] Question Bank synchronized to Supabase: ${recordsToUpsert.length} records`);
       }
 
       if (fs.existsSync(this.questionBankCsvPath)) {
@@ -698,10 +726,10 @@ export class Phase3AnswerResolution {
 
         const newCsv = formatCsv(existingRecords, QB_HEADERS);
         await fs.promises.writeFile(this.questionBankCsvPath, newCsv, 'utf8');
-        console.error(`[Phase 3] Question Bank synchronized: ${updatedCount} updated in-place, ${insertedCount} newly inserted`);
+        console.log(`[Phase 3] Question Bank synchronized: ${updatedCount} updated in-place, ${insertedCount} newly inserted`);
       }
     } catch (err) {
-      console.error('[Phase 3] Warning: Failed to upsert answers to question_bank:', err.message);
+      console.warn('[Phase 3] Warning: Failed to upsert answers to question_bank:', err.message);
     }
 
     // 3. Update legacy question-bank store for backward compatibility
@@ -720,7 +748,7 @@ export class Phase3AnswerResolution {
       });
     }
 
-    console.error(`[Phase 3] [Job ${updatedApplication.jobId} | Client ${updatedApplication.userId}] ${Object.keys(updates).length} answers saved`);
+    console.log(`[Phase 3] [Job ${updatedApplication.jobId} | Client ${updatedApplication.userId}] ${Object.keys(updates).length} answers saved`);
     return updatedApplication;
   }
 }
