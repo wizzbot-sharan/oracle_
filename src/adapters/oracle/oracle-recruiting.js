@@ -70,6 +70,41 @@ async function controlDescriptor(locator) {
     const ariaLabelledBy = element.getAttribute('aria-labelledby')?.split(/\s+/).find(byId);
     const sourceId = element.id || checkboxInput?.id || enclosingLabelId || ariaLabelledBy || null;
 
+    // 6-Layer Required Detection Engine
+    const isLayer1Native = Boolean(
+      element.required ||
+      checkboxInput?.required ||
+      element.getAttribute('aria-required') === 'true' ||
+      wrapper?.getAttribute('aria-required') === 'true'
+    );
+
+    const isLayer2ThemeCss = Boolean(
+      wrapper?.querySelector('.input-row__label--required, .input-row__label--required-star, .apply-flow-input-checkbox__label--required')
+    );
+
+    const sectionText = text(region?.getAttribute('aria-label')) || '';
+    const isLayer3SectionRequired = /(^|\s)(required|mandatory)(\s|$)/i.test(sectionText);
+
+    const isLayer4LabelAsterisk = /\*|\(required\)/i.test(label || '') || (typeof label === 'string' && label.trim().endsWith('*'));
+
+    const isLayer5EvaluatedBinding = Boolean(
+      wrapper?.querySelector('.oj-required, [aria-required="true"]') ||
+      wrapper?.classList.contains('oj-required') ||
+      wrapper?.classList.contains('input-row--required')
+    );
+
+    const isLayer6Compulsory = Boolean(
+      isPhonePrefix ||
+      isPhoneNumber ||
+      /^(first\s*name|last\s*name|full\s*name|email|address\s*1|addressline1|city|state|province|county|postal\s*code|zip\s*code|country)$/i.test((label || '').replace(/\s*\*|\s*\(required\)/gi, '').trim()) ||
+      /^(first_name|last_name|full_name|email|phone_number|phone_country_code|country|city|region1|region2|postalCode|addressLine1)$/i.test(element.getAttribute('name') || element.id || '') ||
+      (type === 'file' && /resume|cv\b/i.test(label || '')) ||
+      type === 'repeatable-group' ||
+      /legally\s*authorized|sponsorship|work\s*authorization|visa/i.test(label || '')
+    );
+
+    const isRequired = isLayer1Native || isLayer2ThemeCss || isLayer3SectionRequired || isLayer4LabelAsterisk || isLayer5EvaluatedBinding || isLayer6Compulsory;
+
     return {
       sourceId,
       sourceName: element.getAttribute('name') || checkboxInput?.getAttribute('name') || null,
@@ -79,8 +114,8 @@ async function controlDescriptor(locator) {
       label,
       isPhonePrefix,
       isPhoneNumber,
-      sectionLabel: text(region?.getAttribute('aria-label')) || null,
-      required: element.required || checkboxInput?.required || element.getAttribute('aria-required') === 'true' || Boolean(wrapper?.querySelector('.input-row__label--required, .input-row__label--required-star, .apply-flow-input-checkbox__label--required')),
+      sectionLabel: sectionText || null,
+      required: isRequired,
       disabled: element.disabled || checkboxInput?.disabled || element.getAttribute('aria-disabled') === 'true'
     };
   });
@@ -587,8 +622,9 @@ export class OracleRecruitingAdapter {
 
     while (pageNumber <= maxPages) {
       console.log(`[Phase 2] Scanning application page/step ${pageNumber}...`);
+      const pageStartTime = Date.now();
       await page.waitForLoadState('domcontentloaded').catch(() => { });
-      await humanPause(this.actionGap);
+      await humanPause({ min: 100, max: 200 });
 
       const pageSections = await page.locator('h2, h3, [role="region"][aria-label]').evaluateAll(elements =>
         [...new Set(elements.map(element => (element.getAttribute('aria-label') || element.textContent || '').replace(/\s+/g, ' ').trim()).filter(Boolean))]
@@ -650,7 +686,12 @@ export class OracleRecruitingAdapter {
       const currentUrl = page.url();
       const currentSectionHeaders = [...allSections].join('|');
       console.log(`[Phase 2] Advancing to next application page...`);
-      await humanPause(this.actionGap);
+      const elapsed = Date.now() - pageStartTime;
+      if (elapsed < 5000) {
+        const dwellWait = 5000 - elapsed;
+        console.log(`[Phase 2] Enforcing natural dwell time (waiting ${dwellWait}ms before Next)...`);
+        await page.waitForTimeout(dwellWait);
+      }
       await nextButton.click();
       await humanPause(this.postNextWait);
       await page.waitForLoadState('domcontentloaded').catch(() => { });
@@ -1061,7 +1102,7 @@ export class OracleRecruitingAdapter {
         // Toggle option ON
         const toggledOn = await this.#toggleMultiOption(page, group, option, true);
         if (!toggledOn) continue;
-        await humanPause({ min: 300, max: 600 });
+        await humanPause({ min: 100, max: 150 });
 
         const after = await this.#extractControls(page, { extractComboboxOptions: false });
         const revealed = after.filter(field => !beforeKeys.has(this.#fieldIdentity(field)));
@@ -1100,7 +1141,7 @@ export class OracleRecruitingAdapter {
               await subGroup.getByRole('radio', { name: subOption, exact: true }).click().catch(async () => {
                 await subGroup.locator(`button[role="radio"]:has-text("${subOption}"), button.cx-select-pill-section:has-text("${subOption}")`).first().click().catch(() => {});
               });
-              await humanPause({ min: 250, max: 500 });
+              await humanPause({ min: 100, max: 150 });
 
               const subAfter = await this.#extractControls(page, { extractComboboxOptions: false });
               const subRevealed = subAfter.filter(f => !subBeforeKeys.has(this.#fieldIdentity(f)));
@@ -1132,7 +1173,7 @@ export class OracleRecruitingAdapter {
 
         // Toggle option OFF to return to clean baseline
         await this.#toggleMultiOption(page, group, option, false);
-        await humanPause({ min: 200, max: 400 });
+        await humanPause({ min: 100, max: 150 });
       }
     }
 
@@ -1146,7 +1187,10 @@ export class OracleRecruitingAdapter {
     while (queue.length && operations < 80) {
       const item = queue.shift();
       await this.#activateRadioPath(page, item.path);
-      const group = page.getByRole('radiogroup', { name: item.label, exact: true }).first();
+      let group = this.#findRadioGroup(page, item.label);
+      if (!(await visible(group))) {
+        group = page.getByRole('radiogroup', { name: item.label, exact: true }).first();
+      }
       if (!(await visible(group))) continue;
       const optionLabels = await this.#radioOptionLabels(group);
 
@@ -1157,21 +1201,27 @@ export class OracleRecruitingAdapter {
         operations += 1;
 
         await this.#activateRadioPath(page, item.path);
-        let currentGroup = page.getByRole('radiogroup', { name: item.label, exact: true }).first();
+        let currentGroup = this.#findRadioGroup(page, item.label);
+        if (!(await visible(currentGroup))) {
+          currentGroup = page.getByRole('radiogroup', { name: item.label, exact: true }).first();
+        }
         if (!(await visible(currentGroup))) continue;
         const alternate = optionLabels.find(label => label !== targetLabel);
         if (alternate) {
-          await currentGroup.getByRole('radio', { name: alternate, exact: true }).click();
-          await humanPause({ min: 180, max: 350 });
+          await this.#clickRadioOption(currentGroup, alternate);
+          await page.waitForTimeout(300);
           await this.#activateRadioPath(page, item.path);
-          currentGroup = page.getByRole('radiogroup', { name: item.label, exact: true }).first();
+          currentGroup = this.#findRadioGroup(page, item.label);
+          if (!(await visible(currentGroup))) {
+            currentGroup = page.getByRole('radiogroup', { name: item.label, exact: true }).first();
+          }
         }
 
         const before = await this.#extractControls(page, { extractComboboxOptions: false });
         const beforeKeys = new Set(before.map(field => this.#fieldIdentity(field)));
         const beforeGroups = new Set(await this.#visibleRadioGroupLabels(page));
-        await currentGroup.getByRole('radio', { name: targetLabel, exact: true }).click();
-        await humanPause({ min: 250, max: 600 });
+        await this.#clickRadioOption(currentGroup, targetLabel);
+        await page.waitForTimeout(500); // Dedicated 500ms settle for Knockout component observable hydration
         const after = await this.#extractControls(page, { extractComboboxOptions: false });
         const revealed = after.filter(field => !beforeKeys.has(this.#fieldIdentity(field)));
         const conditionPath = [...item.path, { triggerLabel: item.label, triggerValue: targetLabel }];
@@ -1201,37 +1251,99 @@ export class OracleRecruitingAdapter {
     return branches;
   }
 
+  #findRadioGroup(page, label) {
+    const normalized = (label || '').replace(/\s+/g, ' ').trim();
+    const shortPrefix = normalized.slice(0, 60);
+    return page.locator('.apply-flow-section:not([style*="display: none"]) [role="radiogroup"], [role="radiogroup"]')
+      .filter({ hasText: shortPrefix })
+      .first();
+  }
+
+  async #clickRadioOption(group, targetLabel) {
+    const cleanTarget = (targetLabel || '').trim();
+    const exactLabel = group.locator('label.apply-flow-input-radio, label.apply-flow-input-radio__label, label')
+      .filter({ hasText: new RegExp(`^\\s*${cleanTarget.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*$`, 'i') })
+      .first();
+    if (await visible(exactLabel)) {
+      await exactLabel.click().catch(() => {});
+      return true;
+    }
+    const anyLabel = group.locator('label').filter({ hasText: cleanTarget }).first();
+    if (await visible(anyLabel)) {
+      await anyLabel.click().catch(() => {});
+      return true;
+    }
+    const radioRole = group.getByRole('radio', { name: cleanTarget }).first();
+    if (await visible(radioRole)) {
+      await radioRole.click({ force: true }).catch(() => {});
+      return true;
+    }
+    const radioInput = group.locator(`input[type="radio"][value="${cleanTarget}"]`).first();
+    if (await visible(radioInput)) {
+      await radioInput.click({ force: true }).catch(() => {});
+      return true;
+    }
+    return false;
+  }
+
   async #visibleRadioGroupLabels(page) {
     const hasSections = (await page.locator('.apply-flow-section').count().catch(() => 0)) > 0;
     const selector = hasSections
       ? '.apply-flow-section:not([style*="display: none"]) [role="radiogroup"]'
       : '[role="radiogroup"]';
-    return page.locator(selector).evaluateAll(groups =>
-      [...new Set(groups.map(group => group.getAttribute('aria-label') || '').filter(Boolean))]
-    ).catch(() => []);
+    return page.locator(selector).evaluateAll(groups => {
+      const labels = [];
+      for (const group of groups) {
+        let label = (group.getAttribute('aria-label') || '').trim();
+        if (!label && group.getAttribute('aria-labelledby')) {
+          const ids = group.getAttribute('aria-labelledby').split(/\s+/).filter(Boolean);
+          const parts = ids.map(id => document.getElementById(id)?.textContent?.trim() || '').filter(Boolean);
+          if (parts.length > 0) label = parts.join(' ');
+        }
+        if (!label) {
+          const labelEl = group.querySelector('.input-row__label, legend, [id$="-label"]');
+          if (labelEl) label = labelEl.textContent?.trim() || '';
+        }
+        if (label) {
+          label = label.replace(/\s+/g, ' ').trim();
+          labels.push(label);
+        }
+      }
+      return [...new Set(labels)];
+    }).catch(() => []);
   }
 
   async #radioOptionLabels(group) {
-    const options = group.getByRole('radio');
+    let options = group.getByRole('radio');
+    let count = await options.count().catch(() => 0);
+    if (count === 0) {
+      options = group.locator('input[type="radio"], button[role="radio"], [role="radio"]');
+      count = await options.count().catch(() => 0);
+    }
     const labels = [];
-    for (let index = 0; index < Math.min(await options.count(), 12); index += 1) {
+    for (let index = 0; index < Math.min(count, 12); index += 1) {
       const label = normalizeText(await options.nth(index).evaluate(element => {
         const labelledBy = element.getAttribute('aria-labelledby')?.split(/\s+/)
           .map(id => document.getElementById(id)?.textContent ?? '').join(' ');
         const explicit = element.id ? document.querySelector(`label[for="${CSS.escape(element.id)}"]`)?.textContent : '';
-        return element.innerText || element.getAttribute('aria-label') || labelledBy || explicit || element.value || '';
+        const enclosingLabel = element.closest('label')?.textContent || '';
+        const nextLabel = element.nextElementSibling?.tagName === 'LABEL' ? element.nextElementSibling.textContent : '';
+        return element.innerText || element.getAttribute('aria-label') || labelledBy || explicit || enclosingLabel || nextLabel || element.value || '';
       }));
       if (label) labels.push(label);
     }
-    return labels;
+    return [...new Set(labels)];
   }
 
   async #activateRadioPath(page, path) {
     for (const step of path) {
-      const group = page.getByRole('radiogroup', { name: step.triggerLabel, exact: true }).first();
+      let group = this.#findRadioGroup(page, step.triggerLabel);
+      if (!(await visible(group))) {
+        group = page.getByRole('radiogroup', { name: step.triggerLabel, exact: true }).first();
+      }
       if (!(await visible(group))) return false;
-      await group.getByRole('radio', { name: step.triggerValue, exact: true }).click();
-      await humanPause({ min: 140, max: 280 });
+      await this.#clickRadioOption(group, step.triggerValue);
+      await page.waitForTimeout(250);
     }
     return true;
   }
@@ -1252,7 +1364,7 @@ export class OracleRecruitingAdapter {
       const before = await this.#extractControls(page, { extractComboboxOptions: false });
       const beforeKeys = new Set(before.map(field => this.#fieldIdentity(field)));
       await add.click();
-      await humanPause({ min: 300, max: 700 });
+      await humanPause({ min: 150, max: 250 });
       const after = await this.#extractControls(page, { extractComboboxOptions: false });
       const fields = after.filter(field => !beforeKeys.has(this.#fieldIdentity(field)));
       const buttonText = normalizeText(await add.innerText().catch(() => ''));
@@ -1269,7 +1381,7 @@ export class OracleRecruitingAdapter {
         ? page.getByRole('button', { name: definition.cancel }).first()
         : page.getByRole('button', { name: definition.remove }).last();
       if (await visible(rollback)) await rollback.click();
-      await humanPause({ min: 200, max: 500 });
+      await humanPause({ min: 100, max: 150 });
     }
 
     // 2. Dynamically discover any additional + Add buttons (e.g. Certifications, Licenses, Skills, References, etc.)
@@ -1295,7 +1407,7 @@ export class OracleRecruitingAdapter {
       const before = await this.#extractControls(page, { extractComboboxOptions: false });
       const beforeKeys = new Set(before.map(field => this.#fieldIdentity(field)));
       await btn.click();
-      await humanPause({ min: 300, max: 700 });
+      await humanPause({ min: 150, max: 250 });
       const after = await this.#extractControls(page, { extractComboboxOptions: false });
       const fields = after.filter(field => !beforeKeys.has(this.#fieldIdentity(field)));
 
@@ -1317,7 +1429,7 @@ export class OracleRecruitingAdapter {
         'button[aria-label*="delete" i]:visible'
       ].join(', ')).last();
       if (await visible(rollback)) await rollback.click();
-      await humanPause({ min: 200, max: 500 });
+      await humanPause({ min: 100, max: 150 });
     }
 
     return groups;
@@ -1448,7 +1560,11 @@ export class OracleRecruitingAdapter {
 
           // Strict visibility check for the control on the active page
           let locator;
-          if (effectiveField.type === 'repeatable-group') {
+          if (effectiveField.id === 'phone_number' || effectiveField.type === 'tel' || effectiveField.isPhoneNumber) {
+            locator = page.locator('.phone-row__number input[type="tel"]:visible, .phone-row__number input.phone-row__input:visible, input[type="tel"]:visible').first();
+          } else if (effectiveField.id === 'phone_country_code' || effectiveField.isPhonePrefix) {
+            locator = page.locator('.phone-row__prefix [role="combobox"]:visible, #country-codes-dropdownphoneNumber:visible, .phone-row__prefix input:visible').first();
+          } else if (effectiveField.type === 'repeatable-group') {
             locator = page.getByRole('button', { name: new RegExp(`^${effectiveField.addButton}$`, 'i') }).first();
           } else if (effectiveField.type === 'multi-checkbox') {
             locator = page.locator(`.input-row:has-text("${effectiveField.label}"), [role="group"]:has-text("${effectiveField.label}"), .form-field:has-text("${effectiveField.label}")`).first();
@@ -1819,14 +1935,28 @@ export class OracleRecruitingAdapter {
       }
 
       if (field.type === 'repeatable-group') {
-        const cards = page.locator('.input-row-composite__card:visible, .repeatable-row:visible, .profile-item:visible').filter({ hasText: /\S+/ });
-        const cardCount = await cards.count().catch(() => 0);
-        if (cardCount > 0) {
+        const existingCards = await this.#inspectExistingRepeatableCards(page, field);
+        const validCards = existingCards.filter(c => !c.isInvalid);
+        if (validCards.length > 0) {
+          const cap = /experience|work|employment/i.test(field.id || field.label) ? 3 : (/education|school|academic/i.test(field.id || field.label) ? 2 : 5);
           return {
-            currentValue: `${cardCount} entries`,
+            currentValue: validCards.map(c => c.subtitle ? `${c.title} (${c.subtitle})` : c.title).join('; '),
             hasValue: true,
             isLocked: false,
-            matchesDesired: () => true
+            existingCards: validCards,
+            matchesDesired: (desiredRows) => {
+              const targetCount = Math.min(cap, Array.isArray(desiredRows) && desiredRows.length > 0 ? desiredRows.length : 1);
+              if (validCards.length >= targetCount) return true;
+              if (!Array.isArray(desiredRows) || desiredRows.length === 0) return validCards.length > 0;
+              return desiredRows.every(row => {
+                const rowTitle = (row.title || row.job_title || row.degree || '').toLowerCase().trim();
+                const rowOrg = (row.company || row.employer || row.institution || row.school || '').toLowerCase().trim();
+                return validCards.some(c => 
+                  (rowTitle && c.title.toLowerCase().includes(rowTitle)) ||
+                  (rowOrg && c.subtitle.toLowerCase().includes(rowOrg))
+                );
+              });
+            }
           };
         }
         return { hasValue: false, isLocked: false, matchesDesired: () => false };
@@ -1884,7 +2014,11 @@ export class OracleRecruitingAdapter {
 
       // Input / Text / Email / Tel / Combobox
       let locator;
-      if (field.sourceName) {
+      if (field.id === 'phone_number' || field.type === 'tel' || field.isPhoneNumber) {
+        locator = page.locator('.phone-row__number input[type="tel"]:visible, .phone-row__number input.phone-row__input:visible, input[type="tel"]:visible').first();
+      } else if (field.id === 'phone_country_code' || field.isPhonePrefix) {
+        locator = page.locator('.phone-row__prefix [role="combobox"]:visible, #country-codes-dropdownphoneNumber:visible, .phone-row__prefix input:visible').first();
+      } else if (field.sourceName) {
         locator = page.locator(`[name="${field.sourceName}"]`).first();
       } else if (field.sourceId) {
         locator = page.locator(`[id="${field.sourceId}"]`).first();
@@ -1917,7 +2051,11 @@ export class OracleRecruitingAdapter {
           );
         }).catch(() => false);
 
-        const hasValue = Boolean(effectiveVal && effectiveVal.length > 0);
+        let hasValue = Boolean(effectiveVal && effectiveVal.length > 0);
+        if (field.type === 'tel' || field.id === 'phone_number' || field.isPhoneNumber) {
+          const digits = effectiveVal.replace(/\D/g, '');
+          hasValue = digits.length >= 7;
+        }
 
         return {
           currentValue: effectiveVal,
@@ -2074,7 +2212,7 @@ export class OracleRecruitingAdapter {
         locator = phoneInput;
       }
     } else if (field.id === 'phone_country_code' || field.isPhonePrefix) {
-      const prefixInput = page.locator('.phone-row__prefix [role="combobox"]:visible, .phone-row__prefix input:visible').first();
+      const prefixInput = page.locator('.phone-row__prefix [role="combobox"]:visible, #country-codes-dropdownphoneNumber:visible, .phone-row__prefix input:visible').first();
       if (await visible(prefixInput)) {
         locator = prefixInput;
       }
@@ -2327,16 +2465,122 @@ export class OracleRecruitingAdapter {
     return this.#extractComboboxOptions(page, candidate, field);
   }
 
+  async _inspectLiveControlStateForTest(page, field) {
+    return this.#inspectLiveControlState(page, field);
+  }
+
+  async _controlDescriptorForTest(locator) {
+    return controlDescriptor(locator);
+  }
+
+  async _visibleRadioGroupLabelsForTest(page) {
+    return this.#visibleRadioGroupLabels(page);
+  }
+
+  async _inspectExistingRepeatableCardsForTest(page, group) {
+    return this.#inspectExistingRepeatableCards(page, group);
+  }
+
+  async #inspectExistingRepeatableCards(page, group) {
+    if (typeof page?.evaluate !== 'function') return [];
+    const groupId = (group.id || group.label || '').toLowerCase();
+    return page.evaluate((id) => {
+      const isExp = /experience|work|employment/i.test(id);
+      const isEdu = /education|school|academic/i.test(id);
+      const isLic = /license|certification/i.test(id);
+
+      let roots = [];
+      if (isExp) {
+        roots = Array.from(document.querySelectorAll(
+          '.beautiful-timeline__column[data-bind*="experiences"], .standard-apply-flow-profile-item, .apply-flow-section'
+        )).filter(el => /experience|work/i.test(el.textContent || '') || /experiences/i.test(el.getAttribute('data-bind') || ''));
+      } else if (isEdu) {
+        roots = Array.from(document.querySelectorAll(
+          '.beautiful-timeline__column[data-bind*="educations"], .standard-apply-flow-profile-item, .apply-flow-section'
+        )).filter(el => /education|school/i.test(el.textContent || '') || /educations/i.test(el.getAttribute('data-bind') || ''));
+      } else if (isLic) {
+        roots = Array.from(document.querySelectorAll(
+          '[data-bind*="licenses"], [data-bind*="certifications"], .standard-apply-flow-profile-item, .apply-flow-section'
+        )).filter(el => /license|certification/i.test(el.textContent || '') || /license|certification/i.test(el.getAttribute('data-bind') || ''));
+      }
+
+      const searchRoots = roots.length > 0 ? roots : [document];
+      const allTiles = new Set();
+      for (const root of searchRoots) {
+        let tiles = Array.from(root.querySelectorAll('[data-profile-item-tile="true"]'));
+        if (tiles.length === 0) {
+          tiles = Array.from(root.querySelectorAll('.beautiful-timeline-item, article.apply-flow-profile-item-tile, .input-row-composite__card'));
+        }
+        for (const t of tiles) allTiles.add(t);
+      }
+
+      const items = [];
+      for (const tile of allTiles) {
+        const titleEl = tile.querySelector('.beautiful-timeline-item__title, .apply-flow-profile-item-tile__summary-title, [data-bind*="itemKey"], .title') || tile;
+        const title = (titleEl?.textContent || '').replace(/\s+/g, ' ').trim();
+
+        const subtitleEl = tile.querySelector('.beautiful-timeline-item__subtitle, .apply-flow-profile-item-tile__summary-subtitle, .subtitle');
+        const subtitle = (subtitleEl?.textContent || '').replace(/\s+/g, ' ').trim();
+
+        const invalidAttr = tile.getAttribute('data-profile-item-invalid') === 'true' ||
+          tile.closest('[data-profile-item-invalid="true"]') !== null ||
+          tile.querySelector('[data-profile-item-invalid="true"]') !== null;
+        const invalidClass = tile.classList.contains('apply-flow-profile-item-tile--invalid') ||
+          tile.closest('.apply-flow-profile-item-tile--invalid') !== null ||
+          tile.classList.contains('beautiful-timeline-item--invalid');
+        const isPlaceholder = !title || /^unnamed\s+(job\s+title|degree|school)/i.test(title);
+
+        const isInvalid = Boolean(invalidAttr || invalidClass || isPlaceholder);
+
+        items.push({
+          title,
+          subtitle,
+          isInvalid
+        });
+      }
+
+      return items;
+    }, groupId).catch(() => []);
+  }
+
   async #fillRepeatableGroup(page, group, rows, context = {}) {
     invariant(Array.isArray(rows), 'INVALID_REPEATABLE_VALUE', `${group.label} must be an array`);
     const isInlineLink = /link/i.test(group.id) || /link/i.test(group.label);
 
     // Apply safety caps: top 3 for experience, top 2 for education
-    let rowsToFill = rows;
-    if (/experience|work|employment/i.test(group.id || group.label)) {
-      rowsToFill = rows.slice(0, 3);
-    } else if (/education|school|academic/i.test(group.id || group.label)) {
-      rowsToFill = rows.slice(0, 2);
+    const cap = /experience|work|employment/i.test(group.id || group.label) ? 3 : (/education|school|academic/i.test(group.id || group.label) ? 2 : 5);
+    let rowsToFill = rows.slice(0, cap);
+
+    // Inspect pre-existing valid cards
+    const existingCards = await this.#inspectExistingRepeatableCards(page, group);
+    const validCards = existingCards.filter(c => !c.isInvalid);
+
+    if (validCards.length >= cap) {
+      console.log(`[Phase 4] Repeatable group "${group.label}" already satisfied with ${validCards.length} valid entries (cap: ${cap}). Skipping additions.`);
+      return;
+    }
+
+    if (validCards.length > 0) {
+      // Filter out rows whose title or organization is already present on the page
+      const deltaRows = rowsToFill.filter(row => {
+        const rowTitle = (row.title || row.job_title || row.degree || '').toLowerCase().trim();
+        const rowOrg = (row.company || row.employer || row.institution || row.school || '').toLowerCase().trim();
+        const alreadyPresent = validCards.some(card => {
+          const cardTitle = card.title.toLowerCase();
+          const cardOrg = card.subtitle.toLowerCase();
+          return (rowTitle && cardTitle.includes(rowTitle)) || (rowOrg && cardOrg.includes(rowOrg));
+        });
+        return !alreadyPresent;
+      });
+
+      const remainingSlots = Math.max(0, cap - validCards.length);
+      rowsToFill = deltaRows.slice(0, remainingSlots);
+
+      if (rowsToFill.length === 0) {
+        console.log(`[Phase 4] Repeatable group "${group.label}" already has matching entries for candidate profile. Skipping additions.`);
+        return;
+      }
+      console.log(`[Phase 4] Repeatable group "${group.label}" has ${validCards.length} existing entries. Adding ${rowsToFill.length} missing delta entries.`);
     }
 
     for (const row of rowsToFill) {

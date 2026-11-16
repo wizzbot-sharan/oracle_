@@ -85,6 +85,86 @@ test('computeDashboardMetrics calculates accurate KPI counts and client list', a
   assert.ok(typeof result.unassignedClientsCount === 'number');
 });
 
+test('computeDashboardMetrics calculates accurate date-scoped metrics when selectedDateFilter is provided', async () => {
+  const tmpDir = path.join(os.tmpdir(), `dashboard-metric-date-test-${Date.now()}`);
+  fs.mkdirSync(tmpDir, { recursive: true });
+
+  const clientsPath = path.join(tmpDir, 'clients.json');
+  fs.writeFileSync(clientsPath, JSON.stringify({
+    'AWL-1': { client: { full_name: 'Alice Cooper' } },
+    'AWL-2': { client: { full_name: 'Bob Marley' } }
+  }), 'utf8');
+
+  const jobs = {
+    assignments: [
+      { assignmentId: 'asg-1', applywizzId: 'AWL-1', jobKey: 'job_1', jobId: '101' },
+      { assignmentId: 'asg-2', applywizzId: 'AWL-2', jobKey: 'job_2', jobId: '102' }
+    ],
+    uniqueJobs: [
+      { jobKey: 'job_1', jobId: '101' },
+      { jobKey: 'job_2', jobId: '102' }
+    ]
+  };
+
+  // One template scanned on 2026-11-16 (04:00 UTC = 09:30 IST)
+  // One template scanned on 2026-11-15 (10:00 UTC = 15:30 IST)
+  const templates = {
+    job_1: { fields: [{ id: 'f1', label: 'Field 1' }], scan: { scannedAt: '2026-11-16T04:00:00.000Z' } },
+    job_2: { fields: [{ id: 'f2', label: 'Field 2' }], scan: { scannedAt: '2026-11-15T10:00:00.000Z' } }
+  };
+
+  const applications = [
+    {
+      applicationId: 'app-1',
+      userId: 'AWL-1',
+      jobKey: 'job_1',
+      status: 'submitted',
+      updatedAt: '2026-11-16T05:00:00.000Z', // 2026-11-16 in IST
+      values: { f1: { value: 'Ans 1', confidence: 1.0, stage: 'stage1_taxonomy' } }
+    },
+    {
+      applicationId: 'app-2',
+      userId: 'AWL-2',
+      jobKey: 'job_2',
+      status: 'needs_review',
+      updatedAt: '2026-11-15T12:00:00.000Z', // 2026-11-15 in IST
+      values: { f2: { value: 'Ans 2', confidence: 1.0, stage: 'stage1_taxonomy' } }
+    }
+  ];
+
+  // Query for 2026-11-16 IST
+  const resultToday = await computeDashboardMetrics({
+    jobs,
+    applications,
+    templates,
+    clientsPath,
+    selectedDateFilter: '2026-11-16'
+  });
+
+  assert.equal(resultToday.metrics.totalClients, 1, 'Only AWL-1 active on 2026-11-16');
+  assert.equal(resultToday.metrics.totalJobs, 1, 'Only 1 application on 2026-11-16');
+  assert.equal(resultToday.metrics.uniqueUrls, 1, 'Only 1 unique job on 2026-11-16');
+  assert.equal(resultToday.metrics.scannedUrls, 1, 'Only job_1 scanned on 2026-11-16');
+  assert.equal(resultToday.metrics.unlockableApplications, 1);
+  assert.equal(resultToday.metrics.submitted, 1);
+  assert.equal(resultToday.metrics.prepared, 0);
+
+  // Query for All-time
+  const resultAll = await computeDashboardMetrics({
+    jobs,
+    applications,
+    templates,
+    clientsPath,
+    selectedDateFilter: 'all'
+  });
+
+  assert.equal(resultAll.metrics.totalClients, 2);
+  assert.equal(resultAll.metrics.totalJobs, 2);
+  assert.equal(resultAll.metrics.scannedUrls, 2);
+  assert.equal(resultAll.metrics.submitted, 1);
+  assert.equal(resultAll.metrics.prepared, 1);
+});
+
 test('saveAnswers performs in-place upsert in question_bank.csv with zero row duplication', async () => {
   const tmpDir = path.join(os.tmpdir(), `upsert-test-${Date.now()}`);
   fs.mkdirSync(tmpDir, { recursive: true });

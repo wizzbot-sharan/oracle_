@@ -182,6 +182,7 @@ export class ScanQueueRunner {
     if (!scanStatus.jobs) scanStatus.jobs = {};
 
     const existingTemplates = await this.store.read('form-templates', {});
+    const newlyCompletedKeys = [];
 
     const selector = parseJobSelector(options);
 
@@ -488,6 +489,7 @@ export class ScanQueueRunner {
               console.log(`${workerTag} [${job_key}] ✓ Completed in ${(durationMs / 1000).toFixed(1)}s (${template.fields.length} fields, ${template.conditionalBranches.length} branches).`);
 
               releaseTenant();
+              newlyCompletedKeys.push(job_key);
               scanStatus.jobs[job_key] = {
                 job_key,
                 job_url,
@@ -567,7 +569,10 @@ export class ScanQueueRunner {
       console.log(`Saved to:  ${statusPath}`);
       console.log(`========================================\n`);
 
-      return scanStatus;
+      return {
+        ...scanStatus,
+        newlyCompletedKeys
+      };
     } finally {
       this.isScanning = false;
       this.cancelRequested = false;

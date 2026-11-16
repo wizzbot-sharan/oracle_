@@ -485,23 +485,27 @@ function ExecutiveMetrics({ metrics }) {
       <div className="metric-card">
         <div className="metric-title">Total Clients</div>
         <div className="metric-value">{metrics.totalClients ?? 0}</div>
+        {isFiltered && <div className="metric-subbadge">{filterLabel}</div>}
       </div>
       <div className="metric-card">
         <div className="metric-title">Total Jobs</div>
         <div className="metric-value">{metrics.totalJobs ?? 0}</div>
+        {isFiltered && <div className="metric-subbadge">{filterLabel}</div>}
       </div>
       <div className="metric-card">
         <div className="metric-title">Unique URLs</div>
         <div className="metric-value">{metrics.uniqueUrls ?? 0}</div>
+        {isFiltered && <div className="metric-subbadge">{filterLabel}</div>}
       </div>
       <div className="metric-card">
         <div className="metric-title">Scanned Requisitions</div>
         <div className="metric-value">{metrics.scannedUrls ?? 0}</div>
+        {isFiltered && <div className="metric-subbadge">{filterLabel}</div>}
       </div>
       <div className="metric-card">
         <div className="metric-title">Unlockable Applications</div>
         <div className="metric-value">{metrics.unlockableApplications ?? 0}</div>
-        <div className="metric-subbadge">covered by scans</div>
+        <div className="metric-subbadge">{isFiltered ? filterLabel : 'covered by scans'}</div>
       </div>
       <div className="metric-card">
         <div className="metric-title">Pre-AI Resolved</div>
@@ -550,8 +554,13 @@ function WorkerPoolWidget({ status }) {
     return 'idle';
   };
 
-  const formatStatus = (s, cooldownRemainingMs) => {
-    if (s === 'awaiting_review') return 'Awaiting Review';
+  const formatStatus = (s, cooldownRemainingMs, reviewRemainingMs) => {
+    if (s === 'awaiting_review') {
+      const sec = Math.ceil((reviewRemainingMs || 0) / 1000);
+      const m = Math.floor(sec / 60);
+      const r = sec % 60;
+      return sec > 0 ? `Awaiting Review (${m}:${r < 10 ? '0' : ''}${r})` : 'Awaiting Review';
+    }
     if (s === 'filling') return 'Filling Form...';
     if (s === 'launching') return 'Launching (30s throttle)';
     if (s === 'submitting') return 'Submitting (10s settle)';
@@ -575,7 +584,7 @@ function WorkerPoolWidget({ status }) {
             <div className="slot-top">
               <span>Worker {slot.slotId}</span>
               <span className={`slot-badge ${getBadgeClass(slot.status)}`}>
-                {formatStatus(slot.status, slot.cooldownRemainingMs)}
+                {formatStatus(slot.status, slot.cooldownRemainingMs, slot.reviewRemainingMs)}
               </span>
             </div>
             {slot.status !== 'idle' && slot.status !== 'cooldown' && (
@@ -1368,8 +1377,42 @@ export function App() {
     else if (selectedDateFilter === yesterdayIst) label = 'Yesterday in IST';
     else label = `${selectedDateFilter} IST`;
 
+    const scannedJobKeys = new Set(
+      Object.entries(data?.templates || {})
+        .filter(([, t]) => (t.fields?.length || 0) > 0)
+        .map(([k]) => k)
+    );
+
+    const dateClients = new Set(
+      dateFilteredApplications
+        .map(a => a.userId || a.applywizzId)
+        .filter(Boolean)
+    ).size;
+
+    const dateJobs = dateFilteredApplications.length;
+
+    const dateUniqueUrls = new Set(
+      dateFilteredApplications
+        .map(a => a.canonicalUrl || a.jobKey || a.jobId)
+        .filter(Boolean)
+    ).size;
+
+    const dateScannedUrls = Object.values(data?.templates || {}).filter(t => {
+      const scanDateIst = getIstDateString(t.scan?.scannedAt || t.updated_at || t.updatedAt || t.scannedAt);
+      return scanDateIst === selectedDateFilter;
+    }).length;
+
+    const dateUnlockable = dateFilteredApplications.filter(a =>
+      scannedJobKeys.has(a.jobKey) || scannedJobKeys.has(a.jobId)
+    ).length;
+
     return {
       ...data.metrics,
+      totalClients: dateClients,
+      totalJobs: dateJobs,
+      uniqueUrls: dateUniqueUrls,
+      scannedUrls: dateScannedUrls,
+      unlockableApplications: dateUnlockable,
       resolvedPreAiApps,
       resolvedPreAiQuestions,
       resolvedWithAiApps,
@@ -1382,7 +1425,7 @@ export function App() {
       isDateFiltered: true,
       selectedDateLabel: label
     };
-  }, [data?.metrics, dateFilteredApplications, selectedDateFilter]);
+  }, [data?.metrics, data?.templates, dateFilteredApplications, selectedDateFilter]);
 
   // Default to first active CA with dashboard clients
   useEffect(() => {

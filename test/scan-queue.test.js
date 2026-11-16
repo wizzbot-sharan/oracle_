@@ -95,7 +95,18 @@ job_4,https://ebez.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_
 
   assert.equal(result.summary.completed, 4);
   assert.equal(result.summary.failed, 0);
+  assert.deepEqual(result.newlyCompletedKeys.sort(), ['job_1', 'job_2', 'job_3', 'job_4']);
   assert.ok(maxObservedConcurrency <= 3, `Max concurrency ${maxObservedConcurrency} must not exceed 3`);
+
+  // Verify that a second run with existing templates yields 0 newly completed keys
+  const secondResult = await runner.runQueue({
+    jobsCsvPath,
+    statusPath,
+    concurrency: 3,
+    launchThrottleMs: 0,
+    cooldownMs: 5
+  });
+  assert.deepEqual(secondResult.newlyCompletedKeys, [], 'Re-run on already scanned jobs must yield empty newlyCompletedKeys');
 
   // Verify templates stored under job_key
   assert.ok(templatesStore.job_1, 'Template should be keyed by job_1');

@@ -187,6 +187,10 @@ export class Phase3AnswerResolution {
     if (jobUrl) {
       assignments = assignments.filter(a => a.canonicalUrl === jobUrl || a.originalUrl === jobUrl);
     }
+    if (Array.isArray(options.jobKeys) && options.jobKeys.length > 0) {
+      const keySet = new Set(options.jobKeys);
+      assignments = assignments.filter(a => keySet.has(a.jobKey) || keySet.has(a.jobId));
+    }
 
     const targetedJobKeys = new Set(assignments.map(a => a.jobKey || a.jobId));
     // Filter to assignments that have scanned templates
@@ -223,13 +227,19 @@ export class Phase3AnswerResolution {
       assignmentsByCandidate.get(applywizzId).push(assignment);
     }
 
-    for (const [applywizzId, candidateAssignments] of assignmentsByCandidate.entries()) {
+    const concurrency = Math.max(1, this.config?.phase3Concurrency ?? 3);
+    const batchMax = this.config?.llmBatchMaxQuestions ?? 20;
+    const delayMs = this.config?.llmDelayMs ?? 0;
+
+    const candidateEntries = [...assignmentsByCandidate.entries()];
+
+    const processCandidate = async ([applywizzId, candidateAssignments]) => {
       const client = clients[applywizzId];
       
       // Gatekeeper: Enforce clients.json presence
       if (!client || !client.client || Object.keys(client.client).length === 0) {
         console.log(`[Phase 3] Skipping candidate ${applywizzId}: candidate not found or incomplete in clients.json`);
-        continue;
+        return;
       }
 
       // Pillar 2: Structured resume data integration
@@ -335,7 +345,6 @@ export class Phase3AnswerResolution {
       // Pass 3: Unified LLM Batch Execution (if questions exist & Claude is available)
       if (uniqueQuestionsMap.size > 0 && this.engine.claudeService?.isAvailable()) {
         const allQuestions = [...uniqueQuestionsMap.values()];
-        const batchMax = this.config?.llmBatchMaxQuestions ?? 10;
         const newlyAnswered = [];
         let didCallLlm = false;
 
@@ -406,7 +415,6 @@ export class Phase3AnswerResolution {
         }
 
         // Pacing delay between candidates if an LLM call was executed
-        const delayMs = this.config?.llmDelayMs ?? 2000;
         if (didCallLlm && delayMs > 0) {
           await new Promise(r => setTimeout(r, delayMs));
         }
@@ -452,7 +460,23 @@ export class Phase3AnswerResolution {
           updatedAt
         });
       }
-    }
+    };
+
+    // Sliding-window worker queue with configurable concurrency
+    let nextIndex = 0;
+    const workerCount = Math.min(concurrency, candidateEntries.length);
+    const workers = Array.from({ length: workerCount }, async () => {
+      while (nextIndex < candidateEntries.length) {
+        const item = candidateEntries[nextIndex++];
+        try {
+          await processCandidate(item);
+        } catch (err) {
+          console.error(`[Phase 3] Error processing candidate ${item[0]}:`, err.message);
+        }
+      }
+    });
+
+    await Promise.all(workers);
 
     const applications = [...byId.values()];
     await this.store.write('applications', applications);
@@ -466,6 +490,11 @@ export class Phase3AnswerResolution {
 
     const globalResolved = applications.filter(a => a.status === 'answers_resolved').length;
     const globalNeedsInput = applications.filter(a => a.status === 'needs_input').length;
+
+    const newlyResolvedAppIds = applications
+      .filter(a => targetedJobKeys.has(a.jobKey || a.jobId) && a.status === 'answers_resolved')
+      .map(a => a.applicationId);
+    applications.newlyResolvedAppIds = newlyResolvedAppIds;
 
     applications.target = {
       description: selector.description,
@@ -503,6 +532,30 @@ export class Phase3AnswerResolution {
 
     for (const field of flattenTemplateFields(template)) {
       if (field.repeatableGroupId) continue;
+
+      // Strict Required-Only Mode: Only resolve fields that are required or belong to the Compulsory Whitelist
+      const isRequiredOrCompulsory = Boolean(
+        field.required ||
+        field.isPhoneNumber ||
+        field.isPhonePrefix ||
+        field.type === 'file' ||
+        field.type === 'repeatable-group' ||
+        /\*|\(required\)/i.test(field.label || '') ||
+        (typeof field.label === 'string' && field.label.trim().endsWith('*')) ||
+        /^(first\s*name|last\s*name|full\s*name|email|phone\s*number|country\s*code|address\s*1|addressline1|city|state|province|county|postal\s*code|zip\s*code|country)$/i.test((field.label || '').replace(/\s*\*|\s*\(required\)/gi, '').trim()) ||
+        /^(first_name|last_name|full_name|email|phone_number|phone_country_code|country|city|region1|region2|postalCode|addressLine1)$/i.test(field.sourceName || field.id || '') ||
+        /legally\s*authorized|sponsorship|work\s*authorization|visa/i.test(field.label || '')
+      );
+
+      if (!isRequiredOrCompulsory) {
+        values[field.id] = {
+          value: null,
+          rawValue: null,
+          confidence: 0,
+          source: 'skipped_optional'
+        };
+        continue;
+      }
 
       // Preserve previously operator-reviewed values (saved manually via dashboard / saveAnswers)
       const existing = existingValues[field.id];

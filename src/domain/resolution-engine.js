@@ -19,7 +19,7 @@
  */
 
 import { coerceValueForField, findBestOptionMatch, scoreOptionMatch, coerceToBoolean } from './coercion.js';
-import { CanonicalProfile } from './canonical-profile.js';
+import { CanonicalProfile, cleanInstitutionName } from './canonical-profile.js';
 import {
   matchCurrencyOption,
   matchSalaryRangeBucket,
@@ -341,18 +341,22 @@ export class ResolutionEngine {
       if (/education|school|academic/i.test(label) || /education/i.test(field.id || '')) {
         const records = canonical.history.educationRecords;
         if (!records || !records.length) return null;
-        const normalized = records.map(r => ({
-          institution: r.institution || r.school || r.school_name || '',
-          educational_establishment: r.institution || r.school || r.school_name || '',
-          school_name: r.institution || r.school || r.school_name || '',
-          degree: r.degree || r.degree_name || '',
-          content_item_id: r.degree || r.degree_name || '',
-          degree_name: r.degree || r.degree_name || '',
-          major: r.major || r.fieldOfStudy || '',
-          gpa: r.gpa || '',
-          graduated: true,
-          graduation_year: r.graduationYear || r.graduation_year || this.#extractDatePart(r.end_date, 'year') || ''
-        }));
+        const normalized = records.map(r => {
+          const cleanInst = cleanInstitutionName(r.institution || r.school || r.school_name || '');
+          const cleanDeg = String(r.degree || r.degree_name || '').normalize('NFKD').replace(/â€™|[\u2018\u2019]/g, "'").trim();
+          return {
+            institution: cleanInst,
+            educational_establishment: cleanInst,
+            school_name: cleanInst,
+            degree: cleanDeg,
+            content_item_id: cleanDeg,
+            degree_name: cleanDeg,
+            major: r.major || r.fieldOfStudy || '',
+            gpa: r.gpa || '',
+            graduated: true,
+            graduation_year: r.graduationYear || r.graduation_year || this.#extractDatePart(r.end_date, 'year') || ''
+          };
+        });
         return { rawValue: normalized, confidence: 1.0 };
       }
 

@@ -79,9 +79,37 @@ export function findStateName(text) {
   return text.trim();
 }
 
-export function decomposeAddress(fullAddress, locationFallback, stateOfResidence) {
-  const raw = String(fullAddress || '').trim();
-  const loc = String(locationFallback || '').trim();
+export function decomposeAddress(fullAddress, locationFallback, stateOfResidence, candidateIdentity = {}) {
+  // Normalize candidate identity to strip from address lines
+  const namesToStrip = [];
+  if (typeof candidateIdentity === 'string' && candidateIdentity.trim()) {
+    namesToStrip.push(candidateIdentity.trim().toLowerCase());
+  } else if (candidateIdentity && typeof candidateIdentity === 'object') {
+    if (candidateIdentity.fullName) namesToStrip.push(candidateIdentity.fullName.trim().toLowerCase());
+    if (candidateIdentity.firstName && candidateIdentity.lastName) {
+      namesToStrip.push(`${candidateIdentity.firstName} ${candidateIdentity.lastName}`.trim().toLowerCase());
+    }
+  }
+
+  // Pre-clean raw input: normalize newlines to commas, strip candidate names, normalize UTF-8 quotes
+  let cleanedRaw = String(fullAddress || '')
+    .normalize('NFKD')
+    .replace(/â€™|[\u2018\u2019]/g, "'")
+    .replace(/\r?\n/g, ', ')
+    .trim();
+
+  for (const name of namesToStrip) {
+    if (!name) continue;
+    const regex = new RegExp(`^${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*[,\\s]*`, 'i');
+    cleanedRaw = cleanedRaw.replace(regex, '').trim();
+  }
+
+  const raw = cleanedRaw;
+  const loc = String(locationFallback || '')
+    .normalize('NFKD')
+    .replace(/â€™|[\u2018\u2019]/g, "'")
+    .replace(/\r?\n/g, ', ')
+    .trim();
 
   // 1. Extract ZIP Code (last 5-digit or 9-digit format in the address, before country)
   const allZips = Array.from(raw.matchAll(/\b(\d{5}(?:-\d{4})?)\b/g));
@@ -151,7 +179,13 @@ export function decomposeAddress(fullAddress, locationFallback, stateOfResidence
       city = rawParts[1];
     }
   }
-  // Capitalize city nicely if in all lowercase
+  // Capitalize city nicely if in all lowercase or mixed with linebreaks
+  city = (city || '').replace(/[\r\n]+/g, ' ').trim();
+  for (const name of namesToStrip) {
+    if (!name) continue;
+    const regex = new RegExp(`\\b${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'gi');
+    city = city.replace(regex, '').trim();
+  }
   if (city && city === city.toLowerCase()) {
     city = city.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
   }
@@ -172,7 +206,14 @@ export function decomposeAddress(fullAddress, locationFallback, stateOfResidence
   if (raw) {
     const rawParts = raw.split(',').map(s => s.trim()).filter(Boolean);
     if (rawParts.length > 0) {
-      addressLine1 = rawParts[0];
+      let firstPart = rawParts[0];
+      for (const name of namesToStrip) {
+        if (firstPart.toLowerCase() === name || firstPart.toLowerCase().startsWith(name)) {
+          firstPart = rawParts[1] || '';
+          break;
+        }
+      }
+      addressLine1 = firstPart;
     }
 
     if (rawParts.length > 1) {

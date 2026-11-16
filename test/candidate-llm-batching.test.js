@@ -235,3 +235,211 @@ test('Phase3AnswerResolution groups questions across multiple jobs for the same 
   // Verify optional field was not sent to LLM and remains unresolved (null)
   assert.equal(app1.values.optional_note.value, null, 'Optional field should be skipped from LLM');
 });
+
+test('ClaudeService passes prompt-caching headers, system cache_control, and thinking disabled', async () => {
+  let capturedHeaders = null;
+  let capturedBody = null;
+
+  const mockFetch = async (url, opts) => {
+    capturedHeaders = opts.headers;
+    capturedBody = JSON.parse(opts.body);
+    return {
+      ok: true,
+      json: async () => ({
+        content: [{
+          text: JSON.stringify({
+            answers: {
+              q1: { answer: 'Master of Science', confidence: 0.95, rationale: 'Matches education profile' }
+            }
+          })
+        }],
+        usage: {
+          input_tokens: 250,
+          output_tokens: 45,
+          cache_creation_input_tokens: 0,
+          cache_read_input_tokens: 1050
+        }
+      })
+    };
+  };
+
+  const claude = new ClaudeService({
+    apiKey: 'mock-key',
+    model: 'claude-haiku-5-5',
+    fetchFn: mockFetch
+  });
+
+  const client = {
+    client: { full_name: 'David Lee', personal_email: 'david@example.com' },
+    additional_information: { highest_education: 'Master of Science' }
+  };
+
+  const questions = [
+    { questionId: 'q1', label: 'What is your highest degree?', type: 'text' }
+  ];
+
+  const results = await claude.resolveCandidateBatch({ client, questions });
+
+  assert.equal(results.q1.answer, 'Master of Science');
+  assert.equal(capturedHeaders['anthropic-beta'], 'prompt-caching-2024-07-31', 'Must pass prompt caching beta header');
+  assert.equal(capturedBody.thinking?.type, 'disabled', 'Must pass thinking disabled to preserve tokens');
+  assert.ok(Array.isArray(capturedBody.system), 'System prompt must be an array of blocks');
+  assert.equal(capturedBody.system[0].cache_control?.type, 'ephemeral', 'System prompt must have ephemeral cache_control');
+  assert.ok(capturedBody.system[0].text.includes('OPERATIONAL RULES & CONSTRAINTS'), 'System prompt must contain screening rules');
+});
+
+test('Phase3AnswerResolution processes multiple candidates concurrently up to configured concurrency limit', async () => {
+  let activeConcurrency = 0;
+  let maxObservedConcurrency = 0;
+
+  const mockFetch = async () => {
+    activeConcurrency++;
+    maxObservedConcurrency = Math.max(maxObservedConcurrency, activeConcurrency);
+    await new Promise(r => setTimeout(r, 20)); // Small sleep to simulate network
+    activeConcurrency--;
+    return {
+      ok: true,
+      json: async () => ({
+        content: [{
+          text: JSON.stringify({
+            answers: {
+              q_1: { answer: 'Yes', confidence: 0.95 }
+            }
+          })
+        }]
+      })
+    };
+  };
+
+  const claudeService = new ClaudeService({
+    apiKey: 'mock-key',
+    fetchFn: mockFetch
+  });
+
+  const engine = new ResolutionEngine({ claudeService });
+
+  const mockStore = {
+    async read(name, fallback) {
+      if (name === 'jobs') {
+        return {
+          uniqueJobs: [{ jobKey: 'job-1' }],
+          assignments: [
+            { applywizzId: 'cand-A', jobKey: 'job-1', companyName: 'Company 1' },
+            { applywizzId: 'cand-B', jobKey: 'job-1', companyName: 'Company 1' },
+            { applywizzId: 'cand-C', jobKey: 'job-1', companyName: 'Company 1' }
+          ]
+        };
+      }
+      if (name === 'form-templates') {
+        return {
+          'job-1': {
+            templateId: 't-1',
+            fields: [
+              { id: 'first_name', label: 'First Name', required: true },
+              { id: 'screen_q', label: 'Do you have Java experience?', type: 'text', required: true }
+            ]
+          }
+        };
+      }
+      if (name === 'applications') return [];
+      return fallback;
+    },
+    async write() {},
+    async loadQuestionBank() {
+      return { clientHistoryMap: new Map(), globalHistory: [] };
+    },
+    async upsertQuestionBank() {}
+  };
+
+  const phase3 = new Phase3AnswerResolution({
+    store: mockStore,
+    engine,
+    config: { phase3Concurrency: 3, llmDelayMs: 0, llmBatchMaxQuestions: 20 }
+  });
+
+  phase3.loadClients = async () => ({
+    'cand-A': { client: { full_name: 'Cand A' }, additional_information: { experience: 'Java dev' } },
+    'cand-B': { client: { full_name: 'Cand B' }, additional_information: { experience: 'Java dev' } },
+    'cand-C': { client: { full_name: 'Cand C' }, additional_information: { experience: 'Java dev' } }
+  });
+
+  const applications = await phase3.createOrResolveApplications();
+
+  assert.equal(applications.length, 3);
+  assert.ok(maxObservedConcurrency > 1, `Max observed concurrency (${maxObservedConcurrency}) should be > 1`);
+  assert.ok(maxObservedConcurrency <= 3, `Max observed concurrency (${maxObservedConcurrency}) should not exceed 3`);
+
+  for (const app of applications) {
+    assert.equal(app.values.screen_q.value, 'Yes');
+    assert.equal(app.status, 'answers_resolved');
+  }
+});
+
+test('Phase3AnswerResolution chunks up to 20 questions in 1 batch call', async () => {
+  let callCount = 0;
+  const mockFetch = async (url, opts) => {
+    callCount++;
+    const body = JSON.parse(opts.body);
+    const answers = {};
+    for (let i = 1; i <= 15; i++) {
+      answers[`q_${i}`] = { answer: `Answer ${i}`, confidence: 0.90 };
+    }
+    return {
+      ok: true,
+      json: async () => ({
+        content: [{ text: JSON.stringify({ answers }) }]
+      })
+    };
+  };
+
+  const claudeService = new ClaudeService({
+    apiKey: 'mock-key',
+    fetchFn: mockFetch
+  });
+
+  const engine = new ResolutionEngine({ claudeService });
+
+  const fields = [{ id: 'first_name', label: 'First Name', required: true }];
+  for (let i = 1; i <= 15; i++) {
+    fields.push({ id: `screening_${i}`, label: `Question ${i}?`, type: 'text', required: true });
+  }
+
+  const mockStore = {
+    async read(name, fallback) {
+      if (name === 'jobs') {
+        return {
+          uniqueJobs: [{ jobKey: 'job-heavy' }],
+          assignments: [{ applywizzId: 'cand-heavy', jobKey: 'job-heavy', companyName: 'Heavy Corp' }]
+        };
+      }
+      if (name === 'form-templates') {
+        return {
+          'job-heavy': { templateId: 't-heavy', fields }
+        };
+      }
+      if (name === 'applications') return [];
+      return fallback;
+    },
+    async write() {},
+    async loadQuestionBank() {
+      return { clientHistoryMap: new Map(), globalHistory: [] };
+    },
+    async upsertQuestionBank() {}
+  };
+
+  const phase3 = new Phase3AnswerResolution({
+    store: mockStore,
+    engine,
+    config: { phase3Concurrency: 1, llmDelayMs: 0, llmBatchMaxQuestions: 20 }
+  });
+
+  phase3.loadClients = async () => ({
+    'cand-heavy': { client: { full_name: 'Heavy Candidate' }, additional_information: { experience: '15 skills' } }
+  });
+
+  const applications = await phase3.createOrResolveApplications();
+
+  assert.equal(callCount, 1, '15 questions should fit into 1 single call when limit is 20');
+  assert.equal(applications.length, 1);
+  assert.equal(applications[0].values.screening_15.value, 'Answer 15');
+});

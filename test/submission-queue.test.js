@@ -369,3 +369,160 @@ test('dry-run mode auto-closes session, captures audit proofs, and transitions t
 
   await fs.rm(tempDir, { recursive: true, force: true }).catch(() => {});
 });
+
+test('Priority Queue: manual click unshifts ahead of batch queue and promotes existing queue item', async () => {
+  const runner = new SubmissionQueueRunner({
+    store: {
+      read: async () => [
+        { applicationId: 'app-batch-1' },
+        { applicationId: 'app-batch-2' },
+        { applicationId: 'app-manual-1' }
+      ]
+    },
+    runLog: { append: async () => {} },
+    oracle: {},
+    phase1: {},
+    phase4: {},
+    sessions: new Map(),
+    config: { submission: { concurrency: 0, launchThrottleMs: 0 } } // 0 concurrency to keep in queue
+  });
+
+  await runner.enqueueApplication('app-batch-1', { isManual: false });
+  await runner.enqueueApplication('app-batch-2', { isManual: false });
+
+  assert.deepEqual(runner.pendingQueue.map(i => i.applicationId || i), ['app-batch-1', 'app-batch-2']);
+
+  // Manual click jumps to front of queue
+  await runner.enqueueApplication('app-manual-1', { isManual: true });
+  assert.deepEqual(runner.pendingQueue.map(i => i.applicationId || i), ['app-manual-1', 'app-batch-1', 'app-batch-2']);
+
+  // Manual click on existing batch item promotes it ahead of batch items
+  await runner.enqueueApplication('app-batch-2', { isManual: true });
+  assert.deepEqual(runner.pendingQueue.map(i => i.applicationId || i), ['app-manual-1', 'app-batch-2', 'app-batch-1']);
+});
+
+test('Manual review safety timeout closes session, preserves filled_verified, and frees slot', async () => {
+  const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'timeout-test-'));
+  let appStore = [
+    { applicationId: 'app-timeout', userId: 'AWL-T', jobId: 'job-t', jobKey: 'job-t', status: 'answers_resolved' }
+  ];
+
+  const store = {
+    async read(name) { return name === 'applications' ? appStore : {}; },
+    async update(name, fallback, updater) {
+      appStore = updater(appStore);
+      return appStore;
+    }
+  };
+
+  const sessions = new Map();
+  let closedSessions = 0;
+
+  const phase4 = {
+    async prepare(appId) {
+      const page = createMockPage();
+      sessions.set(appId, { page });
+      return { status: 'prepared', reviewStatus: 'not_ready' };
+    }
+  };
+
+  const runner = new SubmissionQueueRunner({
+    store,
+    runLog: { append: async () => {} },
+    oracle: { closeSession: async () => { closedSessions++; } },
+    phase1: {},
+    phase4,
+    sessions,
+    config: {
+      clientsPath: path.join(tempDir, 'clients.json'),
+      submission: {
+        concurrency: 1,
+        launchThrottleMs: 0,
+        cooldownMs: 20,
+        awaitTimeoutMs: 50, // 50ms timeout simulation
+        dryRun: false
+      }
+    }
+  });
+
+  await runner.enqueueApplication('app-timeout', { isManual: true });
+  await delay(20);
+
+  const slot = runner.slots[0];
+  assert.equal(slot.status, 'awaiting_review', 'Manual click must enter awaiting_review');
+  assert.ok(slot.reviewRemainingMs !== undefined);
+
+  // Wait for 50ms timeout to trigger
+  await delay(70);
+
+  assert.equal(closedSessions, 1, 'Session should be closed on timeout');
+  assert.notEqual(slot.status, 'awaiting_review', 'Slot must no longer be in awaiting_review after timeout');
+
+  const app = appStore.find(a => a.applicationId === 'app-timeout');
+  assert.equal(app.status, 'filled_verified', 'Application status should transition to filled_verified on timeout');
+  assert.equal(app.reviewStatus, 'timeout_audited');
+
+  await fs.rm(tempDir, { recursive: true, force: true }).catch(() => {});
+});
+
+test('Automated batch with dryRun: false executes live submit automatically', async () => {
+  const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'auto-live-test-'));
+  const submitDir = path.join(tempDir, 'submit');
+  await fs.mkdir(submitDir, { recursive: true });
+
+  let appStore = [
+    { applicationId: 'app-live-1', userId: 'AWL-L1', jobId: 'job-l1', jobKey: 'job-l1', status: 'answers_resolved' }
+  ];
+
+  const store = {
+    async read(name) { return name === 'applications' ? appStore : {}; },
+    async update(name, fallback, updater) {
+      appStore = updater(appStore);
+      return appStore;
+    }
+  };
+
+  const sessions = new Map();
+  let clickedSubmit = false;
+
+  const phase4 = {
+    async prepare(appId) {
+      const page = createMockPage();
+      sessions.set(appId, { page });
+      return { status: 'prepared', reviewStatus: 'not_ready' };
+    }
+  };
+
+  const runner = new SubmissionQueueRunner({
+    store,
+    runLog: { append: async () => {} },
+    oracle: {
+      clickSubmit: async () => { clickedSubmit = true; },
+      closeSession: async () => {}
+    },
+    phase1: {},
+    phase4,
+    sessions,
+    config: {
+      clientsPath: path.join(tempDir, 'clients.json'),
+      submission: {
+        concurrency: 1,
+        launchThrottleMs: 0,
+        cooldownMs: 20,
+        submitWaitMs: 10,
+        submitDir,
+        dryRun: false // Live mode
+      }
+    }
+  });
+
+  await runner.enqueueApplication('app-live-1', { isManual: false });
+  await delay(60);
+
+  assert.equal(clickedSubmit, true, 'Should automatically call clickSubmit in live batch mode');
+  const app = appStore.find(a => a.applicationId === 'app-live-1');
+  assert.equal(app.status, 'submitted', 'Status should be submitted');
+  assert.ok(app.receipt, 'Receipt should be present');
+
+  await fs.rm(tempDir, { recursive: true, force: true }).catch(() => {});
+});

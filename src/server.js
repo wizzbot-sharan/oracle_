@@ -7,8 +7,9 @@ import { seedReconData } from './seed.js';
 import { parseOracleJobUrl } from './shared/url.js';
 import { syncClients } from '../scripts/fetch_clients.mjs';
 import { syncCAs } from '../scripts/fetch_cas.mjs';
+import { getIstDateString } from './utils/ist-date.js';
 
-export async function computeDashboardMetrics({ jobs, applications, templates, clientsPath }) {
+export async function computeDashboardMetrics({ jobs, applications, templates, clientsPath, selectedDateFilter }) {
   let clientsData = {};
   try {
     if (clientsPath && fs.existsSync(clientsPath)) {
@@ -16,20 +17,42 @@ export async function computeDashboardMetrics({ jobs, applications, templates, c
     }
   } catch {}
 
-  const totalClients = Object.keys(clientsData).length;
   const assignments = jobs.assignments || [];
   const uniqueJobs = jobs.uniqueJobs || [];
-  const totalJobs = assignments.length;
-  const uniqueUrls = uniqueJobs.length;
-
   const scannedTemplates = Object.entries(templates).filter(([, t]) => (t.fields?.length || 0) > 0);
   const scannedJobKeys = new Set(scannedTemplates.map(([k]) => k));
-  const scannedUrls = scannedJobKeys.size;
+
+  const isFiltered = Boolean(selectedDateFilter && selectedDateFilter !== 'all');
+  const targetApps = isFiltered
+    ? applications.filter(app => {
+        const d = getIstDateString(app.updatedAt || app.updated_at || app.fillCompletedAt || app.createdAt);
+        return d === selectedDateFilter;
+      })
+    : applications;
+
+  const totalClients = isFiltered
+    ? new Set(targetApps.map(a => a.userId || a.applywizzId).filter(Boolean)).size
+    : Object.keys(clientsData).length;
+
+  const totalJobs = isFiltered
+    ? targetApps.length
+    : assignments.length;
+
+  const uniqueUrls = isFiltered
+    ? new Set(targetApps.map(a => a.canonicalUrl || a.jobKey || a.jobId).filter(Boolean)).size
+    : uniqueJobs.length;
+
+  const scannedUrls = isFiltered
+    ? Object.values(templates).filter(t => {
+        const d = getIstDateString(t.scan?.scannedAt || t.updated_at || t.updatedAt || t.scannedAt);
+        return d === selectedDateFilter;
+      }).length
+    : scannedJobKeys.size;
 
   // Potential unlockable applications covered by scanned unique requisitions
-  const unlockableApplications = assignments.filter(a =>
-    scannedJobKeys.has(a.jobKey) || scannedJobKeys.has(a.jobId)
-  ).length;
+  const unlockableApplications = isFiltered
+    ? targetApps.filter(a => scannedJobKeys.has(a.jobKey) || scannedJobKeys.has(a.jobId)).length
+    : assignments.filter(a => scannedJobKeys.has(a.jobKey) || scannedJobKeys.has(a.jobId)).length;
 
   let resolvedPreAiApps = 0;
   let resolvedPreAiQuestions = 0;
@@ -41,7 +64,7 @@ export async function computeDashboardMetrics({ jobs, applications, templates, c
   let prepared = 0;
   let submitted = 0;
 
-  for (const app of applications) {
+  for (const app of targetApps) {
     if (app.status === 'submitted') submitted++;
     else if (app.status === 'needs_review') prepared++;
     else if (app.status === 'answers_resolved' || app.reviewStatus === 'approved') readyToApply++;
@@ -251,9 +274,34 @@ app.post('/api/scan/queue', async (request, response) => {
   response.status(202).json({ success: true, message: 'Scanner queue started in background', options });
 
   workflow.scanQueue.runQueue(options)
-    .then(async () => {
-      // Auto-resolve applications for newly scanned templates
-      await workflow.phase3.createOrResolveApplications().catch(() => {});
+    .then(async (scanResult) => {
+      // Auto-resolve applications strictly for newly scanned templates in this run
+      const completedJobKeys = scanResult?.newlyCompletedKeys ??
+        Object.entries(scanResult?.jobs || {})
+          .filter(([_, j]) => j.status === 'completed' && !j.reused && j.workerId)
+          .map(([key]) => key);
+
+      if (completedJobKeys.length > 0) {
+        console.log(`[Phase 3 Trigger] Auto-resolving for ${completedJobKeys.length} newly scanned jobs in this run...`);
+        const resolveResult = await workflow.phase3.createOrResolveApplications({ jobKeys: completedJobKeys }).catch(err => {
+          console.error('[Phase 3 Trigger Error]:', err.message);
+        });
+
+        // Phase 4 Auto-Chain: strictly for newly resolved applications in this active run
+        const newlyResolved = resolveResult?.newlyResolvedAppIds || [];
+        if (newlyResolved.length > 0) {
+          console.log(`[Phase 4 Auto-Chain] Enqueueing ${newlyResolved.length} newly resolved applications for this run into submission queue...`);
+          for (const appId of newlyResolved) {
+            await workflow.submissionQueue.enqueueApplication(appId, { isManual: false }).catch(err => {
+              console.error(`[Phase 4 Auto-Chain Error for ${appId}]:`, err.message);
+            });
+          }
+        } else {
+          console.log('[Phase 4 Auto-Chain] No applications reached answers_resolved in this run.');
+        }
+      } else {
+        console.log('[Phase 3 Trigger] No new jobs completed in this scan run. Skipping auto-resolve.');
+      }
     })
     .catch(err => console.error('[Scanner Queue Error]:', err.message));
 });
@@ -399,7 +447,7 @@ app.put('/api/applications/:applicationId/answers', async (request, response) =>
 });
 
 app.post('/api/applications/:applicationId/prepare', async (request, response) => {
-  response.json(await workflow.submissionQueue.enqueueApplication(request.params.applicationId));
+  response.json(await workflow.submissionQueue.enqueueApplication(request.params.applicationId, { isManual: true }));
 });
 
 app.post('/api/applications/:applicationId/approve', async (request, response) => {

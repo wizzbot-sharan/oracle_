@@ -11,6 +11,28 @@
 import { decomposeAddress } from './address-decomposer.js';
 import { decomposePhone } from './phone-decomposer.js';
 
+function cleanString(val) {
+  if (val === null || val === undefined) return '';
+  let s = String(val).trim();
+  if (/^(null|undefined|none)$/i.test(s)) return '';
+  s = s.replace(/â€™|a\u0302\u20ac\u2122|â€TM|[\u2018\u2019]/g, "'");
+  s = s.normalize('NFKD').replace(/â€™|a\u0302\u20ac\u2122|â€TM|[\u2018\u2019]/g, "'");
+  return s;
+}
+
+export function cleanInstitutionName(rawName = '') {
+  if (!rawName) return '';
+  let cleaned = String(rawName)
+    .replace(/â€™|a\u0302\u20ac\u2122|â€TM|[\u2018\u2019]/g, "'")
+    .replace(/[\r\n]+/g, ' ')
+    .trim();
+
+  // Truncate at common resume metadata delimiters: —, --, |, GPA:, Selected for:, etc.
+  cleaned = cleaned.split(/\s*[\u2014\u2013\u2015—–|]\s*|\s+--\s+|\s+GPA[:\s]|\s+Selected for/i)[0].trim();
+  cleaned = cleaned.replace(/[,\s.]+$/, '').trim();
+  return cleanString(cleaned);
+}
+
 export class CanonicalProfile {
   constructor(data = {}) {
     this.raw = data.raw ?? null;
@@ -38,33 +60,35 @@ export class CanonicalProfile {
     const applywizzId = cInfo.applywizz_id || addInfo.applywizz_id || pInfo.applywizz_id || '';
 
     // 1. Identity Normalization
-    const rawFullName = (cInfo.full_name || pInfo.client_name || '').trim();
-    let firstName = (pInfo.first_name || cInfo.first_name || '').trim();
-    let lastName = (pInfo.last_name || cInfo.last_name || '').trim();
+    const rawFullName = cleanString(cInfo.full_name || pInfo.client_name || '');
+    let firstName = cleanString(pInfo.first_name || cInfo.first_name || '');
+    let lastName = cleanString(pInfo.last_name || cInfo.last_name || '');
 
     if ((!firstName || !lastName) && rawFullName) {
-      const parts = rawFullName.split(/\s+/).filter(Boolean);
+      const parts = rawFullName.split(/\s+/).map(cleanString).filter(Boolean);
       if (parts.length === 1) {
         firstName = firstName || parts[0];
       } else if (parts.length > 1) {
         firstName = firstName || parts[0];
-        lastName = lastName || parts.slice(1).join(' ');
+        lastName = lastName || cleanString(parts.slice(1).join(' '));
       }
     }
+    firstName = cleanString(firstName);
+    lastName = cleanString(lastName);
 
     const identity = {
       fullName: rawFullName || [firstName, lastName].filter(Boolean).join(' '),
       firstName,
       lastName,
-      middleName: (addInfo.middle_name || '').trim()
+      middleName: cleanString(addInfo.middle_name || '')
     };
 
     // 2. Contact Normalization
-    const personalEmail = (cInfo.personal_email || pInfo.email || addInfo.personal_email || '').trim();
-    const companyEmail = (cInfo.company_email || pInfo.company_email || '').trim();
+    const personalEmail = cleanString(cInfo.personal_email || pInfo.email || addInfo.personal_email || '');
+    const companyEmail = cleanString(cInfo.company_email || pInfo.company_email || '');
     const email = personalEmail || companyEmail;
 
-    const rawPhone = (addInfo.primary_phone || cInfo.callable_phone || pInfo.phone || cInfo.whatsapp_number || '').trim();
+    const rawPhone = cleanString(addInfo.primary_phone || cInfo.callable_phone || pInfo.phone || cInfo.whatsapp_number || '');
     const phoneDecomp = rawPhone ? decomposePhone(rawPhone) : null;
 
     const contact = {
@@ -78,10 +102,10 @@ export class CanonicalProfile {
     };
 
     // 3. Address Normalization
-    const fullAddress = (addInfo.full_address || pInfo.location || '').trim();
-    const location = (pInfo.location || addInfo.location || '').trim();
-    const stateOfRes = (addInfo.state_of_residence || '').trim();
-    const addr = fullAddress || location || stateOfRes ? decomposeAddress(fullAddress, location, stateOfRes) : {};
+    const fullAddress = cleanString(addInfo.full_address || pInfo.location || '');
+    const location = cleanString(pInfo.location || addInfo.location || '');
+    const stateOfRes = cleanString(addInfo.state_of_residence || '');
+    const addr = fullAddress || location || stateOfRes ? decomposeAddress(fullAddress, location, stateOfRes, identity) : {};
 
     const address = {
       fullAddress,
@@ -182,6 +206,14 @@ export class CanonicalProfile {
         gpa: addInfo.cumulative_gpa || '',
         graduationYear: addInfo.graduation_year || ''
       }];
+    }
+
+    if (Array.isArray(educationRecords) && educationRecords.length > 0) {
+      educationRecords = educationRecords.map(r => ({
+        ...r,
+        institution: cleanInstitutionName(r.institution || r.school || r.school_name || ''),
+        degree: cleanString(r.degree || r.degree_name || '')
+      }));
     }
 
     let experienceRecords = [];

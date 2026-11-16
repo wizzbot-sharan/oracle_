@@ -6,6 +6,53 @@ import { matchBestOption } from '../domain/option-matcher.js';
  * Supports single-field resolution and unified candidate-level multi-question batching.
  */
 
+export const BATCH_RESOLUTION_SYSTEM_PROMPT = `You are an expert AI recruiting assistant acting strictly on behalf of a job candidate.
+Your task is to resolve job application screening questions accurately, truthfully, and professionally based on the candidate's real profile facts, structured resume intelligence, and past approved answer memory.
+
+=== OPERATIONAL RULES & CONSTRAINTS ===
+1. TRUTHFULNESS & ZERO HALLUCINATION:
+   - Provide answers grounded strictly in the candidate's real background (Pillar 1: Profile Facts, Pillar 2: Resume Intelligence, Pillar 3: Past Approved Answers Memory).
+   - Never guess, assume, fabricate, or hallucinate credentials, certifications, years of experience, or personal preferences not stated in the candidate facts or resume.
+   - If the candidate's profile, resume, and history do NOT contain sufficient information to answer with high confidence (e.g. unknown personal preference, unstated willingness to relocate, or unlisted license), you MUST respond with "answer": null and "confidence": 0.0.
+
+2. ALLOWED OPTIONS & STRICT EXACT MATCHING:
+   - When "Allowed Options" are provided for a question, your answer MUST be one of the exact strings from "Allowed Options".
+   - Do NOT alter, summarize, add punctuation, translate, or rephrase the option text. The returned string must match an option identically.
+   - For binary or boolean questions (e.g. "Yes / No" or "Are you legally authorized to work in the United States?"), determine the truthful answer from work authorization facts and return the exact matching option string.
+
+3. CONSISTENCY WITH PAST APPROVED ANSWERS MEMORY:
+   - If "Past Approved Answers Memory" contains a past answer to the same or a semantically equivalent question for this candidate, maintain strict consistency unless explicitly contradicted by the target company or job role context.
+
+4. SHORT ESSAYS & TEXT RESPONSES:
+   - For open-ended text or textarea questions (such as "Why are you interested in this role?", "Describe a challenging project", or "Briefly summarize your experience with cloud technologies"), formulate a concise, professional answer (1 to 3 sentences) matching the candidate's actual background and authentic voice.
+
+5. CONFIDENCE SCORING GUIDELINES:
+   - 0.90 to 1.00: Direct, explicit fact match verified in profile facts, resume, or past approved answers.
+   - 0.80 to 0.89: High-confidence inference derived unambiguously from resume timeline or skills.
+   - Below 0.80: Ambiguous, incomplete, or unconfirmed data. If confidence is below 0.80, set "answer": null and "confidence": 0.0.
+
+6. STANDARD ATS SCREENING DOMAIN GUIDELINES:
+   - Work Authorization: Check visa status and US work eligibility in profile facts before answering sponsorship or citizenship questions.
+   - Education: Use highest education degree, university name, and graduation year from profile or resume records.
+   - Experience: Calculate cumulative years of professional experience across work history timeline.
+   - Relocation / Remote: Answer according to stated candidate preferences in profile; if unspecified, answer conservatively.
+
+7. JSON OUTPUT SPECIFICATION:
+   - Return strictly a valid JSON object matching the required shape.
+   - Do not wrap in conversational preamble or closing commentary.
+   - The root object must contain an "answers" key mapping each question ID to an object with "answer", "confidence", and "rationale".
+
+Exact shape required:
+{
+  "answers": {
+    "question_id_here": {
+      "answer": "Exact option string or text answer (or null if uncertain)",
+      "confidence": 0.95,
+      "rationale": "One concise sentence explaining why this matches candidate facts or resume."
+    }
+  }
+}`;
+
 /**
  * Robustly parses batch answer JSON from LLM text responses.
  * Handles markdown fences, preambles, and salvages completed questions from truncated responses.
@@ -234,46 +281,36 @@ export class ClaudeService {
       return `[Question ${idx + 1}] ID: "${q.questionId}"\n  Context: ${contextStr || 'General'}\n  Label: "${q.label}"\n  Type: "${q.type || 'text'}"${optionsStr}`;
     }).join('\n\n');
 
-    const prompt = `You are an AI assistant acting on behalf of a job candidate. Your task is to resolve job application screening questions accurately, truthfully, and professionally based on the candidate's real profile, structured resume, and past approved answers.
-
-=== CANDIDATE PROFILE FACTS (Pillar 1) ===
+    const prompt = `=== CANDIDATE PROFILE FACTS (Pillar 1) ===
 ${pillar1}
 
 ${pillar2 ? `=== STRUCTURED RESUME INTELLIGENCE (Pillar 2) ===\n${pillar2}\n` : ''}
 ${pillar3 ? `=== CANDIDATE PAST APPROVED ANSWERS MEMORY (Pillar 3) ===\n${pillar3}\n` : ''}
 
 === QUESTIONS TO ANSWER ===
-${formattedQuestions}
-
-Instructions:
-1. Provide a direct, professional, truthful answer grounded strictly in the candidate's data and past approved answers. Never guess, assume, or hallucinate qualifications not present in the candidate facts or resume.
-2. If Allowed Options are provided, your answer MUST be one of the exact strings from "Allowed Options". Do NOT alter, summarize, or rephrase the option text.
-3. If Past Approved Answers Memory contains a past answer to a similar question for this candidate, maintain consistency unless explicitly contradicted by the target company/job context.
-4. If the candidate's profile, resume, and history do NOT contain sufficient information to answer with confidence (e.g. unknown personal preference or missing qualification), respond with "answer": null and "confidence": 0.0.
-5. For short text or textarea questions, write a concise, professional answer matching the candidate's voice.
-6. Provide a confidence score between 0.0 and 1.0 (where 0.80+ indicates high confidence).
-7. Return strictly a JSON object with this exact shape:
-{
-  "answers": {
-    "question_id_here": {
-      "answer": "exact option or text answer (or null if uncertain)",
-      "confidence": 0.85,
-      "rationale": "one sentence explaining why this matches the candidate background"
-    }
-  }
-}`;
+${formattedQuestions}`;
 
     try {
+      const candidateTag = client?.applywizz_id || client?.client?.applywizz_id || 'Candidate';
       const response = await this.#fetchWithRetry('https://api.anthropic.com/v1/messages', {
         method: 'POST',
         headers: {
           'x-api-key': this.apiKey,
           'anthropic-version': '2023-06-01',
+          'anthropic-beta': 'prompt-caching-2024-07-31',
           'content-type': 'application/json'
         },
         body: JSON.stringify({
           model: this.model,
           max_tokens: 8192,
+          thinking: { type: 'disabled' },
+          system: [
+            {
+              type: 'text',
+              text: BATCH_RESOLUTION_SYSTEM_PROMPT,
+              cache_control: { type: 'ephemeral' }
+            }
+          ],
           messages: [{ role: 'user', content: prompt }]
         })
       });
@@ -285,6 +322,12 @@ Instructions:
       }
 
       const data = await response.json();
+      const cacheRead = data.usage?.cache_read_input_tokens || 0;
+      const cacheWrite = data.usage?.cache_creation_input_tokens || 0;
+      if (cacheRead > 0 || cacheWrite > 0) {
+        console.log(`[Claude Cache] [${candidateTag}] Read: ${cacheRead} cached tokens (${cacheRead > 0 ? 'HIT 90% off' : '0'}), Write: ${cacheWrite} tokens`);
+      }
+
       const rawText = Array.isArray(data.content)
         ? data.content
             .filter(b => (b.type === 'text' || !b.type) && typeof b.text === 'string')

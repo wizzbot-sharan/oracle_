@@ -22,6 +22,7 @@ export class SubmissionQueueRunner {
     this.launchThrottleMs = this.config.submission?.launchThrottleMs ?? config.submission?.launchThrottleMs ?? 30000;
     this.cooldownMs = this.config.submission?.cooldownMs ?? config.submission?.cooldownMs ?? 10000;
     this.submitWaitMs = this.config.submission?.submitWaitMs ?? config.submission?.submitWaitMs ?? 10000;
+    this.awaitTimeoutMs = this.config.submission?.awaitTimeoutMs ?? config.submission?.awaitTimeoutMs ?? 300000;
     this.submitDir = this.config.submission?.submitDir ?? (this.config.dataDir ? path.resolve(this.config.dataDir, 'submit') : config.submission?.submitDir);
     this.dryRun = this.config.submission?.dryRun ?? false;
 
@@ -35,10 +36,18 @@ export class SubmissionQueueRunner {
       applywizzId: null,
       jobKey: null,
       clientName: null,
+      isManual: false,
       startedAt: null,
       cooldownUntil: null,
+      reviewExpiresAt: null,
+      reviewTimeout: null,
       session: null,
-      error: null
+      error: null,
+      get reviewRemainingMs() {
+        return (this.status === 'awaiting_review' && this.reviewExpiresAt)
+          ? Math.max(0, this.reviewExpiresAt - Date.now())
+          : 0;
+      }
     }));
 
     this.pendingQueue = [];
@@ -86,34 +95,48 @@ export class SubmissionQueueRunner {
         slot.applywizzId = null;
         slot.jobKey = null;
         slot.clientName = null;
+        slot.isManual = false;
         slot.session = null;
         slot.cooldownUntil = null;
+        slot.reviewExpiresAt = null;
+        slot.reviewTimeout = null;
       }
     }
 
-    const sanitizedSlots = this.slots.map(s => ({
-      slotId: s.slotId,
-      status: s.status,
-      applicationId: s.applicationId,
-      applywizzId: s.applywizzId,
-      jobKey: s.jobKey,
-      clientName: s.clientName,
-      startedAt: s.startedAt,
-      cooldownRemainingMs: s.cooldownUntil ? Math.max(0, s.cooldownUntil - now) : 0,
-      error: s.error
-    }));
+    const sanitizedSlots = this.slots.map(s => {
+      let reviewRemainingMs = 0;
+      if (s.status === 'awaiting_review' && s.reviewExpiresAt) {
+        reviewRemainingMs = Math.max(0, s.reviewExpiresAt - now);
+      }
+      return {
+        slotId: s.slotId,
+        status: s.status,
+        applicationId: s.applicationId,
+        applywizzId: s.applywizzId,
+        jobKey: s.jobKey,
+        clientName: s.clientName,
+        isManual: Boolean(s.isManual),
+        startedAt: s.startedAt,
+        reviewRemainingMs,
+        cooldownRemainingMs: s.cooldownUntil ? Math.max(0, s.cooldownUntil - now) : 0,
+        error: s.error
+      };
+    });
+
+    const pendingAppIds = this.pendingQueue.map(item => (typeof item === 'string' ? item : item.applicationId));
 
     return {
       concurrency: this.concurrency,
       activeCount: sanitizedSlots.filter(s => s.status !== 'idle').length,
       pendingQueueLength: this.pendingQueue.length,
-      pendingQueue: [...this.pendingQueue],
+      pendingQueue: pendingAppIds,
       slots: sanitizedSlots
     };
   }
 
-  async enqueueApplication(applicationId) {
+  async enqueueApplication(applicationId, options = {}) {
     invariant(applicationId, 'APPLICATION_ID_REQUIRED', 'Application ID is required');
+    const isManual = options.isManual !== undefined ? Boolean(options.isManual) : !this.dryRun;
 
     // Check if already in active slot or queue
     const activeSlot = this.slots.find(s => s.applicationId === applicationId && s.status !== 'idle' && s.status !== 'cooldown');
@@ -127,11 +150,32 @@ export class SubmissionQueueRunner {
       };
     }
 
-    if (this.pendingQueue.includes(applicationId)) {
+    const queueIdx = this.pendingQueue.findIndex(item => (typeof item === 'string' ? item : item.applicationId) === applicationId);
+    if (queueIdx !== -1) {
+      // If was previously automated and now manually clicked, promote ahead of batch items
+      if (isManual) {
+        const [promoted] = this.pendingQueue.splice(queueIdx, 1);
+        const item = typeof promoted === 'string' ? { applicationId: promoted, isManual: true, enqueuedAt: Date.now() } : { ...promoted, isManual: true };
+        const lastManualIdx = this.pendingQueue.findLastIndex(i => (typeof i === 'object' && i.isManual));
+        if (lastManualIdx !== -1) {
+          this.pendingQueue.splice(lastManualIdx + 1, 0, item);
+        } else {
+          this.pendingQueue.unshift(item);
+        }
+        console.log(`[SubmissionQueue] Promoted ${applicationId} with manual priority. Queue length: ${this.pendingQueue.length}`);
+        setImmediate(() => this.dispatchNext().catch(err => console.error('[SubmissionQueue] Dispatch error:', err)));
+        const newPos = this.pendingQueue.findIndex(i => (typeof i === 'string' ? i : i.applicationId) === applicationId);
+        return {
+          enqueued: true,
+          promoted: true,
+          queuePosition: newPos + 1,
+          applicationId
+        };
+      }
       return {
         enqueued: false,
         alreadyQueued: true,
-        queuePosition: this.pendingQueue.indexOf(applicationId) + 1,
+        queuePosition: queueIdx + 1,
         applicationId
       };
     }
@@ -141,15 +185,34 @@ export class SubmissionQueueRunner {
     const app = applications.find(item => item.applicationId === applicationId);
     invariant(app, 'APPLICATION_NOT_FOUND', `Application ${applicationId} not found`);
 
-    this.pendingQueue.push(applicationId);
-    console.log(`[SubmissionQueue] Enqueued ${applicationId}. Queue length: ${this.pendingQueue.length}`);
+    const queueItem = {
+      applicationId,
+      isManual,
+      enqueuedAt: Date.now()
+    };
+
+    if (isManual) {
+      const lastManualIdx = this.pendingQueue.findLastIndex(item => (typeof item === 'object' && item.isManual));
+      if (lastManualIdx !== -1) {
+        this.pendingQueue.splice(lastManualIdx + 1, 0, queueItem);
+      } else {
+        this.pendingQueue.unshift(queueItem);
+      }
+      console.log(`[SubmissionQueue] Enqueued ${applicationId} with manual priority. Queue length: ${this.pendingQueue.length}`);
+    } else {
+      this.pendingQueue.push(queueItem);
+      console.log(`[SubmissionQueue] Enqueued ${applicationId} in batch queue (FIFO). Queue length: ${this.pendingQueue.length}`);
+    }
 
     // Trigger dispatch asynchronously
     setImmediate(() => this.dispatchNext().catch(err => console.error('[SubmissionQueue] Dispatch error:', err)));
 
+    const currentPos = this.pendingQueue.findIndex(item => (typeof item === 'string' ? item : item.applicationId) === applicationId);
+
     return {
       enqueued: true,
-      queuePosition: this.pendingQueue.length,
+      queuePosition: currentPos !== -1 ? currentPos + 1 : this.pendingQueue.length,
+      isManual,
       applicationId
     };
   }
@@ -166,19 +229,27 @@ export class SubmissionQueueRunner {
       return;
     }
 
-    const nextApplicationId = this.pendingQueue.shift();
-    if (!nextApplicationId) return;
+    const nextRaw = this.pendingQueue.shift();
+    if (!nextRaw) return;
+
+    const queueItem = typeof nextRaw === 'string' ? { applicationId: nextRaw, isManual: false } : nextRaw;
 
     // Launch worker asynchronously
-    this.#runWorker(idleSlot, nextApplicationId).catch(err => {
-      console.error(`[SubmissionQueue] Worker in Slot ${idleSlot.slotId} encountered fatal error for ${nextApplicationId}:`, err);
+    this.#runWorker(idleSlot, queueItem).catch(err => {
+      console.error(`[SubmissionQueue] Worker in Slot ${idleSlot.slotId} encountered fatal error for ${queueItem.applicationId}:`, err);
     });
   }
 
-  async #runWorker(slot, applicationId) {
+  async #runWorker(slot, queueItem) {
+    const applicationId = queueItem.applicationId;
+    const isManual = Boolean(queueItem.isManual);
+
     slot.status = 'launching';
     slot.applicationId = applicationId;
+    slot.isManual = isManual;
     slot.startedAt = nowIso();
+    slot.reviewExpiresAt = null;
+    slot.reviewTimeout = null;
     slot.error = null;
 
     try {
@@ -196,7 +267,7 @@ export class SubmissionQueueRunner {
       slot.jobKey = application.jobKey || application.jobId;
       slot.clientName = application.clientName || client?.client?.full_name || applywizzId;
 
-      console.log(`\n=== [Submission Worker Slot ${slot.slotId}] Starting live fill for ${applywizzId} (Job: ${slot.jobKey}) ===`);
+      console.log(`\n=== [Submission Worker Slot ${slot.slotId}] Starting live fill for ${applywizzId} (Job: ${slot.jobKey}, Manual: ${isManual}) ===`);
 
       // 1. Wait for global launch throttle (30s)
       await this.waitForLaunchSlot(this.launchThrottleMs);
@@ -217,27 +288,43 @@ export class SubmissionQueueRunner {
         console.warn(`[Submission Worker Slot ${slot.slotId}] Form filling had failures; halting for operator inspection.`);
       }
 
-      // Dry-Run Visual Audit Mode: Do not click Submit. Auto-close browser cleanly to free worker slot for queued applications.
-      if (this.dryRun) {
-        console.log(`[Submission Worker Slot ${slot.slotId}] Dry-Run Audit Mode: All pages filled and visual audit screenshots captured. Auto-closing session without submitting.`);
-        const session = this.sessions.get(applicationId);
-        if (session) {
-          await this.oracle.closeSession(session).catch(() => {});
-          this.sessions.delete(applicationId);
+      // Branch 1: Automated Batch Processing (!isManual)
+      if (!isManual) {
+        if (this.dryRun) {
+          console.log(`[Submission Worker Slot ${slot.slotId}] Automated Batch Dry-Run: Visual audit screenshots captured. Auto-closing session.`);
+          const session = this.sessions.get(applicationId);
+          if (session) {
+            await this.oracle.closeSession(session).catch(() => {});
+            this.sessions.delete(applicationId);
+          }
+          slot.session = null;
+          await this.#cooldownSlot(slot);
+          return;
+        } else {
+          console.log(`[Submission Worker Slot ${slot.slotId}] Automated Batch Live Mode: Submitting application automatically...`);
+          await this.finalizeSubmission(slot, applicationId, 'auto_batch');
+          return;
         }
-        slot.session = null;
-        await this.#cooldownSlot(slot);
-        return;
       }
 
-      // 3. Safety Gate Reached: Halt at final page before submit
+      // Branch 2: Manual Dashboard Click (isManual: true) -> Halt at review page with 5-minute safety timeout
       slot.status = 'awaiting_review';
       const session = this.sessions.get(applicationId);
       slot.session = session;
+      slot.reviewExpiresAt = Date.now() + this.awaitTimeoutMs;
 
-      console.log(`[Submission Worker Slot ${slot.slotId}] Strict Safety Gate: Live session halted at review step. Awaiting operator confirmation.`);
+      console.log(`[Submission Worker Slot ${slot.slotId}] Manual Review Gate: Session halted at review step. 5-minute timeout countdown started.`);
 
-      // 4. Attach listeners on live page for manual submit or window close
+      // Attach 5-minute safety timeout
+      slot.reviewTimeout = setTimeout(async () => {
+        if (slot.status === 'awaiting_review' && slot.applicationId === applicationId) {
+          console.warn(`[Submission Worker Slot ${slot.slotId}] 5-minute review window expired for ${applicationId}. Auto-closing session.`);
+          await this.closeManualSessionOnTimeout(slot, applicationId);
+        }
+      }, this.awaitTimeoutMs);
+
+      if (slot.reviewTimeout.unref) slot.reviewTimeout.unref();
+
       if (session?.page) {
         this.#attachLivePageObservers(slot, applicationId, session);
       }
@@ -246,6 +333,38 @@ export class SubmissionQueueRunner {
       slot.error = error.message;
       await this.#cooldownSlot(slot);
     }
+  }
+
+  async closeManualSessionOnTimeout(slot, applicationId) {
+    if (slot.reviewTimeout) {
+      clearTimeout(slot.reviewTimeout);
+      slot.reviewTimeout = null;
+    }
+    if (slot.checkInterval) {
+      clearInterval(slot.checkInterval);
+      slot.checkInterval = null;
+    }
+
+    const session = this.sessions.get(applicationId);
+    if (session) {
+      await this.oracle.closeSession(session).catch(() => {});
+      this.sessions.delete(applicationId);
+    }
+
+    // Transition application status to filled_verified to preserve screenshots & fill state
+    await this.store.update('applications', [], apps => apps.map(app => {
+      if (app.applicationId !== applicationId) return app;
+      return {
+        ...app,
+        status: 'filled_verified',
+        reviewStatus: 'timeout_audited',
+        updatedAt: nowIso()
+      };
+    }));
+
+    slot.session = null;
+    slot.reviewExpiresAt = null;
+    await this.#cooldownSlot(slot);
   }
 
   #attachLivePageObservers(slot, applicationId, session) {
@@ -319,7 +438,14 @@ export class SubmissionQueueRunner {
     this.activeSubmissions.add(applicationId);
 
     const targetSlot = slot || this.slots.find(s => s.applicationId === applicationId);
-    if (targetSlot) targetSlot.status = 'submitting';
+    if (targetSlot) {
+      if (targetSlot.reviewTimeout) {
+        clearTimeout(targetSlot.reviewTimeout);
+        targetSlot.reviewTimeout = null;
+      }
+      targetSlot.reviewExpiresAt = null;
+      targetSlot.status = 'submitting';
+    }
 
     const session = this.sessions.get(applicationId);
     invariant(session, 'SESSION_MISSING', 'Live browser session not found');
@@ -330,8 +456,8 @@ export class SubmissionQueueRunner {
     console.log(`\n=== [Submission Finalizer] Finalizing submission for ${applicationId} (Source: ${source}) ===`);
 
     try {
-      // 1. If dashboard source, click submit programmatically via Playwright
-      if (source === 'dashboard') {
+      // 1. If dashboard or auto-live source, click submit programmatically via Playwright
+      if (source === 'dashboard' || source === 'auto_batch' || source === 'auto_live') {
         console.log(`[Submission Finalizer] Clicking submit button via Playwright...`);
         await this.oracle.clickSubmit({ session }).catch(err => {
           console.warn(`[Submission Finalizer] clickSubmit note: ${err.message}`);
@@ -399,10 +525,16 @@ export class SubmissionQueueRunner {
   }
 
   async #cooldownSlot(slot) {
+    if (slot.reviewTimeout) {
+      clearTimeout(slot.reviewTimeout);
+      slot.reviewTimeout = null;
+    }
     if (slot.checkInterval) {
       clearInterval(slot.checkInterval);
       slot.checkInterval = null;
     }
+    slot.reviewExpiresAt = null;
+    slot.isManual = false;
     slot.status = 'cooldown';
     slot.session = null;
     slot.cooldownUntil = Date.now() + this.cooldownMs;

@@ -38,8 +38,9 @@ export const config = Object.freeze({
   questionBankCsvPath: path.resolve(rootDir, process.env.QUESTION_BANK_CSV_PATH ?? 'data/question_bank.csv'),
   dataDir: path.resolve(rootDir, 'data'),
   runtimeDir: path.resolve(rootDir, 'data/runtime'),
-  llmDelayMs: numberEnv('LLM_DELAY_MS', 2000),
-  llmBatchMaxQuestions: numberEnv('LLM_BATCH_MAX_QUESTIONS', 10),
+  phase3Concurrency: numberEnv('PHASE3_CONCURRENCY', 3),
+  llmDelayMs: numberEnv('LLM_DELAY_MS', 0),
+  llmBatchMaxQuestions: numberEnv('LLM_BATCH_MAX_QUESTIONS', 20),
   scanner: {
     concurrency: numberEnv('SCANNER_CONCURRENCY', 3),
     launchThrottleMs: numberEnv('SCANNER_LAUNCH_THROTTLE_MS', 30000),
@@ -66,6 +67,7 @@ export const config = Object.freeze({
     submitDir: path.resolve(rootDir, process.env.SUBMISSION_DIR ?? 'data/submit'),
     resumeDir: path.resolve(rootDir, process.env.RESUME_DIR ?? 'data/runtime/resumes'),
     statusPath: path.resolve(rootDir, process.env.SUBMISSION_STATUS_PATH ?? 'data/submission-status.json'),
-    dryRun: process.env.SUBMISSION_DRY_RUN !== 'false'
+    dryRun: process.env.SUBMISSION_DRY_RUN !== 'false',
+    awaitTimeoutMs: numberEnv('SUBMISSION_AWAIT_TIMEOUT_MS', 300000)
   }
 });
