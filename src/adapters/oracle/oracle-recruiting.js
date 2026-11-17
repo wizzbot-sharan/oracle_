@@ -2249,18 +2249,36 @@ export class OracleRecruitingAdapter {
     }
 
     if (!locator) {
-      locator = field.sourceId
-        ? page.locator(`[id="${field.sourceId.replaceAll('"', '\\"')}"]`).first()
-        : field.sourceName
-          ? page.locator(`[name="${field.sourceName.replaceAll('"', '\\"')}"]`).first()
-          : page.getByLabel(field.label).first();
+      const baseName = (field.sourceName || field.sourceId || '').replace(/-\d+$/, '');
+      const drawer = context.drawer || null;
+      if (drawer && typeof drawer.locator === 'function') {
+        locator = drawer.locator([
+          baseName ? `input[name="${baseName}"], textarea[name="${baseName}"], [id^="${baseName}-"], [id="${baseName}"]` : null,
+          field.sourceName ? `[name="${field.sourceName}"]` : null,
+          field.label ? `input[aria-label="${field.label}"], textarea[aria-label="${field.label}"], [placeholder="${field.label}"]` : null
+        ].filter(Boolean).join(', ')).first();
+      } else {
+        locator = (field.sourceName ? page.locator(`[name="${field.sourceName.replaceAll('"', '\\"')}"]`).first() : null) ||
+          (field.sourceId ? page.locator(`[id="${field.sourceId.replaceAll('"', '\\"')}"]`).first() : null);
+        if (!locator || (await locator.count().catch(() => 0)) === 0) {
+          if (baseName) {
+            locator = page.locator(`[name="${baseName}"], [id^="${baseName}-"], [id="${baseName}"]`).first();
+          }
+        }
+        if (!locator || (await locator.count().catch(() => 0)) === 0) {
+          locator = page.getByLabel(field.label).first();
+        }
+      }
     }
 
     await this.#smoothScrollIntoView(page, locator);
 
     const liveRole = typeof locator.getAttribute === 'function' ? await locator.getAttribute('role').catch(() => null) : null;
-    const isLiveCombobox = field.type === 'combobox' || liveRole === 'combobox' ||
-      (typeof locator.evaluate === 'function' ? await locator.evaluate(el => el.classList?.contains('cx-select-input') || el.closest('.cx-select-container') !== null || el.getAttribute('aria-haspopup') === 'grid').catch(() => false) : false);
+    const isAddressLine1 = /address_line1|^addressline1$|^address_1$|^address$/i.test(field.id || '') ||
+      /address\s*line\s*1|street\s*address/i.test(field.label || '');
+
+    const isLiveCombobox = !isAddressLine1 && (field.type === 'combobox' || liveRole === 'combobox' ||
+      (typeof locator.evaluate === 'function' ? await locator.evaluate(el => el.classList?.contains('cx-select-input') || el.closest('.cx-select-container') !== null || el.getAttribute('aria-haspopup') === 'grid').catch(() => false) : false));
 
     const effectiveAnswer = coerceToString(answer, field.options);
 
@@ -2285,6 +2303,13 @@ export class OracleRecruitingAdapter {
     }
 
     await humanType(locator, effectiveAnswer, this.humanDelay);
+    if (isAddressLine1) {
+      // Dismiss any Google Places or Oracle autocomplete dropdown without committing suggested location
+      await locator.press('Escape').catch(() => {});
+      await humanPause({ min: 200, max: 400 });
+      await locator.evaluate(el => el.blur()).catch(() => {});
+      console.log(`[Phase 4] [Job ${context.jobId ?? ''} | User ${context.userId ?? ''}] ✓ Typed address line 1 cleanly without autocomplete selection.`);
+    }
     await humanPause(this.actionGap);
     const actualVal = await locator.inputValue();
     if (field.type === 'tel' || field.id === 'phone_number') {
@@ -2607,6 +2632,37 @@ export class OracleRecruitingAdapter {
         addBtn = page.locator(`button:has-text("${group.addButton || group.label}"):visible`).first();
       }
 
+      // 1. Inline links handling (supporting_links, another_link, portfolio/linkedin)
+      if (isInlineLink) {
+        let filledLink = false;
+        for (const child of group.children ?? []) {
+          const answer = this.#resolveChildAnswer(child, row);
+          if (!answer) continue;
+          const baseName = (child.sourceName || child.sourceId || '').replace(/-\d+$/, '');
+          const linkInput = page.locator([
+            baseName ? `input[name="${baseName}"]:visible, [id^="${baseName}-"]:visible, [id="${baseName}"]:visible` : null,
+            child.sourceId ? `[id="${child.sourceId}"]:visible` : null,
+            'input[type="url"]:visible',
+            'input[name*="siteLink"]:visible'
+          ].filter(Boolean).join(', ')).first();
+
+          if (await visible(linkInput)) {
+            await humanType(linkInput, String(answer), this.humanDelay);
+            await linkInput.evaluate(el => el.blur()).catch(() => {});
+            console.log(`[Phase 4] [Job ${context.jobId ?? ''} | User ${context.userId ?? ''}] ✓ Filled inline link: "${answer}"`);
+            filledLink = true;
+          }
+        }
+        if (!filledLink) {
+          for (const child of group.children ?? []) {
+            const answer = this.#resolveChildAnswer(child, row);
+            if (!answer) continue;
+            await this.#fillField(page, child, answer, {}, context);
+          }
+        }
+        continue;
+      }
+
       if (await visible(addBtn)) {
         await this.#smoothScrollIntoView(page, addBtn);
         await humanPause({ min: 500, max: 1000 });
@@ -2615,55 +2671,66 @@ export class OracleRecruitingAdapter {
 
       // 2. Wait for drawer to appear and settle
       const drawer = page.locator('.apply-flow-drawer:visible, [role="dialog"]:visible').first();
-      if (!isInlineLink && typeof drawer?.waitFor === 'function') {
+      if (typeof drawer?.waitFor === 'function') {
         await drawer.waitFor({ state: 'visible', timeout: 5000 }).catch(() => {});
         await humanPause({ min: 500, max: 1000 });
       }
 
-      // 3. Fill all inner fields
+      // 3. Fill all inner fields scoped to drawer
       let filledAny = false;
       for (const child of group.children ?? []) {
         const answer = this.#resolveChildAnswer(child, row);
         if (answer === null || answer === undefined || answer === '') continue;
         await humanPause(this.actionGap);
-        await this.#fillField(page, child, answer, {}, context);
+        await this.#fillField(page, child, answer, {}, { ...context, drawer });
         filledAny = true;
       }
 
       // 4. For drawer/modal sections (Education, Experience, License):
-      if (!isInlineLink) {
-        if (!filledAny) {
-          // Empty row: cancel out of drawer
-          const cancelBtn = page.locator('button:has-text("Cancel"):visible').first();
-          if (await visible(cancelBtn)) await cancelBtn.click().catch(() => {});
-          continue;
+      if (!filledAny) {
+        // Empty row: cancel out of drawer
+        const cancelBtn = (drawer && typeof drawer.locator === 'function'
+          ? drawer.locator('button:has-text("Cancel"):visible')
+          : page.locator('button:has-text("Cancel"):visible')).first();
+        if (await visible(cancelBtn)) await cancelBtn.click().catch(() => {});
+        continue;
+      }
+
+      await humanPause({ min: 500, max: 1000 });
+
+      const sectionName = (group.label || group.id).replace(/^add\s+/i, '').trim();
+      const saveBtn = (drawer && typeof drawer.locator === 'function' ? drawer.locator([
+        'button.apply-flow-drawer__save:visible',
+        `button:has-text("Add ${sectionName}"):visible`,
+        'button:has-text("Save"):visible',
+        'button:has-text("Done"):visible',
+        'button:has-text("Add"):visible'
+      ].join(', ')) : page.locator([
+        'button.apply-flow-drawer__save:visible',
+        `button:has-text("Add ${sectionName}"):visible`,
+        'button:has-text("Save"):visible',
+        'button:has-text("Done"):visible',
+        'button:has-text("Add"):visible'
+      ].join(', '))).first();
+
+      if (await visible(saveBtn)) {
+        await this.#smoothScrollIntoView(page, saveBtn);
+        await humanPause({ min: 300, max: 600 });
+        await saveBtn.click();
+        // Wait for drawer to close/detach
+        if (typeof drawer?.waitFor === 'function') {
+          await drawer.waitFor({ state: 'detached', timeout: 7000 }).catch(async () => {
+            await drawer.waitFor({ state: 'hidden', timeout: 3000 }).catch(() => {});
+          });
         }
-
-        await humanPause({ min: 500, max: 1000 });
-
-        const sectionName = (group.label || group.id).replace(/^add\s+/i, '').trim();
-        const saveBtn = page.locator([
-          'button.apply-flow-drawer__save:visible',
-          `button:has-text("Add ${sectionName}"):visible`,
-          `button:has-text("Save"):visible`,
-          `button:has-text("Done"):visible`
-        ].join(', ')).first();
-
-        if (await visible(saveBtn)) {
-          await this.#smoothScrollIntoView(page, saveBtn);
-          await humanPause({ min: 300, max: 600 });
-          await saveBtn.click();
-          // Wait for drawer to close/detach if supported by page locator
-          if (typeof drawer?.waitFor === 'function') {
-            await drawer.waitFor({ state: 'hidden', timeout: 7000 }).catch(() => {});
-          }
-          await humanPause({ min: 1000, max: 1500 });
-          console.log(`[Phase 4] [Job ${context.jobId ?? ''} | User ${context.userId ?? ''}] ✓ Saved ${sectionName} record`);
-        } else {
-          console.warn(`[Phase 4] [Job ${context.jobId ?? ''} | User ${context.userId ?? ''}] ⚠ Save button for ${sectionName} not found, checking Cancel fallback...`);
-          const cancelBtn = page.locator('button:has-text("Cancel"):visible').first();
-          if (await visible(cancelBtn)) await cancelBtn.click().catch(() => {});
-        }
+        await humanPause({ min: 1000, max: 1500 });
+        console.log(`[Phase 4] [Job ${context.jobId ?? ''} | User ${context.userId ?? ''}] ✓ Saved ${sectionName} record`);
+      } else {
+        console.warn(`[Phase 4] [Job ${context.jobId ?? ''} | User ${context.userId ?? ''}] ⚠ Save button for ${sectionName} not found, checking Cancel fallback...`);
+        const cancelBtn = (drawer && typeof drawer.locator === 'function'
+          ? drawer.locator('button:has-text("Cancel"):visible')
+          : page.locator('button:has-text("Cancel"):visible')).first();
+        if (await visible(cancelBtn)) await cancelBtn.click().catch(() => {});
       }
 
       await humanPause(this.actionGap);

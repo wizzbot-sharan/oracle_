@@ -463,6 +463,8 @@ export class ResolutionEngine {
             degree_name: cleanDeg,
             major: r.major || r.fieldOfStudy || '',
             gpa: r.gpa || '',
+            country: r.country || r.country_code || canonical.address.country || 'United States',
+            country_code: r.country_code || r.country || canonical.address.country || 'United States',
             graduated: true,
             graduation_year: r.graduationYear || r.graduation_year || this.#extractDatePart(r.end_date, 'year') || ''
           };
