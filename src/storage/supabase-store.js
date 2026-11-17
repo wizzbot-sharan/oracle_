@@ -933,6 +933,239 @@ export class SupabaseStore {
     return updated;
   }
 
+  _normalizeApplicationRow(row) {
+    if (!row) return null;
+    return {
+      applicationId: row.application_id,
+      applywizzId: row.applywizz_id,
+      userId: row.applywizz_id,
+      clientName: row.client_name,
+      companyName: row.company_name,
+      jobId: row.job_key,
+      jobKey: row.job_key,
+      templateId: row.template_id,
+      canonicalUrl: row.canonical_url,
+      tenantHost: row.tenant_host,
+      tenantKey: row.tenant_key,
+      status: row.status,
+      reviewStatus: row.review_status,
+      values: this.fromJson(row.values, {}),
+      unresolvedFields: this.fromJson(row.unresolved_fields, []),
+      fillResults: this.fromJson(row.fill_results, []),
+      submissionResult: this.fromJson(row.submission_result, null),
+      screenshots: this.fromJson(row.screenshots, []),
+      fillLogs: this.fromJson(row.fill_logs, []),
+      fillCompletedAt: row.fill_completed_at,
+      receipt: this.fromJson(row.receipt, null),
+      createdAt: row.created_at,
+      updatedAt: row.updated_at
+    };
+  }
+
+  /**
+   * Fetches a single application by application_id
+   */
+  async getApplication(applicationId) {
+    if (!applicationId) return null;
+
+    if (this.pool) {
+      try {
+        const res = await this.query(`
+          SELECT application_id, applywizz_id, job_key, client_name, company_name,
+                 template_id, canonical_url, tenant_host, tenant_key, status,
+                 review_status, "values", unresolved_fields, fill_results,
+                 submission_result, screenshots, fill_logs, fill_completed_at, receipt,
+                 created_at, updated_at
+          FROM applications
+          WHERE application_id = $1
+          LIMIT 1
+        `, [applicationId]);
+        if (res.rows?.[0]) {
+          return this._normalizeApplicationRow(res.rows[0]);
+        }
+      } catch (err) {
+        console.warn(`[SupabaseStore] getApplication error from PostgreSQL for ${applicationId}:`, err.message);
+      }
+    } else if (this.client) {
+      try {
+        const { data, error } = await this.client.from('applications').select('*').eq('application_id', applicationId).maybeSingle();
+        if (!error && data) {
+          return this._normalizeApplicationRow(data);
+        }
+      } catch (err) {
+        console.warn(`[SupabaseStore] getApplication error from REST for ${applicationId}:`, err.message);
+      }
+    }
+
+    if (this.fallbackStore) {
+      const fallbackApps = await this.fallbackStore.read('applications', []);
+      const match = (fallbackApps || []).find(a => (a.applicationId || a.application_id) === applicationId);
+      return match ? structuredClone(match) : null;
+    }
+
+    return null;
+  }
+
+  /**
+   * Fetches a single form template by job_key
+   */
+  async getTemplate(jobKey) {
+    if (!jobKey) return null;
+
+    if (this.pool) {
+      try {
+        const res = await this.query(`
+          SELECT job_key, template_id, version, submit_present, fields, conditional_branches, repeatable_groups, scan_metadata
+          FROM form_templates
+          WHERE job_key = $1
+          LIMIT 1
+        `, [jobKey]);
+        if (res.rows?.[0]) {
+          const row = res.rows[0];
+          return {
+            templateId: row.template_id,
+            version: row.version,
+            jobKey: row.job_key,
+            submitPresent: Boolean(row.submit_present),
+            fields: this.fromJson(row.fields, []),
+            conditionalBranches: this.fromJson(row.conditional_branches, []),
+            repeatableGroups: this.fromJson(row.repeatable_groups, []),
+            scan: this.fromJson(row.scan_metadata, {})
+          };
+        }
+      } catch (err) {
+        console.warn(`[SupabaseStore] getTemplate error from PostgreSQL for ${jobKey}:`, err.message);
+      }
+    } else if (this.client) {
+      try {
+        const { data, error } = await this.client.from('form_templates').select('*').eq('job_key', jobKey).maybeSingle();
+        if (!error && data) {
+          return {
+            templateId: data.template_id,
+            version: data.version,
+            jobKey: data.job_key,
+            submitPresent: Boolean(data.submit_present),
+            fields: this.fromJson(data.fields, []),
+            conditionalBranches: this.fromJson(data.conditional_branches, []),
+            repeatableGroups: this.fromJson(data.repeatable_groups, []),
+            scan: this.fromJson(data.scan_metadata, {})
+          };
+        }
+      } catch (err) {
+        console.warn(`[SupabaseStore] getTemplate error from REST for ${jobKey}:`, err.message);
+      }
+    }
+
+    if (this.fallbackStore) {
+      const fallbackTemplates = await this.fallbackStore.read('form-templates', {});
+      return fallbackTemplates?.[jobKey] || null;
+    }
+
+    return null;
+  }
+
+  /**
+   * Scoped update for a single application. Avoids full-table sweeps.
+   */
+  async updateApplication(applicationId, updater) {
+    const current = await this.getApplication(applicationId);
+    if (!current) {
+      throw new Error(`Application ${applicationId} not found`);
+    }
+
+    const updated = await updater(structuredClone(current));
+
+    const appId = updated.applicationId || applicationId;
+    const applywizzId = updated.applywizzId || updated.userId;
+    const jobKey = updated.jobKey || updated.jobId;
+    const clientName = updated.clientName || '';
+    const companyName = updated.companyName || '';
+    const templateId = updated.templateId || null;
+    const canonicalUrl = updated.canonicalUrl || null;
+    const tenantHost = updated.tenantHost || null;
+    const tenantKey = updated.tenantKey || null;
+    const status = updated.status || 'needs_input';
+    const reviewStatus = updated.reviewStatus || 'not_ready';
+    const valuesJson = this.toJson(updated.values || {});
+    const unresolvedJson = this.toJson(updated.unresolvedFields || []);
+    const fillResultsJson = this.toJson(updated.fillResults || []);
+    const submissionResultJson = this.toJson(updated.submissionResult || null);
+    const screenshotsJson = this.toJson(updated.screenshots || []);
+    const fillLogsJson = this.toJson(updated.fillLogs || []);
+    const fillCompletedAt = updated.fillCompletedAt || null;
+    const receiptJson = this.toJson(updated.receipt || null);
+    const updatedAt = updated.updatedAt || updated.updated_at || new Date().toISOString();
+
+    if (this.pool) {
+      await this.query(`
+        INSERT INTO applications (
+          application_id, applywizz_id, job_key, client_name, company_name, template_id,
+          canonical_url, tenant_host, tenant_key, status, review_status, "values",
+          unresolved_fields, fill_results, submission_result, screenshots, fill_logs,
+          fill_completed_at, receipt, updated_at
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12::jsonb, $13::jsonb, $14::jsonb, $15::jsonb, $16::jsonb, $17::jsonb, $18, $19::jsonb, COALESCE($20, NOW()))
+        ON CONFLICT (application_id) DO UPDATE SET
+          applywizz_id = EXCLUDED.applywizz_id,
+          job_key = EXCLUDED.job_key,
+          client_name = EXCLUDED.client_name,
+          company_name = EXCLUDED.company_name,
+          template_id = EXCLUDED.template_id,
+          canonical_url = EXCLUDED.canonical_url,
+          tenant_host = EXCLUDED.tenant_host,
+          tenant_key = EXCLUDED.tenant_key,
+          status = EXCLUDED.status,
+          review_status = EXCLUDED.review_status,
+          "values" = EXCLUDED."values",
+          unresolved_fields = EXCLUDED.unresolved_fields,
+          fill_results = EXCLUDED.fill_results,
+          submission_result = EXCLUDED.submission_result,
+          screenshots = EXCLUDED.screenshots,
+          fill_logs = EXCLUDED.fill_logs,
+          fill_completed_at = EXCLUDED.fill_completed_at,
+          receipt = EXCLUDED.receipt,
+          updated_at = COALESCE(EXCLUDED.updated_at, applications.updated_at, NOW())
+      `, [
+        appId, applywizzId, jobKey, clientName, companyName, templateId,
+        canonicalUrl, tenantHost, tenantKey, status, reviewStatus, valuesJson,
+        unresolvedJson, fillResultsJson, submissionResultJson,
+        screenshotsJson, fillLogsJson, fillCompletedAt, receiptJson, updatedAt
+      ]);
+    } else if (this.client) {
+      await this.client.from('applications').upsert([{
+        application_id: appId,
+        applywizz_id: applywizzId,
+        job_key: jobKey,
+        client_name: clientName,
+        company_name: companyName,
+        template_id: templateId,
+        canonical_url: canonicalUrl,
+        tenant_host: tenantHost,
+        tenant_key: tenantKey,
+        status,
+        review_status: reviewStatus,
+        values: updated.values || {},
+        unresolved_fields: updated.unresolvedFields || [],
+        fill_results: updated.fillResults || [],
+        submission_result: updated.submissionResult || null,
+        screenshots: updated.screenshots || [],
+        fill_logs: updated.fillLogs || [],
+        fill_completed_at: fillCompletedAt,
+        receipt: updated.receipt || null,
+        updated_at: updatedAt
+      }], { onConflict: 'application_id' });
+    }
+
+    if (this.fallbackStore?.updateApplication) {
+      try {
+        await this.fallbackStore.updateApplication(applicationId, () => updated);
+      } catch (err) {
+        console.warn(`[SupabaseStore] Fallback update warning for ${applicationId}:`, err.message);
+      }
+    }
+
+    return updated;
+  }
+
   // --------------------------------------------------------------------------
   // Dedicated Domain Helper Methods for Supabase
   // --------------------------------------------------------------------------

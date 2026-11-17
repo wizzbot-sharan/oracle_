@@ -675,10 +675,7 @@ export class Phase3AnswerResolution {
   async saveAnswers(applicationId, updates) {
     let updatedApplication;
 
-    // 1. Update application in applications store
-    await this.store.update('applications', [], applications => applications.map(application => {
-      if (application.applicationId !== applicationId) return application;
-
+    const applyAnswers = (application, template) => {
       const values = { ...application.values };
       for (const [fieldId, value] of Object.entries(updates)) {
         const existingEntry = values[fieldId] || {};
@@ -693,9 +690,6 @@ export class Phase3AnswerResolution {
         };
       }
 
-      // Re-evaluate application status
-      const templates = this.store.readSync ? this.store.readSync('form-templates', {}) : {};
-      const template = templates[application.jobKey] || templates[application.jobId];
       let unresolvedList = [];
       if (template) {
         unresolvedList = this.unresolved(template, values);
@@ -703,22 +697,53 @@ export class Phase3AnswerResolution {
 
       const status = unresolvedList.length === 0 ? 'answers_resolved' : 'needs_input';
 
-      updatedApplication = {
+      return {
         ...application,
         status,
         values,
         unresolvedFields: unresolvedList.map(f => f.id),
         updatedAt: nowIso()
       };
-      return updatedApplication;
-    }));
+    };
+
+    // 1. Update application in applications store using scoped update if supported
+    if (typeof this.store.updateApplication === 'function') {
+      updatedApplication = await this.store.updateApplication(applicationId, async (application) => {
+        let template = null;
+        if (typeof this.store.getTemplate === 'function') {
+          template = await this.store.getTemplate(application.jobKey || application.jobId);
+        }
+        if (!template) {
+          const templates = this.store.readSync ? this.store.readSync('form-templates', {}) : await this.store.read('form-templates', {});
+          template = templates?.[application.jobKey] || templates?.[application.jobId];
+        }
+        return applyAnswers(application, template);
+      });
+    } else {
+      const templates = this.store.readSync ? this.store.readSync('form-templates', {}) : await this.store.read('form-templates', {});
+      await this.store.update('applications', [], applications => {
+        const list = Array.isArray(applications) ? applications : Object.values(applications || {});
+        return list.map(application => {
+          if ((application.applicationId || application.application_id) !== applicationId) return application;
+          const template = templates?.[application.jobKey] || templates?.[application.jobId];
+          updatedApplication = applyAnswers(application, template);
+          return updatedApplication;
+        });
+      });
+    }
 
     invariant(updatedApplication, 'APPLICATION_NOT_FOUND', `Application ${applicationId} not found`);
 
     // 2. Upsert confirmed answers into Supabase question_bank table or data/question_bank.csv
     try {
-      const templates = await this.store.read('form-templates', {});
-      const template = templates[updatedApplication.jobKey] || templates[updatedApplication.jobId];
+      let template = null;
+      if (typeof this.store.getTemplate === 'function') {
+        template = await this.store.getTemplate(updatedApplication.jobKey || updatedApplication.jobId);
+      }
+      if (!template) {
+        const templates = await this.store.read('form-templates', {});
+        template = templates[updatedApplication.jobKey] || templates[updatedApplication.jobId];
+      }
       const templateFields = template ? flattenTemplateFields(template) : [];
       const fieldMap = new Map(templateFields.map(f => [f.id, f]));
 

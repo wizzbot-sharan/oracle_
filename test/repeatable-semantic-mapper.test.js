@@ -186,3 +186,116 @@ test('ResolutionEngine resolves repeatable groups with bi-directional normalizat
   assert.equal(Array.isArray(linksRes.value), true);
   assert.equal(linksRes.value[0].site_link_2, 'https://linkedin.com/in/vkorlahalli');
 });
+
+test('OracleRecruitingAdapter repeatable group pre-check skips additions when cards are already present', async () => {
+  const adapter = new OracleRecruitingAdapter({
+    actionGap: { min: 0, max: 0 },
+    humanDelay: { min: 0, max: 0 }
+  });
+
+  let addClicked = false;
+  const mockPage = {
+    evaluate: async () => [
+      { title: "Bachelor's Degree", subtitle: 'Purdue University', isInvalid: false }
+    ],
+    locator: (selector) => ({
+      count: async () => 1,
+      first: () => ({
+        count: async () => 1,
+        isVisible: async () => true,
+        click: async () => { addClicked = true; },
+        scrollIntoViewIfNeeded: async () => {}
+      })
+    }),
+    getByRole: () => ({
+      first: () => ({
+        count: async () => 1,
+        isVisible: async () => true,
+        click: async () => { addClicked = true; }
+      })
+    })
+  };
+
+  const group = {
+    id: 'education',
+    label: 'education',
+    addButton: 'ADD EDUCATION',
+    children: [
+      { id: 'content_item_id', label: 'Degree' },
+      { id: 'major', label: 'Major' }
+    ]
+  };
+
+  const rows = [
+    { degree: "Master's Degree", major: 'Computer Science', institution: 'UT Dallas' }
+  ];
+
+  const result = await adapter._fillRepeatableGroupForTest(mockPage, group, rows);
+
+  assert.equal(addClicked, false, 'Must NOT click Add button when cards are already present');
+  assert.equal(result?.prefilled, true, 'Should mark prefilled as true');
+});
+
+test('OracleRecruitingAdapter repeatable group fills drawer when zero cards are detected', async () => {
+  const adapter = new OracleRecruitingAdapter({
+    actionGap: { min: 0, max: 0 },
+    humanDelay: { min: 0, max: 0 }
+  });
+
+  let addClicked = false;
+  let saveClicked = false;
+  const filledFields = {};
+
+  const makeLocator = (type) => ({
+    count: async () => 1,
+    isVisible: async () => true,
+    scrollIntoViewIfNeeded: async () => {},
+    evaluate: async () => {},
+    pressSequentially: async (val) => { filledFields[type] = (filledFields[type] || '') + val; },
+    inputValue: async () => filledFields[type] || '',
+    click: async () => {
+      if (type === 'add') addClicked = true;
+      if (type === 'save') saveClicked = true;
+    },
+    fill: async (val) => { filledFields[type] = val; },
+    waitFor: async () => {},
+    filter: () => makeLocator(type),
+    first: () => makeLocator(type)
+  });
+
+  const mockPage = {
+    evaluate: async () => [], // Zero cards
+    locator: (selector) => {
+      if (selector.includes('drawer__save') || selector.includes('Save') || selector.includes('Done')) {
+        return makeLocator('save');
+      }
+      if (selector.includes('apply-flow-drawer')) {
+        return makeLocator('drawer');
+      }
+      return makeLocator('field');
+    },
+    getByRole: (role, opts) => {
+      if (role === 'button') return makeLocator('add');
+      return makeLocator('role');
+    },
+    getByLabel: (label) => makeLocator(label)
+  };
+
+  const group = {
+    id: 'education',
+    label: 'education',
+    addButton: 'ADD EDUCATION',
+    children: [
+      { id: 'major', label: 'Major', type: 'text' }
+    ]
+  };
+
+  const rows = [
+    { degree: "Bachelor's Degree", major: 'Computer Science', institution: 'SCSVMV' }
+  ];
+
+  await adapter._fillRepeatableGroupForTest(mockPage, group, rows);
+
+  assert.equal(addClicked, true, 'Must click Add button when 0 cards are detected');
+  assert.equal(saveClicked, true, 'Must click Save button to close drawer');
+});

@@ -1647,24 +1647,44 @@ export class OracleRecruitingAdapter {
           await humanPause(this.actionGap);
         }
 
-        // 4. Process repeatable groups if matching add button is visible on page
-        for (const addBtnInfo of visibleAddButtons) {
-          const matchGroup = (template.repeatableGroups ?? []).find(g =>
-            g.id === addBtnInfo.id || (g.addButton && g.addButton.toLowerCase() === addBtnInfo.text.toLowerCase())
-          );
-          if (!matchGroup || filledFieldIds.has(matchGroup.id)) continue;
-          const answer = values[matchGroup.id]?.value;
+        // 4. Process repeatable groups (Education, Experience, Licenses, etc.)
+        for (const group of (template.repeatableGroups ?? [])) {
+          if (filledFieldIds.has(group.id)) continue;
+          const answer = values[group.id]?.value;
           if (!answer || !Array.isArray(answer) || !answer.length) continue;
 
-          console.log(`[Phase 4] [Job ${jobId} | User ${userId}] Filling repeatable group "${matchGroup.label}" (${answer.length} entries)...`);
+          // Pre-Check Detection: check if any valid cards are already present on the page
+          const existingCards = await this.#inspectExistingRepeatableCards(page, group);
+          const validCards = existingCards.filter(c => !c.isInvalid);
+
+          if (validCards.length > 0) {
+            console.log(`[Phase 4] [Job ${jobId} | User ${userId}] Repeatable group "${group.label}" already has ${validCards.length} card(s) present. Preserving existing card(s) without additions.`);
+            filledFieldIds.add(group.id);
+            results.push({ fieldId: group.id, status: 'verified', prefilled: true });
+            continue;
+          }
+
+          // If 0 cards detected, check if this section's Add button is on the current page
+          const hasMatchingAddBtn = visibleAddButtons.some(b =>
+            b.id === group.id || (group.addButton && group.addButton.toLowerCase() === b.text.toLowerCase())
+          );
+
+          if (!hasMatchingAddBtn) {
+            const cleanName = (group.label || group.id).replace(/^add\s+/i, '').trim();
+            const directAddBtn = page.getByRole('button', { name: new RegExp(`(\\+|add)\\s*${cleanName}`, 'i') }).first();
+            const isDirectVisible = await visible(directAddBtn);
+            if (!isDirectVisible) continue;
+          }
+
+          console.log(`[Phase 4] [Job ${jobId} | User ${userId}] No existing cards for "${group.label}". Filling repeatable group (${answer.length} entries)...`);
           try {
-            await this.#fillRepeatableGroup(page, matchGroup, answer, context);
-            filledFieldIds.add(matchGroup.id);
-            results.push({ fieldId: matchGroup.id, status: 'verified' });
+            await this.#fillRepeatableGroup(page, group, answer, context);
+            filledFieldIds.add(group.id);
+            results.push({ fieldId: group.id, status: 'verified' });
             filledAnyOnPass = true;
           } catch (error) {
-            console.error(`[Phase 4] [Job ${jobId} | User ${userId}] ✗ Failed repeatable group "${matchGroup.label}": ${error.message}`);
-            results.push({ fieldId: matchGroup.id, status: 'failed', error: error.message });
+            console.error(`[Phase 4] [Job ${jobId} | User ${userId}] ✗ Failed repeatable group "${group.label}": ${error.message}`);
+            results.push({ fieldId: group.id, status: 'failed', error: error.message });
           }
         }
       }
@@ -1828,7 +1848,8 @@ export class OracleRecruitingAdapter {
   }
 
   async #visibleAddButtons(page) {
-    const addButtons = page.locator('button:has-text(/^\\+?\\s*Add/i):visible, .apply-flow-repeatable__add-button:visible, button.candidate-links__add-link:visible');
+    const addButtons = page.locator('button:visible, .apply-flow-repeatable__add-button:visible, button.candidate-links__add-link:visible')
+      .filter({ hasText: /^\+?\s*add/i });
 
     const count = await addButtons.count().catch(() => 0);
     const result = [];
@@ -2547,70 +2568,60 @@ export class OracleRecruitingAdapter {
     invariant(Array.isArray(rows), 'INVALID_REPEATABLE_VALUE', `${group.label} must be an array`);
     const isInlineLink = /link/i.test(group.id) || /link/i.test(group.label);
 
-    // Apply safety caps: top 3 for experience, top 2 for education
-    const cap = /experience|work|employment/i.test(group.id || group.label) ? 3 : (/education|school|academic/i.test(group.id || group.label) ? 2 : 5);
-    let rowsToFill = rows.slice(0, cap);
-
-    // Inspect pre-existing valid cards
+    // 1. Inspect existing valid cards first
     const existingCards = await this.#inspectExistingRepeatableCards(page, group);
     const validCards = existingCards.filter(c => !c.isInvalid);
 
-    if (validCards.length >= cap) {
-      console.log(`[Phase 4] Repeatable group "${group.label}" already satisfied with ${validCards.length} valid entries (cap: ${cap}). Skipping additions.`);
-      return;
-    }
-
+    // Rule: if cards are present, no need to match or update; let it be
     if (validCards.length > 0) {
-      // Filter out rows whose title or organization is already present on the page
-      const deltaRows = rowsToFill.filter(row => {
-        const rowTitle = (row.title || row.job_title || row.degree || '').toLowerCase().trim();
-        const rowOrg = (row.company || row.employer || row.institution || row.school || '').toLowerCase().trim();
-        const alreadyPresent = validCards.some(card => {
-          const cardTitle = card.title.toLowerCase();
-          const cardOrg = card.subtitle.toLowerCase();
-          return (rowTitle && cardTitle.includes(rowTitle)) || (rowOrg && cardOrg.includes(rowOrg));
-        });
-        return !alreadyPresent;
-      });
-
-      const remainingSlots = Math.max(0, cap - validCards.length);
-      rowsToFill = deltaRows.slice(0, remainingSlots);
-
-      if (rowsToFill.length === 0) {
-        console.log(`[Phase 4] Repeatable group "${group.label}" already has matching entries for candidate profile. Skipping additions.`);
-        return;
-      }
-      console.log(`[Phase 4] Repeatable group "${group.label}" has ${validCards.length} existing entries. Adding ${rowsToFill.length} missing delta entries.`);
+      console.log(`[Phase 4] [Job ${context.jobId ?? ''} | User ${context.userId ?? ''}] Repeatable group "${group.label}" already has ${validCards.length} card(s) present. Preserving existing card(s) without additions.`);
+      return { prefilled: true, existingCards: validCards };
     }
+
+    // Apply safety caps: top 3 for experience, top 2 for education
+    const cap = /experience|work|employment/i.test(group.id || group.label) ? 3 : (/education|school|academic/i.test(group.id || group.label) ? 2 : 5);
+    const rowsToFill = rows.slice(0, cap);
 
     for (const row of rowsToFill) {
       // 1. Click initial + Add button with flexible locator
-      let addBtn = page.locator([
-        `button:has-text("${group.addButton || group.label}"):visible`,
-        `button:has-text("Add ${group.label || ''}"):visible`,
-        'button:has-text("+ Add"):visible'
-      ].join(', ')).first();
-
+      const cleanName = (group.label || group.id).replace(/^add\s+/i, '').trim();
+      let addBtn = page.getByRole('button', { name: new RegExp(`(\\+|add)\\s*${cleanName}`, 'i') }).first();
+      if (!(await visible(addBtn))) {
+        addBtn = page.locator('button:visible, .apply-flow-repeatable__add-button:visible')
+                     .filter({ hasText: new RegExp(`(\\+|add)\\s*${cleanName}`, 'i') })
+                     .first();
+      }
       if (!(await visible(addBtn)) && group.addButton) {
         addBtn = page.getByRole('button', { name: new RegExp(`^${group.addButton}$`, 'i') }).first();
+      }
+      if (!(await visible(addBtn))) {
+        addBtn = page.locator(`button:has-text("${group.addButton || group.label}"):visible`).first();
       }
 
       if (await visible(addBtn)) {
         await this.#smoothScrollIntoView(page, addBtn);
+        await humanPause({ min: 500, max: 1000 });
         await addBtn.click();
+      }
+
+      // 2. Wait for drawer to appear and settle
+      const drawer = page.locator('.apply-flow-drawer:visible, [role="dialog"]:visible').first();
+      if (!isInlineLink && typeof drawer?.waitFor === 'function') {
+        await drawer.waitFor({ state: 'visible', timeout: 5000 }).catch(() => {});
         await humanPause({ min: 500, max: 1000 });
       }
 
-      // 2. Fill all inner fields
+      // 3. Fill all inner fields
       let filledAny = false;
       for (const child of group.children ?? []) {
         const answer = this.#resolveChildAnswer(child, row);
         if (answer === null || answer === undefined || answer === '') continue;
+        await humanPause(this.actionGap);
         await this.#fillField(page, child, answer, {}, context);
         filledAny = true;
       }
 
-      // 3. For drawer/modal sections (Education, Experience, License):
+      // 4. For drawer/modal sections (Education, Experience, License):
       if (!isInlineLink) {
         if (!filledAny) {
           // Empty row: cancel out of drawer
@@ -2618,6 +2629,8 @@ export class OracleRecruitingAdapter {
           if (await visible(cancelBtn)) await cancelBtn.click().catch(() => {});
           continue;
         }
+
+        await humanPause({ min: 500, max: 1000 });
 
         const sectionName = (group.label || group.id).replace(/^add\s+/i, '').trim();
         const saveBtn = page.locator([
@@ -2629,13 +2642,13 @@ export class OracleRecruitingAdapter {
 
         if (await visible(saveBtn)) {
           await this.#smoothScrollIntoView(page, saveBtn);
+          await humanPause({ min: 300, max: 600 });
           await saveBtn.click();
           // Wait for drawer to close/detach if supported by page locator
-          const drawer = page.locator('.apply-flow-drawer, [role="dialog"]');
           if (typeof drawer?.waitFor === 'function') {
-            await drawer.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => {});
+            await drawer.waitFor({ state: 'hidden', timeout: 7000 }).catch(() => {});
           }
-          await humanPause({ min: 500, max: 1000 });
+          await humanPause({ min: 1000, max: 1500 });
           console.log(`[Phase 4] [Job ${context.jobId ?? ''} | User ${context.userId ?? ''}] ✓ Saved ${sectionName} record`);
         } else {
           console.warn(`[Phase 4] [Job ${context.jobId ?? ''} | User ${context.userId ?? ''}] ⚠ Save button for ${sectionName} not found, checking Cancel fallback...`);

@@ -18,6 +18,7 @@
  * - STRICT OPTION ENFORCEMENT: If field has explicit options, resolved value MUST be in options.
  */
 
+import fs from 'node:fs';
 import { coerceValueForField, findBestOptionMatch, scoreOptionMatch, coerceToBoolean } from './coercion.js';
 import { CanonicalProfile, cleanInstitutionName } from './canonical-profile.js';
 import {
@@ -29,6 +30,28 @@ import {
 } from './option-matcher.js';
 import { decomposeAddress } from './address-decomposer.js';
 import { decomposePhone } from './phone-decomposer.js';
+
+let cachedPolicies = null;
+
+function loadApplicationPolicies() {
+  if (cachedPolicies) return cachedPolicies;
+  try {
+    const raw = fs.readFileSync(new URL('../../data/application-policies.json', import.meta.url), 'utf8');
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed?.rules)) {
+      cachedPolicies = parsed.rules.map(rule => ({
+        ...rule,
+        _compiledMatch: (rule.matchPatterns || []).map(p => new RegExp(p, 'i')),
+        _compiledAnti: (rule.antiPatterns || []).map(p => new RegExp(p, 'i'))
+      }));
+      return cachedPolicies;
+    }
+  } catch (err) {
+    console.warn('[ResolutionEngine] Failed to load application policies:', err.message);
+  }
+  cachedPolicies = [];
+  return cachedPolicies;
+}
 
 function parseBoolean(val) {
   if (typeof val === 'boolean') return val;
@@ -308,6 +331,93 @@ export class ResolutionEngine {
   }
 
   // --------------------------------------------------------------------------
+  // APPLICATION POLICY EVALUATOR
+  // --------------------------------------------------------------------------
+  #evaluatePolicies(field, canonical) {
+    const label = field.label || '';
+    if (!label) return null;
+    const type = field.type || field.role || 'text';
+    const policies = loadApplicationPolicies();
+
+    for (const rule of policies) {
+      // 1. Check supported types
+      let normalizedType = (type === 'select' || type === 'dropdown') ? 'combobox' : type;
+      if (normalizedType === 'text' && Array.isArray(field.options) && field.options.length > 0) {
+        normalizedType = 'combobox';
+      }
+      if (Array.isArray(rule.supportedTypes) && rule.supportedTypes.length > 0) {
+        if (!rule.supportedTypes.includes(normalizedType)) {
+          continue;
+        }
+      }
+
+      // 2. Check match patterns
+      const matches = rule._compiledMatch.some(regex => regex.test(label));
+      if (!matches) continue;
+
+      // 3. Check anti-patterns (e.g., exclude tech skills, sponsorship, relatives)
+      const hasAnti = rule._compiledAnti.some(regex => regex.test(label));
+      if (hasAnti) continue;
+
+      // 4. Candidate-aware polarity and target value determination
+      let targetPolarity = rule.requiredPolarity; // 'affirmative' | 'negative' | 'neutral'
+      let targetVal = rule.universalValue;
+
+      if (rule.id === 'ko_age_18_plus') {
+        if (canonical?.workAuth?.isOver18 === false) {
+          targetVal = 'No';
+          targetPolarity = 'negative';
+        }
+      } else if (rule.id === 'ko_work_authorization') {
+        if (canonical?.workAuth?.eligibleInUS === false) {
+          targetVal = 'No';
+          targetPolarity = 'negative';
+        }
+      } else if (rule.id === 'ko_criminal_convictions') {
+        if (canonical?.disclosures?.convictedOfFelony === true) {
+          targetVal = 'Yes';
+          targetPolarity = 'affirmative';
+        }
+      }
+
+      // 5. Explicit Options matching with Strict Safety Abort (Floor: 80)
+      if (Array.isArray(field.options) && field.options.length > 0) {
+        let preferred = [];
+        if (targetPolarity === 'negative' && rule.requiredPolarity === 'affirmative') {
+          // Inverted by candidate profile
+          preferred = ['No', 'false', 'Not Authorized', 'None', 'Disagree'];
+        } else if (targetPolarity === 'affirmative' && rule.requiredPolarity === 'negative') {
+          // Inverted by candidate profile
+          preferred = ['Yes', 'true', 'Convicted', 'Agree'];
+        } else {
+          preferred = Array.isArray(rule.preferredOptions) && rule.preferredOptions.length > 0
+            ? rule.preferredOptions
+            : [targetVal];
+        }
+
+        const matched = matchBestOption(preferred, field.options, 80);
+        if (matched) {
+          return { rawValue: matched, confidence: 1.0, source: 'stage1_policy', ruleId: rule.id };
+        }
+        // Strict Safety Abort: Dropdown/radio options do NOT match policy target answer with score >= 80.
+        // Do NOT guess. Abort policy matching so it falls through cleanly.
+        return null;
+      }
+
+      // 6. Checkbox control without multi-options
+      if (type === 'checkbox') {
+        const boolVal = targetPolarity === 'affirmative';
+        return { rawValue: boolVal, confidence: 1.0, source: 'stage1_policy', ruleId: rule.id };
+      }
+
+      // 7. Non-option controls (text, textarea, etc.)
+      return { rawValue: targetVal, confidence: 1.0, source: 'stage1_policy', ruleId: rule.id };
+    }
+
+    return null;
+  }
+
+  // --------------------------------------------------------------------------
   // STAGE 1: DETERMINISTIC STANDARD TAXONOMY
   // --------------------------------------------------------------------------
   #matchStage1Taxonomy(field, canonical, clientInfo, addInfo, resumeText = '') {
@@ -531,22 +641,13 @@ export class ResolutionEngine {
       return { rawValue: canonical.address.county || '', confidence: 1.0 };
     }
 
-    // 8. AGE (18+)
-    if (/18\s*(years|years of age)|over\s*the\s*age\s*of\s*18|at\s*least\s*18/i.test(label)) {
-      const is18 = canonical.workAuth.isOver18;
-      if (type === 'radio') return { rawValue: is18 ? 'Yes' : 'No', confidence: 1.0 };
-      return { rawValue: is18, confidence: 1.0 };
+    // 8. APPLICATION POLICY ENGINE (Declarative Knockouts, Referral Gates, Conditional Follow-ups, Sourcing)
+    const policyResult = this.#evaluatePolicies(field, canonical);
+    if (policyResult) {
+      return policyResult;
     }
 
-    // 9. WORK AUTHORIZATION & SPONSORSHIP
-    if (/legally\s*eligible\s*to\s*work|authorized\s*to\s*work\s*in\s*the|eligible\s*to\s*work\s*in\s*the\s*united\s*states|lawful\s*permanent\s*resident/i.test(label)) {
-      if (canonical.workAuth.eligibleInUS !== null) {
-        const val = canonical.workAuth.eligibleInUS ? 'Yes' : 'No';
-        return { rawValue: type === 'checkbox' ? canonical.workAuth.eligibleInUS : val, confidence: 1.0 };
-      }
-      return null;
-    }
-
+    // 9. VISA SPONSORSHIP & STATUS (Candidate-Specific)
     if (/require.*sponsorship|help\s*you\s*obtain\s*an\s*employment\s*visa|require\s*visa\s*sponsorship/i.test(label)) {
       if (canonical.workAuth.requiresSponsorship !== null) {
         const val = canonical.workAuth.requiresSponsorship ? 'Yes' : 'No';
@@ -584,27 +685,12 @@ export class ResolutionEngine {
       return { rawValue: 'Not Applicable', confidence: 0.50 };
     }
 
-    if (/employee\s*refer\s*you|referred\s*by(\s*a\s*current\s*employee|\s*an\s*employee)?/i.test(label)) {
-      return { rawValue: 'No', confidence: 1.0 };
-    }
-
     if (/employed\s*by\s*the\s*government|government\s*official|public\s*agency|selection\s*committee|restrictions?\s*from\s*a\s*former\s*employer|other\s*jobs.*board\s*membership/i.test(label)) {
       return { rawValue: 'No', confidence: 1.0 };
     }
 
     if (/minimum\s*(years\s*of\s*)?experience|minimum\s*qualifications/i.test(label)) {
       return { rawValue: 'Yes', confidence: 1.0 };
-    }
-
-    if (/background\s*check/i.test(label)) {
-      return { rawValue: 'Yes', confidence: 1.0 };
-    }
-    if (/drug\s*screen|drug\s*test/i.test(label)) {
-      if (/failed|refused/i.test(label)) return { rawValue: 'No', confidence: 1.0 };
-      return { rawValue: 'Yes', confidence: 1.0 };
-    }
-    if (/felony|convicted/i.test(label)) {
-      return { rawValue: canonical.disclosures.convictedOfFelony ? 'Yes' : 'No', confidence: 1.0 };
     }
 
     // 11. PREFERENCES & AVAILABILITY

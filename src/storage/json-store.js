@@ -40,4 +40,19 @@ export class JsonStore {
     this.#queues.set(name, operation.catch(() => {}));
     return operation;
   }
+
+  async updateApplication(applicationId, updater) {
+    let updatedApp = null;
+    await this.update('applications', [], async (applications) => {
+      const list = Array.isArray(applications) ? applications : Object.values(applications || {});
+      const index = list.findIndex(a => (a.applicationId || a.application_id) === applicationId);
+      if (index === -1) {
+        throw new Error(`Application ${applicationId} not found`);
+      }
+      updatedApp = await updater(structuredClone(list[index]));
+      list[index] = updatedApp;
+      return list;
+    });
+    return updatedApp;
+  }
 }

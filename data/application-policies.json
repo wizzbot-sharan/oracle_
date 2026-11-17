@@ -1,0 +1,211 @@
+{
+  "version": "1.0.0",
+  "name": "ATS Application Policies",
+  "description": "High-precision declarative rules for legal knockouts, referral gates, follow-ups, and sourcing channels.",
+  "rules": [
+    {
+      "id": "ko_age_18_plus",
+      "category": "age_eligibility",
+      "requiredPolarity": "affirmative",
+      "matchPatterns": [
+        "\\b(are you|at least|over the age of|age of)\\s*(at least\\s*)?18\\b",
+        "\\b18\\s*years\\s*of\\s*age\\s*(or older)?\\b",
+        "\\b(are|at least)\\s*18\\s*(years)?\\s*(or)?\\s*older\\b"
+      ],
+      "antiPatterns": [
+        "\\bminor\\b",
+        "\\bunder\\s*18\\b"
+      ],
+      "supportedTypes": ["radio", "checkbox", "combobox"],
+      "universalValue": "Yes",
+      "preferredOptions": ["Yes", "Yes, I am 18 or older", "Yes, I am over 18", "true", "Agree"]
+    },
+    {
+      "id": "ko_work_authorization",
+      "category": "work_authorization",
+      "requiredPolarity": "affirmative",
+      "matchPatterns": [
+        "\\blegally\\s*(authorized|eligible)\\s*to\\s*work\\b",
+        "\\blawfully\\s*(authorized|permitted|eligible)\\s*to\\s*work\\b",
+        "\\bauthorized\\s*to\\s*work\\s*in\\s*the\\s*(united states|jurisdiction|country)\\b",
+        "\\beligible\\s*to\\s*work\\s*in\\s*the\\s*(united states|jurisdiction|country)\\b"
+      ],
+      "antiPatterns": [
+        "\\bsponsor(ship)?\\b",
+        "\\bvisa\\b",
+        "\\bh-?1b\\b",
+        "\\bopt\\b",
+        "\\bstem\\b",
+        "\\bunauthorized\\b"
+      ],
+      "supportedTypes": ["radio", "checkbox", "combobox"],
+      "universalValue": "Yes",
+      "preferredOptions": ["Yes", "true", "Authorized", "Lawfully Authorized"]
+    },
+    {
+      "id": "ko_criminal_convictions",
+      "category": "negative_disqualification",
+      "requiredPolarity": "negative",
+      "matchPatterns": [
+        "\\bhave you (ever )?been convicted of\\b.*\\b(felony|misdemeanor|crime)\\b",
+        "\\bpleaded guilty or nolo contendere to\\b.*\\b(felony|crime)\\b",
+        "\\bconvicted of a (felony|crime)\\b"
+      ],
+      "antiPatterns": [
+        "\\bi certify that\\b",
+        "\\bi have not been\\b",
+        "\\bfree of\\b",
+        "\\bno conviction\\b"
+      ],
+      "supportedTypes": ["radio", "combobox"],
+      "universalValue": "No",
+      "preferredOptions": ["No", "false", "None"]
+    },
+    {
+      "id": "ko_non_compete_restrictions",
+      "category": "negative_disqualification",
+      "requiredPolarity": "negative",
+      "matchPatterns": [
+        "\\bsubject to (any )?(employment )?agreements.*\\b(non-?compete|post-employment restrictions)\\b",
+        "\\bbound by (any )?restrictive covenant\\b",
+        "\\brestrictions from a (former|previous) employer\\b"
+      ],
+      "antiPatterns": [
+        "\\bexperience with\\b",
+        "\\btechnology\\b",
+        "\\btechnical\\b"
+      ],
+      "supportedTypes": ["radio", "combobox"],
+      "universalValue": "No",
+      "preferredOptions": ["No", "false"]
+    },
+    {
+      "id": "ko_background_check_consent",
+      "category": "mandatory_consent",
+      "requiredPolarity": "affirmative",
+      "matchPatterns": [
+        "\\b(willing to|consent to|submit to|undergo)\\s*(a\\s*)?(pre-employment\\s*)?background\\s*(check|investigation|screening)\\b",
+        "\\bbackground\\s*(check|screening)\\s*consent\\b"
+      ],
+      "antiPatterns": [
+        "\\bfailed\\b",
+        "\\brefused\\b",
+        "\\bresults\\b"
+      ],
+      "supportedTypes": ["radio", "checkbox", "combobox"],
+      "universalValue": "Yes",
+      "preferredOptions": ["Yes", "I Agree", "true", "Consent", "Agree"]
+    },
+    {
+      "id": "ko_drug_screen_consent",
+      "category": "mandatory_consent",
+      "requiredPolarity": "affirmative",
+      "matchPatterns": [
+        "\\b(willing to|consent to|submit to|undergo)\\s*(a\\s*)?(pre-employment\\s*)?drug\\s*(screen|test|screening)\\b",
+        "\\bdrug\\s*(screen|screening|testing)\\s*consent\\b"
+      ],
+      "antiPatterns": [
+        "\\bfailed\\b",
+        "\\brefused\\b",
+        "\\btested positive\\b"
+      ],
+      "supportedTypes": ["radio", "checkbox", "combobox"],
+      "universalValue": "Yes",
+      "preferredOptions": ["Yes", "I Agree", "true", "Consent", "Agree"]
+    },
+    {
+      "id": "ko_essential_job_functions",
+      "category": "mandatory_consent",
+      "requiredPolarity": "affirmative",
+      "matchPatterns": [
+        "\\bable to perform the essential (functions|duties|requirements) of the (job|position|role)\\b"
+      ],
+      "antiPatterns": [
+        "\\bunable\\b"
+      ],
+      "supportedTypes": ["radio", "checkbox", "combobox"],
+      "universalValue": "Yes",
+      "preferredOptions": ["Yes", "true"]
+    },
+    {
+      "id": "ko_government_debarment",
+      "category": "negative_disqualification",
+      "requiredPolarity": "negative",
+      "matchPatterns": [
+        "\\bdeclared ineligible to contract with\\b.*\\bgovernment\\b",
+        "\\bdebarred, suspended, or proposed for debarment\\b",
+        "\\bdenied (an )?export license\\b",
+        "\\bineligible to receive (an )?export license\\b"
+      ],
+      "antiPatterns": [],
+      "supportedTypes": ["radio", "combobox"],
+      "universalValue": "No",
+      "preferredOptions": ["No", "false"]
+    },
+    {
+      "id": "ref_employee_referral_gate",
+      "category": "referral_gate",
+      "requiredPolarity": "negative",
+      "matchPatterns": [
+        "\\bwere you referred (to this role |to this position )?by an? \\w+ employee\\b",
+        "\\bwere you referred by a (current )?employee\\b",
+        "\\bemployee refer you\\b",
+        "\\breferred by an employee\\b",
+        "\\brelatives? (or members of your household )?employed by the company\\b",
+        "\\bis the employee who referred you a family member\\b",
+        "\\bdo you have a close relative who is currently a public agency employee\\b",
+        "\\bpersonal investment in a (covered fund|volcker rule)\\b"
+      ],
+      "antiPatterns": [
+        "\\bif yes\\b",
+        "\\bname of\\b",
+        "\\bemergency\\b",
+        "\\bcontact\\b"
+      ],
+      "supportedTypes": ["radio", "combobox", "checkbox"],
+      "universalValue": "No",
+      "preferredOptions": ["No", "false", "None", "Not Applicable"]
+    },
+    {
+      "id": "ref_conditional_followup_neutralizer",
+      "category": "conditional_followup",
+      "requiredPolarity": "neutral",
+      "matchPatterns": [
+        "^if yes,?\\s*(please )?(enter|provide|tell us|share|explain)",
+        "^if yes,?\\s*name of the person that referred you",
+        "^if you answered.*explain",
+        "^if other( source)?,?\\s*(please )?specify",
+        "\\bname used while employed and employment dates\\b",
+        "\\bname, location, and job title of the relative\\b"
+      ],
+      "antiPatterns": [
+        "\\bfirst name\\b",
+        "\\blast name\\b",
+        "\\blegal name\\b",
+        "\\bpersonal email\\b"
+      ],
+      "supportedTypes": ["text", "textarea"],
+      "universalValue": "N/A",
+      "preferredOptions": ["N/A", "Not Applicable", "None"]
+    },
+    {
+      "id": "src_application_channel",
+      "category": "sourcing_channel",
+      "requiredPolarity": "neutral",
+      "matchPatterns": [
+        "\\bhow did you (first )?hear about this (position|job|role|opportunity)\\b",
+        "\\bwhere did you (first )?hear about this\\b",
+        "\\bjob posting sites?\\s*/\\s*social media\\b",
+        "\\bplease specify social media platform\\b",
+        "\\bhow did you hear about us\\b"
+      ],
+      "antiPatterns": [
+        "\\bformer employee\\b",
+        "\\bemployed by\\b"
+      ],
+      "supportedTypes": ["combobox", "radio"],
+      "universalValue": "LinkedIn",
+      "preferredOptions": ["LinkedIn", "Company Website", "Career site", "Job Board", "Online"]
+    }
+  ]
+}
