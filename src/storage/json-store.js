@@ -24,7 +24,7 @@ export class JsonStore {
   async write(name, value) {
     const file = this.file(name);
     await fs.mkdir(path.dirname(file), { recursive: true });
-    const temp = `${file}.${process.pid}.tmp`;
+    const temp = `${file}.${process.pid}.${Date.now()}-${Math.random().toString(36).slice(2)}.tmp`;
     await fs.writeFile(temp, `${JSON.stringify(value, null, 2)}\n`, 'utf8');
     await fs.rename(temp, file);
     return value;

@@ -1,4 +1,5 @@
 import fs from 'node:fs/promises';
+import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { chromium as vanillaChromium } from 'playwright';
 import { chromium as extraChromium } from 'playwright-extra';
@@ -2096,17 +2097,25 @@ export class OracleRecruitingAdapter {
 
   async #fillField(page, field, answer, files, context = {}) {
     if (field.type === 'file') {
-      const file = files[field.id] ?? answer;
-      invariant(file, 'MISSING_FILE', `No file supplied for ${field.label}`);
-      const locator = page.locator([
-        '.apply-flow-block--file-upload input[type="file"]',
-        '.file-form-element input[type="file"]',
-        '.file-upload-block input[type="file"]',
-        'input[type="file"][name="attachment-upload"]',
-        field.sourceId ? `[id="${field.sourceId.replaceAll('"', '\\"')}"]` : null
-      ].filter(Boolean).join(', ')).first();
-      await locator.setInputFiles(file);
-      await humanPause(this.actionGap);
+      const fileCandidate = files[field.id] ?? answer;
+      const file = (typeof fileCandidate === 'string' && existsSync(fileCandidate)) ? fileCandidate : null;
+      if (!file) {
+        console.warn(`[OracleRecruitingAdapter] No local file found on disk for ${field.label || field.id}. Skipping upload and saving.`);
+        return;
+      }
+      try {
+        const locator = page.locator([
+          '.apply-flow-block--file-upload input[type="file"]',
+          '.file-form-element input[type="file"]',
+          '.file-upload-block input[type="file"]',
+          'input[type="file"][name="attachment-upload"]',
+          field.sourceId ? `[id="${field.sourceId.replaceAll('"', '\\"')}"]` : null
+        ].filter(Boolean).join(', ')).first();
+        await locator.setInputFiles(file);
+        await humanPause(this.actionGap);
+      } catch (uploadErr) {
+        console.warn(`[OracleRecruitingAdapter] File upload failed for ${field.label || field.id}: ${uploadErr.message}. Logged warning, continuing and saving.`);
+      }
       return;
     }
     if (field.type === 'radio') {

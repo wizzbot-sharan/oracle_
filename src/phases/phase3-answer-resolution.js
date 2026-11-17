@@ -243,7 +243,14 @@ export class Phase3AnswerResolution {
       }
 
       // Pillar 2: Structured resume data integration
-      const parsedResume = parsedResumesMap.get(applywizzId) || null;
+      let parsedResume = parsedResumesMap.get(applywizzId) || null;
+      if (!parsedResume && typeof this.store?.loadResumeParsed === 'function' && this.store.isAvailable()) {
+        try {
+          parsedResume = await this.store.loadResumeParsed(applywizzId);
+        } catch (err) {
+          console.warn(`[Phase 3] Note: Could not query resume_parsed for ${applywizzId}:`, err.message);
+        }
+      }
       if (parsedResume) {
         if (Array.isArray(parsedResume.work_experience) && parsedResume.work_experience.length > 0) {
           client.experience_records = parsedResume.work_experience;

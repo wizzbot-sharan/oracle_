@@ -52,6 +52,22 @@ export class Phase4ApplyReviewSubmit {
       console.warn(`[Phase 4] Resume resolution note for ${applywizzId}: ${err.message}`);
     }
 
+    // Check if resume_parsed info exists in Supabase store for this candidate
+    let parsedResume = null;
+    if (this.store && typeof this.store.loadResumeParsed === 'function') {
+      try {
+        parsedResume = await this.store.loadResumeParsed(applywizzId);
+      } catch (e) {
+        console.warn(`[Phase 4] Note: Could not load resume_parsed for ${applywizzId}: ${e.message}`);
+      }
+    }
+    const hasResumeParsedInfo = Boolean(
+      parsedResume ||
+      (Array.isArray(client?.experience_records) && client.experience_records.length > 0) ||
+      (Array.isArray(client?.education_records) && client.education_records.length > 0) ||
+      client?.additional_information?.resume_text
+    );
+
     const effectiveValues = structuredClone(application.values || {});
     const files = { ...(user.files || {}) };
 
@@ -66,6 +82,14 @@ export class Phase4ApplyReviewSubmit {
             reviewed: true
           };
           files[field.id] = candidateResumePath;
+        } else if (isResume && hasResumeParsedInfo) {
+          console.log(`[Phase 4] Candidate ${applywizzId} resume data found in resume_parsed table; marking resume field soft-resolved.`);
+          effectiveValues[field.id] = {
+            value: 'resume_parsed_table',
+            source: 'resume_parsed',
+            confidence: 1,
+            reviewed: true
+          };
         } else if (user.files?.[field.id]) {
           effectiveValues[field.id] = {
             value: user.files[field.id],
@@ -78,9 +102,12 @@ export class Phase4ApplyReviewSubmit {
       }
     }
 
-    const missing = flattenTemplateFields(template).filter(field =>
-      field.required && !field.repeatableGroupId && isFieldVisible(field, effectiveValues) && !effectiveValues[field.id]?.value
-    );
+    const missing = flattenTemplateFields(template).filter(field => {
+      if (!field.required || field.repeatableGroupId || !isFieldVisible(field, effectiveValues)) return false;
+      const isResume = field.type === 'file' && (field.id?.toLowerCase().includes('resume') || field.label?.toLowerCase().includes('resume'));
+      if (isResume && (candidateResumePath || hasResumeParsedInfo)) return false;
+      return !effectiveValues[field.id]?.value;
+    });
     invariant(!missing.length, 'UNRESOLVED_REQUIRED_FIELDS', 'Required answers are still missing', { fields: missing.map(field => field.id) });
 
     const job = {

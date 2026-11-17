@@ -503,7 +503,6 @@ ${formattedQuestions}`;
         body: JSON.stringify({
           model: this.judgeModel,
           max_tokens: 8192,
-          thinking: { type: 'disabled' },
           system: [
             {
               type: 'text',

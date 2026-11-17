@@ -23,8 +23,8 @@ export class SupabaseStore {
       this.pool = this.connectionString ? new Pool({
         connectionString: this.connectionString,
         ssl: { rejectUnauthorized: false },
-        max: 8,
-        idleTimeoutMillis: 30000,
+        max: 2,
+        idleTimeoutMillis: 1000,
         connectionTimeoutMillis: 5000
       }) : null;
     } else if (client !== undefined) {
@@ -35,8 +35,8 @@ export class SupabaseStore {
       this.pool = new Pool({
         connectionString: this.connectionString,
         ssl: { rejectUnauthorized: false },
-        max: 8,
-        idleTimeoutMillis: 30000,
+        max: 2,
+        idleTimeoutMillis: 1000,
         connectionTimeoutMillis: 5000
       });
     } else {
