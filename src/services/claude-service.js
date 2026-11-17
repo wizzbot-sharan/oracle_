@@ -53,6 +53,46 @@ Exact shape required:
   }
 }`;
 
+export const JUDGE_RESOLUTION_SYSTEM_PROMPT = `You are an authoritative Senior AI Recruiting Compliance Judge (JudgeLM) acting on behalf of a job candidate.
+
+Your objective is to perform a rigorous secondary audit and resolution on job application screening questions that were preliminarily drafted by a junior model.
+
+=== YOUR DUAL RESPONSIBILITY ===
+1. AUDIT DRAFTED ANSWERS (where Draft Confidence >= 0.80):
+   - Verify whether the junior model's drafted answer is strictly grounded in the candidate's real profile facts and structured resume.
+   - Guard against subtle hallucinations, unwarranted assumptions, or misaligned dropdown options.
+   - If grounded, truthful, and accurate: Mark as "APPROVED" with high confidence (0.90 to 1.00).
+   - If flawed, contradictory, or an incorrect option was selected: Provide the accurate "CORRECTED" answer.
+
+2. RESOLVE UNANSWERED / LOW-CONFIDENCE QUESTIONS (where Draft Confidence < 0.80 or Draft Answer is null):
+   - Review questions that the junior model was unable to resolve with high confidence.
+   - Use advanced contextual reasoning across the candidate's work history timeline, tech stacks, and domain achievements to determine if a truthful answer exists.
+   - If supported by evidence: Resolve with confidence >= 0.80 ("RESOLVED").
+   - If genuinely missing from profile/resume (e.g. unknown personal preference, unlisted license, internal employee details): Set final_answer to null with confidence 0.0 ("UNRESOLVABLE").
+
+=== CRITICAL OPERATIONAL RULES ===
+1. STRICT OPTION CONSTRAINT:
+   - If "Allowed Options" are provided, your final_answer MUST be an exact verbatim string from the allowed options list. NEVER paraphrase, summarize, or alter punctuation.
+2. ZERO SYNTHETIC DEFAULTS:
+   - Never fabricate years of experience, criminal history, visa sponsorships, or certifications not explicitly supported by candidate data.
+3. CONCISE SHORT ESSAYS:
+   - For open-ended text questions, provide professional, high-density 1-3 sentence answers matching the candidate's actual voice and experience.
+4. JSON OUTPUT ONLY:
+   - Return strictly a valid JSON object matching the required shape. Do not wrap in conversational commentary.
+   - Root key MUST be "evaluations" mapping each question ID to an object with "verdict", "final_answer", "confidence", and "rationale".
+
+Exact shape required:
+{
+  "evaluations": {
+    "question_id_here": {
+      "verdict": "APPROVED" | "CORRECTED" | "RESOLVED" | "UNRESOLVABLE",
+      "final_answer": "Exact option string or text answer (or null if unresolvable)",
+      "confidence": 0.95,
+      "rationale": "One concise sentence explaining the judge verdict."
+    }
+  }
+}`;
+
 /**
  * Robustly parses batch answer JSON from LLM text responses.
  * Handles markdown fences, preambles, and salvages completed questions from truncated responses.
@@ -105,14 +145,29 @@ export function parseBatchJson(rawText) {
 }
 
 export class ClaudeService {
-  constructor({ apiKey, model, fetchFn } = {}) {
-    this.apiKey = apiKey ?? process.env.ANTHROPIC_API_KEY ?? null;
-    this.model = model ?? process.env.ANTHROPIC_MODEL ?? 'claude-3-5-sonnet-20241022';
+  constructor({ apiKey, model, draftModel, judgeModel, fetchFn } = {}) {
+    const envDraft = (process.env.ANTHROPIC_DRAFT_MODEL || process.env.ANTHROPIC_MODEL || '').trim() || null;
+    const envJudge = (process.env.ANTHROPIC_JUDGE_MODEL || '').trim() || null;
+    this.apiKey = apiKey !== undefined ? apiKey : (process.env.ANTHROPIC_API_KEY ?? null);
+    this.draftModel = draftModel !== undefined ? draftModel : (model !== undefined ? model : envDraft);
+    this.judgeModel = judgeModel !== undefined ? judgeModel : envJudge;
     this.fetchFn = fetchFn ?? globalThis.fetch;
   }
 
+  get model() {
+    return this.draftModel;
+  }
+
+  set model(val) {
+    this.draftModel = val;
+  }
+
   isAvailable() {
-    return Boolean(this.apiKey && this.model);
+    return Boolean(this.apiKey && this.draftModel);
+  }
+
+  isJudgeAvailable() {
+    return Boolean(this.apiKey && this.judgeModel);
   }
 
   /**
@@ -384,6 +439,175 @@ ${formattedQuestions}`;
       console.error('[ClaudeService] Failed to execute batch resolution:', err.message);
       return {};
     }
+  }
+
+  /**
+   * Authoritative JudgeLM Pass: audits and verifies draft answers, and resolves low-confidence/null fields.
+   *
+   * @param {Object} params
+   * @param {Object} params.client Candidate profile
+   * @param {Object} [params.canonical] CanonicalProfile instance
+   * @param {string} [params.resumeText] Raw resume text
+   * @param {Object} [params.parsedResume] Structured ATS resume
+   * @param {Array<Object>} [params.clientHistory] Past Q&A memory
+   * @param {Array<Object>} params.questions List of deduplicated questions
+   * @param {Object} params.draftAnswers Map of { [questionId]: { answer, confidence, rationale } } from draft model
+   * @returns {Promise<Object>} Map of { [questionId]: { verdict, answer, confidence, rationale } }
+   */
+  async judgeCandidateBatch({ client, canonical, resumeText = '', parsedResume = null, clientHistory = [], questions = [], draftAnswers = {} }) {
+    if (!this.isJudgeAvailable() || questions.length === 0) {
+      return this.#fallbackToDrafts(questions, draftAnswers);
+    }
+
+    const pillar1 = this.#buildCandidateProfileSummary(client);
+    const pillar2 = this.#buildStructuredResumeSummary(parsedResume) || (resumeText ? `Raw Resume Context:\n${resumeText.slice(0, 3000)}` : '');
+    const pillar3 = this.#buildQuestionBankHistorySummary(clientHistory);
+
+    const formattedQuestions = questions.map((q, idx) => {
+      const optionsStr = Array.isArray(q.options) && q.options.length > 0
+        ? `\n  Allowed Options (MUST be one of these exact strings):\n${q.options.map(o => `    * "${o}"`).join('\n')}`
+        : '';
+      const contextStr = [
+        q.company ? `Company: "${q.company}"` : null,
+        q.jobTitle ? `Target Role: "${q.jobTitle}"` : null,
+        q.sectionLabel ? `Section: "${q.sectionLabel}"` : null
+      ].filter(Boolean).join(' | ');
+
+      const draft = draftAnswers[q.questionId];
+      const draftStr = draft
+        ? `\n  Junior Model Draft: ${draft.answer === null ? 'null (Unresolved)' : `"${draft.answer}"`} (Confidence: ${draft.confidence})\n  Draft Rationale: "${draft.rationale || 'None'}"`
+        : `\n  Junior Model Draft: None (Unanswered)`;
+
+      return `[Question ${idx + 1}] ID: "${q.questionId}"\n  Context: ${contextStr || 'General'}\n  Label: "${q.label}"\n  Type: "${q.type || 'text'}"${optionsStr}${draftStr}`;
+    }).join('\n\n');
+
+    const prompt = `=== CANDIDATE PROFILE FACTS (Pillar 1) ===
+${pillar1}
+
+${pillar2 ? `=== STRUCTURED RESUME INTELLIGENCE (Pillar 2) ===\n${pillar2}\n` : ''}
+${pillar3 ? `=== CANDIDATE PAST APPROVED ANSWERS MEMORY (Pillar 3) ===\n${pillar3}\n` : ''}
+
+=== QUESTIONS & JUNIOR MODEL DRAFTS TO JUDGE ===
+${formattedQuestions}`;
+
+    try {
+      const candidateTag = client?.applywizz_id || client?.client?.applywizz_id || 'Candidate';
+      const response = await this.#fetchWithRetry('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'x-api-key': this.apiKey,
+          'anthropic-version': '2023-06-01',
+          'anthropic-beta': 'prompt-caching-2024-07-31',
+          'content-type': 'application/json'
+        },
+        body: JSON.stringify({
+          model: this.judgeModel,
+          max_tokens: 8192,
+          thinking: { type: 'disabled' },
+          system: [
+            {
+              type: 'text',
+              text: JUDGE_RESOLUTION_SYSTEM_PROMPT,
+              cache_control: { type: 'ephemeral' }
+            }
+          ],
+          messages: [{ role: 'user', content: prompt }]
+        })
+      });
+
+      if (!response.ok) {
+        const errBody = await response.text().catch(() => '');
+        console.warn(`[ClaudeService] Judge API error: ${response.status} ${response.statusText} - ${errBody}. Falling back gracefully to draft answers.`);
+        return this.#fallbackToDrafts(questions, draftAnswers);
+      }
+
+      const data = await response.json();
+      const rawText = Array.isArray(data.content)
+        ? data.content
+            .filter(b => (b.type === 'text' || !b.type) && typeof b.text === 'string')
+            .map(b => b.text)
+            .join('\n')
+            .trim()
+        : (typeof data.content === 'string' ? data.content.trim() : '');
+
+      const parsed = parseBatchJson(rawText);
+      if (!parsed) {
+        console.warn(`[ClaudeService] Failed to parse JSON from judge response. Falling back gracefully to draft answers.`);
+        return this.#fallbackToDrafts(questions, draftAnswers);
+      }
+
+      const rawEvals = parsed.evaluations || parsed.answers || parsed;
+      const finalEvals = {};
+
+      for (const q of questions) {
+        const qId = q.questionId;
+        const evalObj = rawEvals[qId];
+        const draft = draftAnswers[qId];
+
+        if (!evalObj || typeof evalObj !== 'object') {
+          finalEvals[qId] = draft && draft.answer !== null && draft.confidence >= 0.80
+            ? { verdict: 'APPROVED', answer: draft.answer, confidence: draft.confidence, rationale: draft.rationale }
+            : { verdict: 'UNRESOLVABLE', answer: null, confidence: 0.0, rationale: 'Unresolved' };
+          continue;
+        }
+
+        const verdict = String(evalObj.verdict || '').toUpperCase();
+        let finalVal = evalObj.final_answer !== undefined ? evalObj.final_answer : evalObj.answer;
+        let confidence = typeof evalObj.confidence === 'number' ? evalObj.confidence : (verdict === 'APPROVED' ? 0.95 : 0.0);
+        const rationale = evalObj.rationale || 'Evaluated by Claude JudgeLM';
+
+        if (finalVal === null || finalVal === undefined || confidence < 0.80 || verdict === 'UNRESOLVABLE') {
+          finalEvals[qId] = { verdict: 'UNRESOLVABLE', answer: null, confidence: 0.0, rationale };
+          continue;
+        }
+
+        // Post-judge option enforcement (Floor: 80)
+        if (Array.isArray(q.options) && q.options.length > 0) {
+          const matchedOpt = matchBestOption([String(finalVal)], q.options, 80);
+          if (matchedOpt) {
+            finalVal = matchedOpt;
+          } else {
+            finalEvals[qId] = { verdict: 'UNRESOLVABLE', answer: null, confidence: 0.0, rationale: `Option mismatch for "${finalVal}"` };
+            continue;
+          }
+        }
+
+        finalEvals[qId] = {
+          verdict: verdict === 'CORRECTED' ? 'CORRECTED' : (verdict === 'RESOLVED' ? 'RESOLVED' : 'APPROVED'),
+          answer: finalVal,
+          confidence,
+          rationale
+        };
+      }
+
+      return finalEvals;
+    } catch (err) {
+      console.warn(`[ClaudeService] Error during JudgeLM evaluation: ${err.message}. Falling back gracefully to draft answers.`);
+      return this.#fallbackToDrafts(questions, draftAnswers);
+    }
+  }
+
+  #fallbackToDrafts(questions, draftAnswers) {
+    const fallback = {};
+    for (const q of questions) {
+      const draft = draftAnswers[q.questionId];
+      if (draft && draft.answer !== null && draft.confidence >= 0.80) {
+        fallback[q.questionId] = {
+          verdict: 'APPROVED',
+          answer: draft.answer,
+          confidence: draft.confidence,
+          rationale: `${draft.rationale || 'Draft answer'} (Judge unavailable, draft accepted)`
+        };
+      } else {
+        fallback[q.questionId] = {
+          verdict: 'UNRESOLVABLE',
+          answer: null,
+          confidence: 0.0,
+          rationale: draft?.rationale || 'Unresolved'
+        };
+      }
+    }
+    return fallback;
   }
 
   /**

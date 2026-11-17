@@ -41,6 +41,8 @@ export const config = Object.freeze({
   phase3Concurrency: numberEnv('PHASE3_CONCURRENCY', 3),
   llmDelayMs: numberEnv('LLM_DELAY_MS', 0),
   llmBatchMaxQuestions: numberEnv('LLM_BATCH_MAX_QUESTIONS', 20),
+  anthropicDraftModel: (process.env.ANTHROPIC_DRAFT_MODEL || process.env.ANTHROPIC_MODEL || '').trim() || null,
+  anthropicJudgeModel: (process.env.ANTHROPIC_JUDGE_MODEL || '').trim() || null,
   scanner: {
     concurrency: numberEnv('SCANNER_CONCURRENCY', 3),
     launchThrottleMs: numberEnv('SCANNER_LAUNCH_THROTTLE_MS', 30000),

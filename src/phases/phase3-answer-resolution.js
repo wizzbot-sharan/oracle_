@@ -352,7 +352,7 @@ export class Phase3AnswerResolution {
           const chunk = allQuestions.slice(i, i + batchMax);
           console.log(`[Phase 3] [Candidate ${applywizzId}] Resolving ${chunk.length} unique questions via Claude Batch LLM (3-Pillar Triad)...`);
 
-          const batchAnswers = await this.engine.claudeService.resolveCandidateBatch({
+          const draftAnswers = await this.engine.claudeService.resolveCandidateBatch({
             client,
             resumeText,
             parsedResume,
@@ -361,20 +361,38 @@ export class Phase3AnswerResolution {
           });
           didCallLlm = true;
 
+          let finalAnswers = draftAnswers;
+          let isJudgeRun = false;
+
+          if (this.engine.claudeService.isJudgeAvailable()) {
+            console.log(`[Phase 3] [Candidate ${applywizzId}] Auditing & Escalating ${chunk.length} questions via Claude JudgeLM...`);
+            const judgeEvaluations = await this.engine.claudeService.judgeCandidateBatch({
+              client,
+              resumeText,
+              parsedResume,
+              clientHistory,
+              questions: chunk,
+              draftAnswers
+            });
+            finalAnswers = judgeEvaluations;
+            isJudgeRun = true;
+          }
+
           for (const q of chunk) {
-            const ans = batchAnswers[q.questionId];
+            const ans = finalAnswers[q.questionId];
             if (ans && ans.answer !== null && ans.confidence >= 0.80) {
               for (const target of q.targets) {
                 const validated = this.engine.validateAndCoerceAnswer(ans.answer, target.field);
                 if (validated !== null) {
                   target.app.values[target.field.id] = {
                     value: validated,
-                    source: 'tier2_claude_llm',
-                    stage: 'stage4_llm',
+                    source: isJudgeRun ? 'tier2_claude_judge' : 'tier2_claude_llm',
+                    stage: isJudgeRun ? 'stage4_llm_judge' : 'stage4_llm',
                     tier: 2,
                     confidence: ans.confidence,
                     questionLabel: target.field.label,
                     fieldType: target.field.type || 'text',
+                    verdict: ans.verdict || null,
                     reviewed: false
                   };
                 }
@@ -386,7 +404,7 @@ export class Phase3AnswerResolution {
                 question_label: q.label,
                 field_type: q.type,
                 value: ans.answer,
-                source: 'tier2_claude_llm',
+                source: isJudgeRun ? 'tier2_claude_judge' : 'tier2_claude_llm',
                 confidence: ans.confidence,
                 created_at: nowIso(),
                 updated_at: nowIso()
