@@ -659,7 +659,12 @@ export class OracleRecruitingAdapter {
       for (const section of pageSections) allSections.add(section);
 
       const baseline = await this.#extractControls(page);
+      const inlineLinkGroups = await this.#scanInlineLinkGroups(page, pageNumber);
+      const linkControlIds = new Set(inlineLinkGroups.flatMap(group => (group.children ?? []).map(field => field.sourceId).filter(Boolean)));
       for (const field of baseline) {
+        // candidate-links is represented as one scoped repeatable group, not as
+        // unrelated top-level URL fields (siteLink-1 repeats across sections).
+        if (linkControlIds.has(field.sourceId) || (/^siteLink-\d+$/i.test(field.sourceName || '') && field.type === 'url')) continue;
         field.pageNumber = pageNumber;
         const key = this.#fieldIdentity(field);
         if (!seenFieldKeys.has(key)) {
@@ -683,7 +688,7 @@ export class OracleRecruitingAdapter {
       }
       allBranches.push(...branches);
 
-      const groups = await this.#scanRepeatableGroups(page);
+      const groups = [...await this.#scanRepeatableGroups(page), ...inlineLinkGroups];
       for (const group of groups) {
         if (!seenGroupIds.has(group.id)) {
           seenGroupIds.add(group.id);
@@ -1425,6 +1430,87 @@ export class OracleRecruitingAdapter {
     return discovered;
   }
 
+  async #scanInlineLinkGroups(page, pageNumber) {
+    let components = page.locator('candidate-links:visible');
+    if (!(await components.count().catch(() => 0))) components = page.locator('.candidate-links:visible');
+    const discovered = [];
+    const count = await components.count().catch(() => 0);
+    for (let index = 0; index < count; index += 1) {
+      const root = components.nth(index);
+      const inputs = root.locator('.candidate-links__link input[name^="siteLink-"]:visible, input[type="url"][name^="siteLink-"]:visible');
+      const inputCount = await inputs.count().catch(() => 0);
+      if (!inputCount) continue;
+      const sectionLabel = await root.evaluate(el => {
+        const labels = [...el.querySelectorAll('input[name^="siteLink-"]')].map(input => input.getAttribute('aria-label') || '').filter(Boolean);
+        const fromAria = labels.map(label => label.replace(/\s+Link\s+\d+\s*$/i, '').trim()).find(Boolean);
+        if (fromAria) return fromAria;
+        const block = el.closest('.apply-flow-block');
+        return (block?.querySelector('.apply-flow-block__title')?.textContent || block?.querySelector('[role="region"]')?.getAttribute('aria-label') || '').replace(/\s+/g, ' ').trim();
+      }).catch(() => 'Links');
+      const sameLabelOrdinal = discovered.filter(group => group.sectionLabel === sectionLabel).length + 1;
+      const group = {
+        id: `inline_links_${this.#slug(sectionLabel || 'links')}_${sameLabelOrdinal}`,
+        kind: 'inline-links',
+        category: 'links',
+        type: 'repeatable-group',
+        label: 'Links',
+        sectionLabel: sectionLabel || 'Links',
+        componentOrdinal: index,
+        pageNumber,
+        addButton: 'Add Another Link',
+        fields: [],
+        children: []
+      };
+      for (let rowIndex = 0; rowIndex < inputCount; rowIndex += 1) {
+        const input = inputs.nth(rowIndex);
+        const descriptor = await controlDescriptor(input);
+        const number = Number((descriptor.sourceName || '').match(/siteLink-(\d+)/i)?.[1]) || rowIndex + 1;
+        group.children.push({
+          id: 'url', label: `Link ${number}`, type: 'url', inputType: 'url',
+          sourceName: `siteLink-${number}`,
+          ariaLabel: descriptor.ariaLabel, required: descriptor.required,
+          pageNumber, value: null
+        });
+      }
+      group.fields = group.children;
+      group.descriptorVersion = 1;
+      const add = root.locator('button.candidate-links__add-link:visible').first();
+      group.canAdd = Boolean(await add.count().catch(() => 0)) && await add.isEnabled().catch(() => false);
+      group.scanIncomplete = !group.canAdd;
+      if (group.canAdd) {
+        const originalNames = await inputs.evaluateAll(elements => elements.map(el => el.name));
+        try {
+          await add.click();
+          await inputs.nth(inputCount).waitFor({ state: 'visible', timeout: 5000 });
+          const probeRow = root.locator('.candidate-links__link').last();
+          const probeInput = probeRow.locator('input[name^="siteLink-"]').first();
+          const probeDescriptor = await controlDescriptor(probeInput);
+          const probeName = probeDescriptor.sourceName || await probeInput.getAttribute('name');
+          const probeRemove = probeRow.locator('button.candidate-links__remove-link:visible').first();
+          group.addRowProbe = { succeeded: Boolean(probeName && probeName !== originalNames.at(-1)), controlType: probeDescriptor.type };
+          invariant(await probeRemove.count().catch(() => 0), 'SCAN_LINK_REMOVE_UNAVAILABLE', `New ${sectionLabel} row has no Remove control`);
+          await probeRemove.click();
+          await inputs.nth(Math.max(0, inputCount - 1)).waitFor({ state: 'visible', timeout: 5000 });
+          const restored = await inputs.evaluateAll(elements => elements.map(el => el.name));
+          invariant(restored.length === originalNames.length && restored.every((name, i) => name === originalNames[i]), 'SCAN_LINK_CLEANUP_FAILED', `Could not restore ${sectionLabel} link rows after scan probe`);
+        } catch (error) {
+          group.scanIncomplete = true;
+          group.addRowProbe = { succeeded: false, error: error.message };
+          // A probe that may have changed the live form must never leak into the candidate's profile.
+          const currentCount = await inputs.count().catch(() => 0);
+          if (currentCount > inputCount) {
+            const remove = root.locator('.candidate-links__link').last().locator('button.candidate-links__remove-link:visible').first();
+            if (await remove.count().catch(() => 0)) await remove.click().catch(() => {});
+          }
+          const restoredCount = await inputs.count().catch(() => 0);
+          invariant(restoredCount === inputCount, 'SCAN_LINK_CLEANUP_FAILED', `Could not restore ${sectionLabel} link rows after scan probe`);
+        }
+      }
+      discovered.push(group);
+    }
+    return discovered;
+  }
+
   async #smoothScrollIntoView(page, locator) {
     try {
       await locator.evaluate(el => {
@@ -1640,16 +1726,18 @@ export class OracleRecruitingAdapter {
         // 4. Process repeatable groups (Education, Experience, Licenses, etc.)
         for (const group of (template.repeatableGroups ?? [])) {
           if (filledFieldIds.has(group.id)) continue;
+          if (Number.isInteger(group.pageNumber) && group.pageNumber !== pageNumber) continue;
           const answer = values[group.id]?.value;
-          if (!repeatableCategory(group) && !/link/i.test(group.id || group.label || '')) continue;
+          const inlineLinks = group.kind === 'inline-links' || group.addButton === 'Add Another Link';
+          if (!repeatableCategory(group) && !inlineLinks && !/link/i.test(group.id || group.label || '')) continue;
 
           // Pre-Check Detection: check if any valid cards are already present on the page
-          const groupHandle = await findRepeatableGroup(page, group).catch(() => null);
-          if (!groupHandle && repeatableCategory(group)) continue;
+          const groupHandle = inlineLinks ? null : await findRepeatableGroup(page, group).catch(() => null);
+          if (!groupHandle && repeatableCategory(group) && !inlineLinks) continue;
           const existingCards = groupHandle ? await inspectRepeatableCards(groupHandle) : [];
           const validCards = existingCards.filter(c => !c.provisional);
 
-          if (validCards.length > 0) {
+          if (!inlineLinks && validCards.length > 0) {
             console.log(`[Phase 4] [Job ${jobId} | User ${userId}] Repeatable group "${group.label}" already has ${validCards.length} card(s) present. Preserving existing card(s) without additions.`);
             filledFieldIds.add(group.id);
             results.push({ fieldId: group.id, status: validCards.some(c => c.isInvalid) ? 'failed' : 'verified', prefilled: true, existingCards: validCards.length });
@@ -2525,6 +2613,10 @@ export class OracleRecruitingAdapter {
     return this.#fillRepeatableGroup(page, group, rows, context);
   }
 
+  async _scanInlineLinkGroupsForTest(page, pageNumber = 1) {
+    return this.#scanInlineLinkGroups(page, pageNumber);
+  }
+
   async _extractComboboxOptionsForTest(page, candidate, field) {
     return this.#extractComboboxOptions(page, candidate, field);
   }
@@ -2609,7 +2701,8 @@ export class OracleRecruitingAdapter {
 
   async #fillRepeatableGroup(page, group, rows, context = {}) {
     invariant(Array.isArray(rows), 'INVALID_REPEATABLE_VALUE', `${group.label} must be an array`);
-    const isInlineLink = /link/i.test(group.id) || /link/i.test(group.label);
+    const isInlineLink = group.kind === 'inline-links' || group.addButton === 'Add Another Link';
+    if (isInlineLink) return this.#fillInlineLinkGroup(page, group, rows, context);
     if (!isInlineLink && repeatableCategory(group)) {
       const handle = await findRepeatableGroup(page, group);
       if (!handle && typeof page.locator('.apply-flow-block:visible').nth === 'function') {
@@ -2675,37 +2768,6 @@ export class OracleRecruitingAdapter {
       }
       if (!(await visible(addBtn))) {
         addBtn = page.locator(`button:has-text("${group.addButton || group.label}"):visible`).first();
-      }
-
-      // 1. Inline links handling (supporting_links, another_link, portfolio/linkedin)
-      if (isInlineLink) {
-        let filledLink = false;
-        for (const child of group.children ?? []) {
-          const answer = this.#resolveChildAnswer(child, row);
-          if (!answer) continue;
-          const baseName = (child.sourceName || child.sourceId || '').replace(/-\d+$/, '');
-          const linkInput = page.locator([
-            baseName ? `input[name="${baseName}"]:visible, [id^="${baseName}-"]:visible, [id="${baseName}"]:visible` : null,
-            child.sourceId ? `[id="${child.sourceId}"]:visible` : null,
-            'input[type="url"]:visible',
-            'input[name*="siteLink"]:visible'
-          ].filter(Boolean).join(', ')).first();
-
-          if (await visible(linkInput)) {
-            await humanType(linkInput, String(answer), this.humanDelay);
-            await linkInput.evaluate(el => el.blur()).catch(() => {});
-            console.log(`[Phase 4] [Job ${context.jobId ?? ''} | User ${context.userId ?? ''}] ✓ Filled inline link: "${answer}"`);
-            filledLink = true;
-          }
-        }
-        if (!filledLink) {
-          for (const child of group.children ?? []) {
-            const answer = this.#resolveChildAnswer(child, row);
-            if (!answer) continue;
-            await this.#fillField(page, child, answer, {}, context);
-          }
-        }
-        continue;
       }
 
       if (await visible(addBtn)) {
@@ -2780,6 +2842,59 @@ export class OracleRecruitingAdapter {
 
       await humanPause(this.actionGap);
     }
+  }
+
+  async #fillInlineLinkGroup(page, group, rows, context = {}) {
+    let components = page.locator('candidate-links:visible');
+    if (!(await components.count().catch(() => 0))) components = page.locator('.candidate-links:visible');
+    const count = await components.count().catch(() => 0);
+    const ordinal = Number.isInteger(group.componentOrdinal) ? group.componentOrdinal : null;
+    let root = null;
+    if (ordinal !== null && ordinal < count) root = components.nth(ordinal);
+    else {
+      const matches = [];
+      for (let index = 0; index < count; index += 1) {
+        const candidate = components.nth(index);
+        const label = await candidate.evaluate(el => {
+          const input = el.querySelector('input[name^="siteLink-"]');
+          return (input?.getAttribute('aria-label') || '').replace(/\s+Link\s+\d+\s*$/i, '').trim();
+        }).catch(() => '');
+        if (label === (group.sectionLabel || group.label)) matches.push(candidate);
+      }
+      invariant(matches.length === 1, 'INLINE_LINK_GROUP_AMBIGUOUS', `Could not uniquely identify ${group.label}; rescan the application template`);
+      root = matches[0];
+    }
+    invariant(root, 'INLINE_LINK_GROUP_NOT_FOUND', `Could not find link section ${group.label}; rescan the application template`);
+
+    const inputs = () => root.locator('input[name^="siteLink-"]:visible');
+    const normalizeUrl = value => String(value || '').trim().replace(/\/$/, '').toLowerCase();
+    const getCurrent = async () => inputs().evaluateAll(elements => elements.map(el => ({ name: el.name, value: el.value || '' })));
+    let current = await getCurrent();
+    for (const row of rows) {
+      const url = row?.url ?? Object.entries(row || {}).find(([key, value]) => /^site_link_\d+$/i.test(key) && value)?.[1];
+      if (typeof url !== 'string' || !url.trim()) continue;
+      if (current.some(item => normalizeUrl(item.value) === normalizeUrl(url))) continue;
+      let empty = current.find(item => !item.value.trim());
+      if (!empty) {
+        const add = root.locator('button.candidate-links__add-link:visible').first();
+        invariant(await add.count().catch(() => 0) && await add.isEnabled().catch(() => false), 'INLINE_LINK_ADD_UNAVAILABLE', `Cannot add a link in ${group.label}`);
+        const oldCount = current.length;
+        await add.click();
+        await inputs().nth(oldCount).waitFor({ state: 'visible', timeout: 5000 });
+        current = await getCurrent();
+        empty = current.find(item => !item.value.trim());
+      }
+      invariant(empty, 'INLINE_LINK_ROW_NOT_FOUND', `Could not locate an empty URL row in ${group.label}`);
+      const target = root.locator(`input[name="${empty.name}"]:visible`).first();
+      await humanType(target, url.trim(), this.humanDelay);
+      await target.evaluate(el => el.blur()).catch(() => {});
+      await humanPause({ min: 100, max: 250 });
+      const actual = await target.inputValue().catch(() => '');
+      invariant(normalizeUrl(actual) === normalizeUrl(url), 'INLINE_LINK_VERIFY_FAILED', `URL did not persist in ${group.label}`);
+      current = await getCurrent();
+      console.log(`[Phase 4] [Job ${context.jobId ?? ''} | User ${context.userId ?? ''}] ✓ Filled link in "${group.label}"`);
+    }
+    return { verified: true, rows: current.length };
   }
 
   async #fillRepeatableChild(page, opened, field, answer, context) {

@@ -119,6 +119,9 @@ function Field({ field, value, onChange, answers, fieldAudit }) {
   }
 
   if (field.type === 'repeatable-group') {
+    if (field.kind === 'inline-links' || field.addButton === 'Add Another Link') {
+      return <div className={fieldClass}>{header}<InlineLinks field={field} value={value} onChange={next => onChange(field.id, next)} /></div>;
+    }
     return <RepeatableGroup field={field} value={value} onChange={next => onChange(field.id, next)} />;
   }
 
@@ -228,6 +231,39 @@ function Field({ field, value, onChange, answers, fieldAudit }) {
         onChange={event => onChange(field.id, event.target.value)}
       />
     </div>
+  );
+}
+
+function InlineLinks({ field, value, onChange }) {
+  let parsed = value;
+  if (typeof parsed === 'string' && parsed.startsWith('[')) {
+    try { parsed = JSON.parse(parsed); } catch {}
+  }
+  const inputRows = Array.isArray(parsed) ? parsed : (typeof parsed === 'string' && parsed.trim() ? [parsed] : (parsed && typeof parsed === 'object' ? [parsed] : []));
+  const rows = inputRows.map(row => ({
+    ...(row && typeof row === 'object' ? row : {}),
+    url: (typeof row === 'string' ? row : row?.url) ?? Object.entries(row && typeof row === 'object' ? row : {}).find(([key, candidate]) => /^site_link_\d+$/i.test(key) && candidate)?.[1] ?? ''
+  }));
+  const displayRows = rows.length ? rows : [{ url: '' }];
+  return (
+    <fieldset className="repeatable inline-links">
+      <legend>{field.sectionLabel || field.label}</legend>
+      {displayRows.map((row, index) => (
+        <label className="field" key={index}>
+          <span className="field-label">Link {index + 1}</span>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <input type="url" value={row.url || ''} placeholder="https://" onChange={event => {
+              const next = [...rows];
+              if (!next.length) next.push({ url: '' });
+              next[index] = { ...next[index], url: event.target.value };
+              onChange(next);
+            }} />
+            {displayRows.length > 1 && <button className="secondary danger" type="button" onClick={() => onChange(rows.filter((_, rowIndex) => rowIndex !== index))}>Remove</button>}
+          </div>
+        </label>
+      ))}
+      <button className="secondary" type="button" onClick={() => onChange([...displayRows, { url: '' }])}>+ Add Another Link</button>
+    </fieldset>
   );
 }
 
@@ -346,8 +382,7 @@ function TemplateForm({ template, application, onSaved }) {
     }
   };
 
-  const sections =
-    template.sections ??
+  const sections = (template.sections ??
     (() => {
       const grouped = new Map();
       for (const field of template.fields ?? []) {
@@ -361,15 +396,26 @@ function TemplateForm({ template, application, onSaved }) {
         grouped.set(label, section);
       }
       const result = [...grouped.values()];
-      if (template.repeatableGroups?.length) {
-        result.push({
-          id: 'repeatable_groups',
-          label: 'Work, education and links',
-          groups: template.repeatableGroups
-        });
-      }
       return result;
-    })();
+    })()).map(section => ({ ...section, groups: [...(section.groups ?? [])] }));
+
+  const linkGroups = (template.repeatableGroups ?? []).filter(group => group.kind === 'inline-links' || group.addButton === 'Add Another Link');
+  for (const group of linkGroups) {
+    const label = group.sectionLabel || group.label || 'Links';
+    const section = sections.find(item => item.label === label) ?? {
+      id: label.toLowerCase().replace(/[^a-z0-9]+/g, '_'), label, fields: [], groups: []
+    };
+    if (!sections.includes(section)) sections.push(section);
+    if (!section.groups.some(item => item.id === group.id)) section.groups.push(group);
+  }
+  const otherGroups = (template.repeatableGroups ?? []).filter(group => !linkGroups.includes(group));
+  if (otherGroups.length) {
+    const section = sections.find(item => item.id === 'repeatable_groups') ?? {
+      id: 'repeatable_groups', label: 'Work and profile cards', fields: [], groups: []
+    };
+    if (!sections.includes(section)) sections.push(section);
+    section.groups.push(...otherGroups.filter(group => !section.groups.some(item => item.id === group.id)));
+  }
 
   return (
     <div className="form-stack">
@@ -377,6 +423,8 @@ function TemplateForm({ template, application, onSaved }) {
         <section className="form-section" key={section.id}>
           <h2>{section.label}</h2>
           {(section.fields ?? []).map(field => (
+            (section.groups ?? []).some(group => (group.kind === 'inline-links' || group.addButton === 'Add Another Link') && /^siteLink-\d+$/i.test(field.sourceName || '') && field.sectionLabel === group.sectionLabel)
+              ? null :
             <Field
               key={field.id}
               field={field}
@@ -387,17 +435,29 @@ function TemplateForm({ template, application, onSaved }) {
             />
           ))}
           {(section.groups ?? []).map(group => (
-            <RepeatableGroup
+            (() => {
+              const isLinks = group.kind === 'inline-links' || group.addButton === 'Add Another Link';
+              const legacyFields = isLinks ? (template.fields ?? []).filter(field =>
+                /^siteLink-\d+$/i.test(field.sourceName || '') && field.sectionLabel === (group.sectionLabel || group.label)
+              ).sort((a, b) => Number(a.sourceName.match(/\d+/)?.[0]) - Number(b.sourceName.match(/\d+/)?.[0])) : [];
+              const savedGroupValue = answers[group.id];
+              const fieldFallback = legacyFields.map(field => ({ url: answers[field.id] || '' })).filter(row => row.url);
+              return <Field
               key={group.id}
               field={{
                 ...group,
                 children: group.children ?? group.fields ?? [],
                 label: group.label ?? group.id.replaceAll('_', ' ')
               }}
-              value={answers[group.id]}
-              persistedGroupValue={application.values?.[group.id]}
-              onChange={next => update(group.id, next)}
-            />
+              value={savedGroupValue ?? (fieldFallback.length ? fieldFallback : undefined)}
+              answers={answers}
+              fieldAudit={application.values?.[group.id]}
+              onChange={(id, next) => {
+                update(id, next);
+                legacyFields.forEach((field, index) => update(field.id, next[index]?.url ?? ''));
+              }}
+            />;
+            })()
           ))}
         </section>
       ))}

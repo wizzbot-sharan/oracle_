@@ -426,6 +426,11 @@ export class ResolutionEngine {
 
     // 1. REPEATABLE GROUPS
     if (type === 'repeatable-group') {
+      if (field.kind === 'inline-links' || field.addButton === 'Add Another Link') {
+        const link = canonical.history.links.linkedin || canonical.history.links.github || canonical.history.links.portfolio;
+        return link ? { rawValue: [{ url: link, site_link_1: link }], confidence: 1.0 } : null;
+      }
+
       if (/experience|employment|work\s*history/i.test(label) || /experience/i.test(field.id || '')) {
         const records = canonical.history.experienceRecords;
         if (!records || !records.length) return null;

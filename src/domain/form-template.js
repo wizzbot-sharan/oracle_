@@ -17,6 +17,7 @@ export function flattenTemplateFields(template) {
       if (Array.isArray(item.groups)) {
         for (const group of item.groups) {
           fields.push({
+            ...group,
             id: group.id,
             type: 'repeatable-group',
             label: group.label ?? group.id.replaceAll('_', ' '),
@@ -40,6 +41,11 @@ export function flattenTemplateFields(template) {
   for (const group of template.repeatableGroups ?? []) {
     fields.push({
       id: group.id,
+      kind: group.kind,
+      sectionLabel: group.sectionLabel,
+      componentOrdinal: group.componentOrdinal,
+      pageNumber: group.pageNumber,
+      descriptorVersion: group.descriptorVersion,
       type: 'repeatable-group',
       label: group.label ?? group.id.replaceAll('_', ' '),
       addButton: group.addButton,

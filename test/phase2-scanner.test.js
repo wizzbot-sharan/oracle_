@@ -54,3 +54,16 @@ test('Dynamic group id slugification handles arbitrary Add button labels', () =>
   assert.equal(clean('+ Add Another Link'), 'another_link');
   assert.equal(clean('Add Professional References'), 'professional_references');
 });
+
+test('flattenTemplateFields preserves inline-link component identity for Phase 3', () => {
+  const [group] = flattenTemplateFields({ repeatableGroups: [{
+    id: 'inline_links_work_and_education_history_1',
+    kind: 'inline-links', type: 'repeatable-group', label: 'Links', sectionLabel: 'Work and Education History',
+    componentOrdinal: 1, pageNumber: 2, addButton: 'Add Another Link', descriptorVersion: 1,
+    fields: [{ id: 'url', label: 'Link 1', type: 'url', sourceName: 'siteLink-1' }]
+  }] });
+  assert.equal(group.kind, 'inline-links');
+  assert.equal(group.sectionLabel, 'Work and Education History');
+  assert.equal(group.componentOrdinal, 1);
+  assert.equal(group.pageNumber, 2);
+});
