@@ -227,6 +227,7 @@ export class CanonicalProfile {
     }
 
     const skills = [
+      ...(Array.isArray(addInfo.skills) ? addInfo.skills : typeof addInfo.skills === 'string' ? addInfo.skills.split(',').map(s => s.trim()) : []),
       ...(addInfo.role ? [addInfo.role] : []),
       ...(typeof addInfo.alternate_job_roles === 'string' ? addInfo.alternate_job_roles.split(',').map(s => s.trim()) : [])
     ].filter(Boolean);

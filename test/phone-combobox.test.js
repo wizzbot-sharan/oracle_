@@ -233,12 +233,12 @@ test('combobox clears input when no dropdown options appear after 3 seconds', as
     mouse: { wheel: async () => {} }
   };
 
-  await adapter._fillFieldForTest(page, {
+  await assert.rejects(adapter._fillFieldForTest(page, {
     id: 'city',
     sourceName: 'City',
     type: 'combobox',
     label: 'City'
-  }, 'NonExistentPlace');
+  }, 'NonExistentPlace'), { code: 'COMBOBOX_NO_OPTIONS' });
 
   assert.equal(typed, '', 'Expected input to be cleared for manual review when no dropdown options appear');
 });

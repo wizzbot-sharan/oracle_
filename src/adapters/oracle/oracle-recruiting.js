@@ -1,6 +1,8 @@
 import fs from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
+import { repeatableCategory, findRepeatableGroup, inspectRepeatableCards, openRepeatableEditor, closeRepeatableEditor } from './repeatable-controls.js';
+import { detectIdentityChallenge, isApplicationFlowUrl, lastNameChallengeInput, otpChallengeInput } from './identity-challenge.js';
 import { chromium as vanillaChromium } from 'playwright';
 import { chromium as extraChromium } from 'playwright-extra';
 import stealthPlugin from 'puppeteer-extra-plugin-stealth';
@@ -294,7 +296,7 @@ export class OracleRecruitingAdapter {
     }
   }
 
-  async authenticate({ session, job, email, mailReader, companyDomains = [] }) {
+  async authenticate({ session, job, email, lastName, mailReader, companyDomains = [] }) {
     const { page } = session;
     console.log(`[Phase 1] Navigating to: ${job.canonicalUrl}`);
     await page.goto(job.canonicalUrl, { waitUntil: 'domcontentloaded' });
@@ -460,7 +462,7 @@ export class OracleRecruitingAdapter {
     console.log(`[Phase 1] Clicking Next button...`);
     await humanPause(this.actionGap);
 
-    const requestedAt = Date.now();
+    let requestedAt = Date.now();
     await nextButton.click();
 
     // Configurable wait time after clicking Next before proceeding to OTP or next phase
@@ -476,13 +478,13 @@ export class OracleRecruitingAdapter {
       };
     }
 
-    console.log(`[Phase 1] Waiting for OTP prompt or application flow...`);
-    const otpMarker = page.getByRole('heading', { name: /confirm your identity|verify/i }).or(
-      page.locator('input[aria-label*="digit" i], input[name*="verificationCode" i]')
-    );
+    console.log(`[Phase 1] Waiting for identity challenge or application flow...`);
+    const otpMarker = otpChallengeInput(page);
+    const lastNameInput = lastNameChallengeInput(page);
     await Promise.race([
       page.waitForURL(/\/apply\/(section|flow|application)/, { timeout: 30_000 }),
-      otpMarker.first().waitFor({ state: 'visible', timeout: 30_000 })
+      otpMarker.waitFor({ state: 'visible', timeout: 30_000 }),
+      lastNameInput.waitFor({ state: 'visible', timeout: 30_000 })
     ]).catch(() => { });
 
     if (await this.detectCaptcha(page)) {
@@ -494,7 +496,28 @@ export class OracleRecruitingAdapter {
       };
     }
 
-    if (await visible(otpMarker.first())) {
+    let lastNameAttempted = false;
+    if (await detectIdentityChallenge(page) === 'last_name') {
+      if (!String(lastName ?? '').trim()) {
+        return { status: 'skipped', reason: 'last_name_required', message: 'Oracle requested the candidate last name, but none was available' };
+      }
+      lastNameAttempted = true;
+      console.log('[Phase 1] Last name verification screen presented. Entering candidate last name...');
+      await humanType(lastNameInput, String(lastName).trim(), this.humanDelay);
+      requestedAt = Date.now();
+      await nextButton.click();
+      await humanPause(this.postNextWait);
+      await Promise.race([
+        lastNameInput.waitFor({ state: 'hidden', timeout: 15_000 }),
+        otpMarker.waitFor({ state: 'visible', timeout: 15_000 }),
+        page.waitForURL(/\/apply\/(section|flow|application)/, { timeout: 15_000 })
+      ]).catch(() => { });
+      if (await detectIdentityChallenge(page) === 'last_name') {
+        return { status: 'skipped', reason: 'last_name_rejected', message: 'Oracle did not accept the candidate last name' };
+      }
+    }
+
+    if (await detectIdentityChallenge(page) === 'otp') {
       console.log(`[Phase 1] OTP screen presented. Polling mailbox for 6-digit code...`);
       let code;
       try {
@@ -560,14 +583,17 @@ export class OracleRecruitingAdapter {
     await page.waitForURL(/\/apply\/(section|flow|application)/, { timeout: 5_000 }).catch(() => { });
 
     const currentUrl = typeof page.url === 'function' ? page.url() : String(page.url || '');
-    const isStillOnOtpScreen = await visible(otpMarker.first());
+    const isStillOnOtpScreen = await detectIdentityChallenge(page) === 'otp';
+    const isStillOnLastNameScreen = await detectIdentityChallenge(page) === 'last_name';
     const isStillOnEmailUrl = currentUrl.endsWith('/apply/email');
-    if (isStillOnOtpScreen || isStillOnEmailUrl) {
+    if (!isApplicationFlowUrl(currentUrl) && (isStillOnOtpScreen || isStillOnLastNameScreen || isStillOnEmailUrl)) {
       console.error(`[Phase 1] ✖ Authentication incomplete: page remained on verification/email screen (${currentUrl}).`);
       return {
         status: 'skipped',
-        reason: 'otp_unresolved',
-        message: 'Application flow did not load; page remained on verification screen',
+        reason: lastNameAttempted && !isStillOnOtpScreen ? 'last_name_unresolved' : 'otp_unresolved',
+        message: lastNameAttempted && !isStillOnOtpScreen
+          ? 'Application flow did not load after last name verification; check the last name used by this Oracle account'
+          : 'Application flow did not load; page remained on verification screen',
         url: currentUrl
       };
     }
@@ -1350,90 +1376,53 @@ export class OracleRecruitingAdapter {
   }
 
   async #scanRepeatableGroups(page) {
-    const knownDefinitions = [
-      { id: 'experience', add: /^add experience$/i, cancel: /^cancel$/i },
-      { id: 'education', add: /^add education$/i, cancel: /^cancel$/i },
-      { id: 'supporting_links', add: /add another link/i, remove: /remove link/i }
-    ];
-    const groups = [];
-    const seenGroupIds = new Set();
-
-    // 1. Scan known standard repeatable sections
-    for (const definition of knownDefinitions) {
-      const add = page.getByRole('button', { name: definition.add }).first();
-      if (!(await visible(add))) continue;
-      const before = await this.#extractControls(page, { extractComboboxOptions: false });
-      const beforeKeys = new Set(before.map(field => this.#fieldIdentity(field)));
-      await add.click();
-      await humanPause({ min: 150, max: 250 });
-      const after = await this.#extractControls(page, { extractComboboxOptions: false });
-      const fields = after.filter(field => !beforeKeys.has(this.#fieldIdentity(field)));
-      const buttonText = normalizeText(await add.innerText().catch(() => ''));
-      seenGroupIds.add(definition.id);
-      groups.push({
-        id: definition.id,
-        label: definition.id.replaceAll('_', ' '),
-        addButton: buttonText || `Add ${definition.id.replaceAll('_', ' ')}`,
-        type: 'repeatable-group',
-        fields,
-        children: fields
-      });
-      const rollback = definition.cancel
-        ? page.getByRole('button', { name: definition.cancel }).first()
-        : page.getByRole('button', { name: definition.remove }).last();
-      if (await visible(rollback)) await rollback.click();
-      await humanPause({ min: 100, max: 150 });
-    }
-
-    // 2. Dynamically discover any additional + Add buttons (e.g. Certifications, Licenses, Skills, References, etc.)
-    const addButtons = page.locator([
-      'button:has-text("Add"):not(.apply-flow-pagination__button):visible',
-      'button:has-text("+ Add"):visible',
-      'button:has-text("+Add"):visible',
-      'button[aria-label*="Add " i]:not(.apply-flow-pagination__button):visible',
-      '.apply-flow-repeatable__add-button:visible'
-    ].join(', '));
-
-    const count = await addButtons.count();
-    for (let i = 0; i < count; i += 1) {
-      const btn = addButtons.nth(i);
-      const rawText = normalizeText(await btn.innerText().catch(() => '') || await btn.getAttribute('aria-label') || '');
-      if (!rawText || /^(next|cancel|continue|apply|back|close|submit)$/i.test(rawText)) continue;
-
-      const groupId = this.#slug(rawText.replace(/^(\+?\s*add|\+)\s+/i, ''));
-      if (!groupId || seenGroupIds.has(groupId)) continue;
-      seenGroupIds.add(groupId);
-
-      console.log(`[Phase 2] Discovered dynamic repeatable group: "${rawText}" (${groupId})`);
-      const before = await this.#extractControls(page, { extractComboboxOptions: false });
-      const beforeKeys = new Set(before.map(field => this.#fieldIdentity(field)));
-      await btn.click();
-      await humanPause({ min: 150, max: 250 });
-      const after = await this.#extractControls(page, { extractComboboxOptions: false });
-      const fields = after.filter(field => !beforeKeys.has(this.#fieldIdentity(field)));
-
-      if (fields.length) {
-        groups.push({
-          id: groupId,
-          label: groupId.replaceAll('_', ' '),
-          addButton: rawText,
-          type: 'repeatable-group',
-          fields,
-          children: fields
-        });
+    const discovered = [];
+    const addButtons = page.getByRole('button', { name: /^add (experience|education|skill|license|certificate|certification|language)s?(?: and certificates)?$/i });
+    const names = typeof addButtons.allInnerTexts === 'function' ? await addButtons.allInnerTexts() : [];
+    const seen = new Set();
+    for (const name of names) {
+      const label = name.replace(/^add\s+/i, '').trim();
+      const category = repeatableCategory({ label });
+      const groupId = this.#slug(label);
+      if (!category || seen.has(groupId)) continue;
+      seen.add(groupId);
+      const group = { id: groupId, category, label, type: 'repeatable-group', addButton: name, fields: [], children: [] };
+      const handle = await findRepeatableGroup(page, group);
+      if (!handle) continue;
+      const before = await inspectRepeatableCards(handle);
+      if (!(await handle.add.count()) || !(await handle.add.isEnabled())) {
+        group.layout = handle.layout;
+        group.scanIncomplete = true;
+        discovered.push(group);
+        continue;
       }
-
-      const rollback = page.locator([
-        'button:has-text("Cancel"):visible',
-        'button:has-text("Remove"):visible',
-        'button[aria-label*="remove" i]:visible',
-        'button[aria-label*="delete" i]:visible'
-      ].join(', ')).last();
-      if (await visible(rollback)) await rollback.click();
-      await humanPause({ min: 100, max: 150 });
+      let opened;
+      try {
+        opened = await openRepeatableEditor(handle);
+        const fields = await this.#extractControls(page, { extractComboboxOptions: false });
+        const editorFields = [];
+        for (const field of fields) {
+          const selector = field.sourceId ? `[id="${field.sourceId.replaceAll('"', '\\"')}"]` : field.sourceName ? `[name="${field.sourceName.replaceAll('"', '\\"')}"]` : null;
+          if (selector && await opened.fields.locator(selector).count()) {
+            if (field.type === 'combobox' && !field.options?.length) {
+              field.options = await this.#extractComboboxOptions(page, opened.fields.locator(selector).first(), field);
+            }
+            editorFields.push(field);
+          }
+        }
+        group.fields = editorFields;
+        group.children = editorFields;
+        group.layout = handle.layout;
+        group.descriptorVersion = 1;
+      } finally {
+        if (opened) {
+          const after = await closeRepeatableEditor(opened, 'cancel');
+          invariant(after.length === before.length, 'SCAN_REPEATABLE_CLEANUP_FAILED', `Cancel did not restore ${label} cards`);
+        }
+      }
+      discovered.push(group);
     }
-
-    return groups;
+    return discovered;
   }
 
   async #smoothScrollIntoView(page, locator) {
@@ -1529,7 +1518,7 @@ export class OracleRecruitingAdapter {
 
         // 3. Process live controls top-to-bottom
         for (const liveControl of liveControls) {
-          if (filledFieldIds.has(liveControl.id)) continue;
+          if (filledFieldIds.has(liveControl.id) || liveControl.type === 'repeatable-group') continue;
 
           // Multi-tier match against values
           const match = this.#matchLiveControlToValues(liveControl, values, template.fields);
@@ -1652,16 +1641,24 @@ export class OracleRecruitingAdapter {
         for (const group of (template.repeatableGroups ?? [])) {
           if (filledFieldIds.has(group.id)) continue;
           const answer = values[group.id]?.value;
-          if (!answer || !Array.isArray(answer) || !answer.length) continue;
+          if (!repeatableCategory(group) && !/link/i.test(group.id || group.label || '')) continue;
 
           // Pre-Check Detection: check if any valid cards are already present on the page
-          const existingCards = await this.#inspectExistingRepeatableCards(page, group);
-          const validCards = existingCards.filter(c => !c.isInvalid);
+          const groupHandle = await findRepeatableGroup(page, group).catch(() => null);
+          if (!groupHandle && repeatableCategory(group)) continue;
+          const existingCards = groupHandle ? await inspectRepeatableCards(groupHandle) : [];
+          const validCards = existingCards.filter(c => !c.provisional);
 
           if (validCards.length > 0) {
             console.log(`[Phase 4] [Job ${jobId} | User ${userId}] Repeatable group "${group.label}" already has ${validCards.length} card(s) present. Preserving existing card(s) without additions.`);
             filledFieldIds.add(group.id);
-            results.push({ fieldId: group.id, status: 'verified', prefilled: true });
+            results.push({ fieldId: group.id, status: validCards.some(c => c.isInvalid) ? 'failed' : 'verified', prefilled: true, existingCards: validCards.length });
+            continue;
+          }
+
+          if (!Array.isArray(answer) || !answer.length) {
+            results.push({ fieldId: group.id, status: group.required ? 'failed' : 'skipped', error: group.required ? 'No candidate records for required group' : undefined });
+            filledFieldIds.add(group.id);
             continue;
           }
 
@@ -1670,7 +1667,7 @@ export class OracleRecruitingAdapter {
             b.id === group.id || (group.addButton && group.addButton.toLowerCase() === b.text.toLowerCase())
           );
 
-          if (!hasMatchingAddBtn) {
+          if (!hasMatchingAddBtn && !groupHandle) {
             const cleanName = (group.label || group.id).replace(/^add\s+/i, '').trim();
             const directAddBtn = page.getByRole('button', { name: new RegExp(`(\\+|add)\\s*${cleanName}`, 'i') }).first();
             const isDirectVisible = await visible(directAddBtn);
@@ -1775,6 +1772,11 @@ export class OracleRecruitingAdapter {
       pageNumber += 1;
     }
 
+    for (const group of template.repeatableGroups ?? []) {
+      if (group.required && repeatableCategory(group) && !results.some(result => result.fieldId === group.id)) {
+        results.push({ fieldId: group.id, status: 'failed', error: 'Required repeatable group was not found on any traversed page' });
+      }
+    }
     const verifiedCount = results.filter(r => r.status === 'verified').length;
     const failedCount = results.filter(r => r.status === 'failed').length;
     console.log(`[Phase 4] [Job ${jobId} | User ${userId}] Fill completed: ${verifiedCount} verified, ${failedCount} failed (${screenshots.length} audit screenshots captured).`);
@@ -2348,8 +2350,11 @@ export class OracleRecruitingAdapter {
     const listboxId = await locator.getAttribute('aria-controls').catch(() => null);
 
     // 2. Focus and type answer with human speed
-    await locator.fill('').catch(() => {});
-    await humanType(locator, answer, this.humanDelay);
+    await locator.click({ timeout: 5000 });
+    await locator.fill('');
+    for (const character of String(answer)) {
+      await locator.pressSequentially(character, { delay: randomBetween(this.humanDelay.min, this.humanDelay.max) });
+    }
 
     // 3. Wait up to 3 seconds for dropdown list to appear
     const getDropdown = () => {
@@ -2441,18 +2446,18 @@ export class OracleRecruitingAdapter {
       await locator.fill('').catch(() => {});
       await locator.press('Escape').catch(() => {});
       await humanPause(this.actionGap);
-      return;
+      throw new WorkflowError('COMBOBOX_NO_OPTIONS', `No selectable option found for ${field.label}`);
     }
 
     // 4. Hybrid commit: check if a visible gridcell matches answer, else keyboard ArrowDown + Enter
-    const optionCount = await options.count().catch(() => 0);
+    const optionCount = Math.min(await options.count().catch(() => 0), 40);
     let matchedOptionLocator = null;
     const cleanAnswer = normalizeText(String(answer)).toLowerCase();
 
     if (typeof options.nth === 'function') {
       for (let i = 0; i < optionCount; i += 1) {
         const optLoc = options.nth(i);
-        const optText = normalizeText(await optLoc.innerText().catch(() => '')).toLowerCase();
+        const optText = normalizeText(await optLoc.innerText({ timeout: 1000 }).catch(() => '')).toLowerCase();
         if (optText && (optText === cleanAnswer || optText.startsWith(cleanAnswer) || cleanAnswer.startsWith(optText))) {
           matchedOptionLocator = optLoc;
           break;
@@ -2461,7 +2466,7 @@ export class OracleRecruitingAdapter {
     }
 
     if (matchedOptionLocator && (await visible(matchedOptionLocator))) {
-      await matchedOptionLocator.click().catch(() => {});
+      await matchedOptionLocator.click({ timeout: 3000 }).catch(() => {});
       await humanPause({ min: 300, max: 700 });
     } else {
       await delay(1000);
@@ -2485,10 +2490,14 @@ export class OracleRecruitingAdapter {
     const finalValue = await locator.inputValue().catch(() => '');
     const finalExpanded = await locator.getAttribute('aria-expanded').catch(() => 'false');
 
-    if (!finalValue || isInvalid || finalExpanded === 'true') {
+    const normalizedAnswer = normalizeText(String(answer)).toLowerCase();
+    const normalizedFinal = normalizeText(finalValue).toLowerCase();
+    const matchesAnswer = normalizedFinal === normalizedAnswer || normalizedFinal.startsWith(`${normalizedAnswer},`) || normalizedFinal.startsWith(`${normalizedAnswer} `);
+    if (!finalValue || isInvalid || finalExpanded === 'true' || !matchesAnswer) {
       console.warn(`[Phase 4] [Job ${context.jobId ?? ''} | User ${context.userId ?? ''}] ⚠ Combobox "${field.label}" was not committed (expanded=${finalExpanded}, value="${finalValue}"). Clearing for manual review.`);
       await locator.fill('').catch(() => {});
       await locator.press('Escape').catch(() => {});
+      throw new WorkflowError('COMBOBOX_NOT_COMMITTED', `Combobox ${field.label} did not commit the expected answer`);
     } else {
       console.log(`[Phase 4] [Job ${context.jobId ?? ''} | User ${context.userId ?? ''}] ✓ Combobox "${field.label}" committed: "${finalValue}"`);
     }
@@ -2601,6 +2610,42 @@ export class OracleRecruitingAdapter {
   async #fillRepeatableGroup(page, group, rows, context = {}) {
     invariant(Array.isArray(rows), 'INVALID_REPEATABLE_VALUE', `${group.label} must be an array`);
     const isInlineLink = /link/i.test(group.id) || /link/i.test(group.label);
+    if (!isInlineLink && repeatableCategory(group)) {
+      const handle = await findRepeatableGroup(page, group);
+      if (!handle && typeof page.locator('.apply-flow-block:visible').nth === 'function') {
+        invariant(false, 'REPEATABLE_GROUP_NOT_FOUND', `Could not identify ${group.label} on active page`);
+      }
+      if (handle) {
+      const before = await inspectRepeatableCards(handle);
+      if (before.some(card => !card.provisional)) {
+        return { prefilled: true, existingCards: before, invalid: before.some(card => card.isInvalid) };
+      }
+      const cap = handle.category === 'experience' ? 3 : handle.category === 'education' ? 2 : 5;
+      const rowsToFill = rows.slice(0, cap);
+      for (const row of rowsToFill) {
+        const opened = await openRepeatableEditor(handle);
+        let applied = 0;
+        try {
+          for (const child of group.children ?? group.fields ?? []) {
+            const answer = this.#resolveChildAnswer(child, row, handle.category);
+            if (answer === null || answer === undefined || answer === '') {
+              invariant(!child.required, 'REPEATABLE_REQUIRED_MISSING', `Missing ${child.label} in ${group.label}`);
+              continue;
+            }
+            await this.#fillRepeatableChild(page, opened, child, answer, context);
+            applied++;
+          }
+          invariant(applied > 0, 'REPEATABLE_EMPTY_ROW', `No fields resolved for ${group.label}`);
+          const after = await closeRepeatableEditor(opened, 'save');
+          invariant(after.length > before.length && after.every(card => !card.provisional), 'REPEATABLE_SAVE_UNVERIFIED', `Could not verify saved ${group.label} card`);
+          before.push(after[after.length - 1]);
+        } catch (error) {
+          throw error;
+        }
+      }
+      return { added: rowsToFill.length, capped: rows.length - rowsToFill.length };
+      }
+    }
 
     // 1. Inspect existing valid cards first
     const existingCards = await this.#inspectExistingRepeatableCards(page, group);
@@ -2737,6 +2782,49 @@ export class OracleRecruitingAdapter {
     }
   }
 
+  async #fillRepeatableChild(page, opened, field, answer, context) {
+    const source = field.sourceName || '';
+    const id = field.sourceId || '';
+    const dateComponent = id.match(/^(month|day|year)-([a-zA-Z]+)-\d+$/);
+    let locator;
+    if (dateComponent) locator = opened.fields.locator(`[id^="${dateComponent[1]}-${dateComponent[2]}-"]`).first();
+    else if (source) locator = opened.fields.locator(`[name="${source.replaceAll('"', '\\"')}"]`).first();
+    else if (id) {
+      const base = id.replace(/-\d+$/, '');
+      locator = opened.fields.locator(`[id="${id.replaceAll('"', '\\"')}"], [id^="${base.replaceAll('"', '\\"')}-"]`).first();
+    }
+    else locator = opened.fields.getByLabel(field.label).first();
+
+    if (field.type === 'radio') {
+      const group = opened.fields.getByRole('radiogroup', { name: field.label }).first();
+      const option = group.getByRole('radio', { name: String(answer), exact: true }).first();
+      await option.click();
+      invariant(await option.getAttribute('aria-checked') === 'true', 'FIELD_VERIFICATION_FAILED', `Radio did not persist: ${field.label}`);
+      return;
+    }
+    if (field.type === 'checkbox') {
+      const desired = coerceToBoolean(answer);
+      if (await locator.isChecked() !== desired) {
+        const liveId = await locator.getAttribute('id');
+        const label = liveId ? opened.fields.locator(`label[for="${liveId}"]`).first() : opened.fields.getByText(field.label).first();
+        if (await label.count()) await label.click();
+        else await locator.setChecked(desired, { force: true });
+      }
+      invariant(await locator.isChecked() === desired, 'FIELD_VERIFICATION_FAILED', `Checkbox did not persist: ${field.label}`);
+      return;
+    }
+    await locator.waitFor({ state: 'visible', timeout: 10000 });
+    if (field.type === 'combobox' || await locator.getAttribute('role') === 'combobox') {
+      await this.#fillCombobox(page, locator, field, coerceToString(answer, field.options), context);
+      const value = await locator.inputValue();
+      invariant(Boolean(value?.trim()) && await locator.getAttribute('aria-invalid') !== 'true', 'FIELD_VERIFICATION_FAILED', `Combobox did not persist: ${field.label}`);
+      return;
+    }
+    await locator.fill(String(answer));
+    await locator.press('Tab').catch(() => {});
+    invariant(normalizeText(await locator.inputValue()).toLowerCase() === normalizeText(String(answer)).toLowerCase(), 'FIELD_VERIFICATION_FAILED', `Value did not persist: ${field.label}`);
+  }
+
   #extractDatePart(dateStr, part) {
     if (!dateStr) return '';
     const s = String(dateStr).trim();
@@ -2773,7 +2861,7 @@ export class OracleRecruitingAdapter {
     return '';
   }
 
-  #resolveChildAnswer(child, row) {
+  #resolveChildAnswer(child, row, category = '') {
     if (!row || typeof row !== 'object') return '';
     const label = (child.label || child.id || '').toLowerCase();
     const id = (child.id || '').toLowerCase();
@@ -2783,9 +2871,19 @@ export class OracleRecruitingAdapter {
       return row[child.id];
     }
 
+    if (category === 'languages') {
+      if (/content_item_id|language/i.test(id) || /language/i.test(label)) return row.language || row.name || '';
+      if (/reading/i.test(label + id)) return row.reading || '';
+      if (/writing/i.test(label + id)) return row.writing || '';
+      if (/speaking/i.test(label + id)) return row.speaking || '';
+    }
+    if (category === 'licenses') {
+      if (/content_item_id|licen[cs]e|certificate|certification/i.test(id + label)) return row.license || row.certificate || row.certification || row.name || '';
+    }
+
     // 2. Specific Experience Fields (Country, City, Phone, Supervisor, Reason MUST precede generic employer/company check)
     if (/country/i.test(label) || /country_code/i.test(id)) {
-      return row.country || row.country_code || 'United States';
+      return row.country || row.country_code || '';
     }
     if (/\bcity\b/i.test(label) || /employer_city|city_city/i.test(id)) {
       return row.city || row.employer_city || '';
@@ -2809,7 +2907,7 @@ export class OracleRecruitingAdapter {
       return row.title || row.position || row.role || '';
     }
     if (/current\s*job|currently\s*work/i.test(label) || /current_job/i.test(id)) {
-      return /present|current/i.test(row.endDate || '') ? true : false;
+      return row.current_job ?? /present|current/i.test(row.endDate || row.end_date || '');
     }
     if (/start\s*date.*month|from.*month/i.test(label) || (/start_date/i.test(id) && !/year/i.test(id))) {
       return this.#extractDatePart(row.startDate, 'month');
@@ -2834,19 +2932,19 @@ export class OracleRecruitingAdapter {
       return row.institution || row.school || row.university || '';
     }
     if (/degree/i.test(label) || /degree|content_item_id/i.test(id)) {
-      return row.degree || "Master's Degree";
+      return row.degree || '';
     }
     if (/major|field\s*of\s*study|specialization/i.test(label) || /major|study|specialization/i.test(id)) {
-      return row.fieldOfStudy || row.major || 'Computer Science';
+      return row.fieldOfStudy || row.major || '';
     }
     if (/gpa/i.test(label) || /gpa/i.test(id)) {
-      return String(row.gpa || '3.8');
+      return row.gpa === undefined || row.gpa === null ? '' : String(row.gpa);
     }
     if (/graduated/i.test(label) || /graduated/i.test(id)) {
-      return true;
+      return row.graduated ?? '';
     }
     if (/graduation\s*year|completion\s*year/i.test(label) || /grad_year|completion_year/i.test(id)) {
-      return String(row.graduationYear || '2025');
+      return String(row.graduationYear || row.graduation_year || '');
     }
 
     // 4. Skills & Supporting Links

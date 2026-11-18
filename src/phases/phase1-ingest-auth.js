@@ -295,7 +295,7 @@ export class Phase1IngestAuth {
     return await this.ingestCsv();
   }
 
-  async authenticate({ applicationId, job, email, companyDomains = [] }) {
+  async authenticate({ applicationId, job, email, lastName, companyDomains = [] }) {
     const lockKey = `${email.toLowerCase()}|${job.tenantHost}`;
     return this.otpLock.run(lockKey, async () => {
       const session = await this.oracle.createSession({ applicationId });
@@ -304,6 +304,7 @@ export class Phase1IngestAuth {
           session,
           job,
           email,
+          lastName,
           companyDomains,
           mailReader: this.mailReader
         });

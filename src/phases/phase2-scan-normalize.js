@@ -12,7 +12,7 @@ export class Phase2ScanNormalize {
     const template = this.#applyConditions(scanned);
     const templates = await this.store.read('form-templates', {});
     const primaryKey = job.jobKey ?? job.jobId;
-    const version = (templates[primaryKey]?.version ?? 0) + 1;
+    const version = Number(templates[primaryKey]?.version ?? 0) + 1;
     const templateId = stableId('tpl', `${job.canonicalUrl}|${template.scan.scannedAt}`);
     const versioned = {
       templateId,

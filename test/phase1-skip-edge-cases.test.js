@@ -212,7 +212,7 @@ test('Phase 4 prepare marks application as already_applied when phase1 returns s
         return { 'user-1': { email: 'user@example.com' } };
       }
       if (name === 'form-templates') {
-        return { '123': { fields: [] } };
+        return { '123': { fields: [{ id: 'region1', label: 'County', type: 'combobox', required: true }] } };
       }
       return {};
     },

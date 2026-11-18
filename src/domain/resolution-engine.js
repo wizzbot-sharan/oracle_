@@ -478,7 +478,7 @@ export class ResolutionEngine {
           const norm = skills.map(s => ({
             skills: s,
             skill: s,
-            years_of_experience: canonical.history.totalExperienceYears || '3'
+            years_of_experience: canonical.history.totalExperienceYears || ''
           }));
           return { rawValue: norm, confidence: 0.95 };
         }
@@ -486,18 +486,14 @@ export class ResolutionEngine {
       }
 
       if (/language/i.test(label) || /language/i.test(field.id || '')) {
-        const detectedLanguages = [];
-        if (resumeText && /\b(english)\b/i.test(resumeText)) detectedLanguages.push('English');
-        if (resumeText && /\b(spanish)\b/i.test(resumeText)) detectedLanguages.push('Spanish');
-        if (resumeText && /\b(hindi)\b/i.test(resumeText)) detectedLanguages.push('Hindi');
-        if (resumeText && /\b(french)\b/i.test(resumeText)) detectedLanguages.push('French');
-        if (detectedLanguages.length) {
-          const rows = detectedLanguages.map(l => ({
-            content_item_id: l,
-            language: l,
-            reading: 'Fluent',
-            writing: 'Fluent',
-            speaking: 'Fluent'
+        const languageRecords = canonical.raw?.client?.additional_information?.language_records;
+        if (Array.isArray(languageRecords) && languageRecords.length) {
+          const rows = languageRecords.filter(item => item?.language).map(item => ({
+            content_item_id: item.language,
+            language: item.language,
+            reading: item.reading || '',
+            writing: item.writing || '',
+            speaking: item.speaking || ''
           }));
           return { rawValue: rows, confidence: 0.95 };
         }

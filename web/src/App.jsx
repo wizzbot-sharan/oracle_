@@ -1849,6 +1849,11 @@ export function App() {
           const activeSlot = submissionStatus?.slots?.find(s => s.applicationId === selected.applicationId && s.status !== 'idle');
           const isQueued = submissionStatus?.pendingQueue?.includes(selected.applicationId);
           const expectedJobId = selected.jobKey || selected.jobId;
+          const repeatableOnlyMissing = selected.status === 'needs_input' &&
+            (selected.unresolvedFields || []).length > 0 &&
+            (selected.unresolvedFields || []).every(fieldId =>
+              (template.repeatableGroups || []).some(group => fieldId === group.id || fieldId.startsWith(`${group.id}[`))
+            );
 
           let applyButtonText = 'Apply (Start Live Fill)';
           let applyDisabled = false;
@@ -1868,9 +1873,11 @@ export function App() {
             applyDisabled = true;
           } else if (selected.status === 'filled_verified') {
             applyButtonText = '✓ Filled & Audited (Click to Re-run)';
-          } else if (selected.status === 'needs_input') {
+          } else if (selected.status === 'needs_input' && !repeatableOnlyMissing) {
             applyButtonText = 'Resolve Questions Before Applying';
             applyDisabled = true;
+          } else if (repeatableOnlyMissing) {
+            applyButtonText = 'Check Existing Cards & Fill';
           }
 
           const canSubmit = (selected.status === 'needs_review' || selected.reviewStatus === 'approved' || activeSlot?.status === 'awaiting_review') &&

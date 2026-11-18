@@ -91,6 +91,7 @@ test('OracleRecruitingAdapter maps repeatable group child fields to candidate re
     degree: "Master's Degree",
     institution: 'University of Texas at Dallas',
     fieldOfStudy: 'Computer Science',
+    graduated: true,
     graduationYear: '2024'
   };
 
@@ -159,17 +160,19 @@ test('ResolutionEngine resolves repeatable groups with bi-directional normalizat
   assert.equal(skillRes.value[0].skills, 'Full Stack Engineer');
   assert.equal(skillRes.value[0].years_of_experience, '5');
 
-  // 4. Languages (Detected in resumeText)
+  // 4. Languages require explicit candidate records and proficiency.
+  const languageCandidate = structuredClone(candidate);
+  languageCandidate.additional_information.language_records = [{ language: 'English', reading: 'High Proficiency' }];
   const langRes = await engine.resolveField({
     field: { id: 'language', label: 'Language', type: 'repeatable-group' },
-    client: candidate,
+    client: languageCandidate,
     resumeText
   });
   assert.equal(Array.isArray(langRes.value), true);
   assert.equal(langRes.value[0].content_item_id, 'English');
-  assert.equal(langRes.value[0].reading, 'Fluent');
+  assert.equal(langRes.value[0].reading, 'High Proficiency');
 
-  // 5. Languages (NOT detected in resumeText -> leaves null for operator review)
+  // 5. Resume mention alone leaves language proficiency for operator review.
   const emptyLangRes = await engine.resolveField({
     field: { id: 'language', label: 'Language', type: 'repeatable-group' },
     client: candidate,

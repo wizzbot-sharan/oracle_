@@ -5,6 +5,7 @@ import { invariant } from '../shared/errors.js';
 import { nowIso } from '../shared/time.js';
 import { resumeService } from '../services/resume-service.js';
 import { config } from '../config.js';
+import { CanonicalProfile } from '../domain/canonical-profile.js';
 
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -39,6 +40,7 @@ export class Phase4ApplyReviewSubmit {
     const user = users[application.userId] || {};
 
     const candidateEmail = client?.client?.company_email || client?.company_email || user.email;
+    const candidateLastName = application.values?.last_name?.value || CanonicalProfile.from({ client }).identity.lastName;
     invariant(candidateEmail, 'USER_EMAIL_MISSING', `No company email configured for candidate ${applywizzId || application.userId}`);
 
     const template = templates[application.jobKey] || templates[application.jobId];
@@ -103,7 +105,9 @@ export class Phase4ApplyReviewSubmit {
     }
 
     const missing = flattenTemplateFields(template).filter(field => {
-      if (!field.required || field.repeatableGroupId || !isFieldVisible(field, effectiveValues)) return false;
+      if (!field.required || field.repeatableGroupId || field.type === 'repeatable-group' || !isFieldVisible(field, effectiveValues)) return false;
+      // Oracle derives County from the other address controls; candidate profiles do not carry it.
+      if (/^county\s*\*?$/i.test(String(field.label || '').trim())) return false;
       const isResume = field.type === 'file' && (field.id?.toLowerCase().includes('resume') || field.label?.toLowerCase().includes('resume'));
       if (isResume && (candidateResumePath || hasResumeParsedInfo)) return false;
       return !effectiveValues[field.id]?.value;
@@ -119,7 +123,7 @@ export class Phase4ApplyReviewSubmit {
     };
 
     console.log(`[Phase 4] Authenticating ${applywizzId} using real candidate company_email: ${candidateEmail}...`);
-    const { session, result } = await this.phase1.authenticate({ applicationId, job, email: candidateEmail });
+    const { session, result } = await this.phase1.authenticate({ applicationId, job, email: candidateEmail, lastName: candidateLastName });
     if (result?.status === 'skipped') {
       if (session) await this.oracle.closeSession(session).catch(() => {});
       const updated = await this.#patch(applicationId, {

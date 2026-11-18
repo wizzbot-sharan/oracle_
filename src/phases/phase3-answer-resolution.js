@@ -253,10 +253,12 @@ export class Phase3AnswerResolution {
       }
       if (parsedResume) {
         if (Array.isArray(parsedResume.work_experience) && parsedResume.work_experience.length > 0) {
-          client.experience_records = parsedResume.work_experience;
+          client.additional_information ??= {};
+          client.additional_information.experience_records = parsedResume.work_experience;
         }
         if (Array.isArray(parsedResume.education) && parsedResume.education.length > 0) {
-          client.education_records = parsedResume.education;
+          client.additional_information ??= {};
+          client.additional_information.education_records = parsedResume.education;
         }
         if (Array.isArray(parsedResume.skills) && parsedResume.skills.length > 0) {
           if (!client.additional_information) client.additional_information = {};

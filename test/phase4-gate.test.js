@@ -47,12 +47,10 @@ test('fillApplication traverses multiple pages and halts safely when Submit is d
       evaluate: async () => {},
       scrollIntoViewIfNeeded: async () => {},
       getAttribute: async (attr) => (attr === 'aria-controls' ? 'country-listbox' : null),
-      click: async () => {
-        if (name === 'country') typedValues[name] = 'United States';
-      },
+      click: async () => {},
       dispatchEvent: async () => {},
       hover: async () => {},
-      fill: async () => {},
+      fill: async value => { typedValues[name] = value; },
       pressSequentially: async (c) => { typedValues[name] = (typedValues[name] || '') + c; },
       press: async (key) => {
         if (key === 'Enter') {
